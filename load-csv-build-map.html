@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Load & Parse CSV File - build map</title>
+</head>
+<body>
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+
+<script type='text/javascript'>
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
+
+	var renderer, scene, camera, controls, light, stats;
+	var geometry, material, mesh, sprite;
+  
+	document.body.style.font = 'bold 12pt monospace';
+	 
+	var fileMenu = document.createElement( 'div' );
+	document.body.appendChild( fileMenu );
+	fileMenu.style.cssText = 'margin-left: 100px;';
+	fileMenu.innerHTML = '<h3 style="margin: 0;">Urban Data Challenge ~ San Francisco Stops</h3>' +
+	'Sample Urban Data Challenge - SF Stops: ' +
+	//'<button title="Theo: this file always crashes my broeser" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time.csv\' )" >Geneva schedule-real-time</button> ' +
+	//'<button title="Theo: Reduced data set of the above" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time-200k.csv\' )" >Geneva schedule-real-time-200k</button> ' +
+	'<button title="Theo: smallest file. Loads fastest. Using this file for most of my testing." onclick="loadCSV( \'public-transportation/san-francisco/realtime-arrivals.csv\' )" >San Francisco real-time-arrivals</button> ' +
+	'<button title="" onclick="loadCSV( \'public-transportation/san-francisco/scheduled-arrivals.csv\' )" >San Francisco scheduled-arrivals</button> ' +
+	//'<button onclick="loadCSV( \'public-transportation/san-francisco/passenger-count.csv\' )" >San Francisco passenger-count.csv</button> ' +
+	//'<button onclick="loadCSV( \'public-transportation/zurich/passenger-counts.csv\' )" >Zurich passenger-counts.csv</button> ' +
+	//'<button onclick="loadCSV( \'weather/weather_zurich_and_geneva.csv\' )" >Weather weather_zurich_and_geneva.csv</button> ' +
+	'<button onclick="putCubes( )" >putCubes</button> ' +
+	'';
+	
+	var info = document.createElement( 'div' );
+	document.body.appendChild( info );
+	info.innerHTML = '';
+
+	var info2 = document.createElement( 'div' );
+	document.body.appendChild( info2 );
+	info2.innerHTML = ''; //'<button onclick="seekUniques()">seekUniques</button><br>';
+
+	var fileName, startTime, data;
+	
+	function loadCSV( fname ) {
+		startTime = new Date();
+		fileName = fname;
+		
+		indexFile = new XMLHttpRequest();
+		indexFile.open('GET', fname, true);
+		
+		indexFile.onreadystatechange = callbackIndex;
+		indexFile.send(null);
+	}
+	
+	function callbackIndex() {
+		if (indexFile.readyState == 4) {
+			var allText, indexLines, indexCount;
+			data = [];
+			allText = indexFile.responseText;
+			
+			indexLines = allText.split(/\r\n|\n/);
+			indexCount = indexLines.length;
+		
+			var i, separator, len = indexLines.length;
+			
+			if ( fileName == 'public-transportation/zurich/passenger-counts.csv' ) {
+				separator = ';';
+			} else {
+				separator = ',';
+			}
+				
+			for ( i = 0; i < len; i++ ) {
+				data.push( indexLines[i].split( separator ) );	
+			}
+
+			//info.innerHTML = 'Loaded CSV file: ' + fileName + '<br>Lines read: ' + indexCount + '<br>Time to load in milliseconds: ' + (new Date() - startTime) + '<br>';
+			//info.innerHTML += 'Samples of data now in memory:<br>';
+			//info.innerHTML += 'Header:&nbsp &nbsp &nbsp ' + data[0] + '<br>';
+			//info.innerHTML += 'First line:&nbsp ' + data[1] + '<br>';
+			//info.innerHTML += 'Random line: ' + data[parseInt(Math.random() * len)] + '<br>';
+			//info.innerHTML += 'Last line: &nbsp ' + data[ (len - 3) ] + '<br>';
+			
+			// makeMenu();
+			seekUniques();
+			
+		} else { 
+			console.log('waiting...');
+		}
+	}	
+
+	function makeMenu() {
+		var titles = data[0];
+		//for (var i = 0, l = titles.length; i < l; i++) {
+		//	info.innerHTML += '<button onclick="seekUniques(' + i + ')">' + titles[i] + '<\/button> ';
+		//}
+		info.innerHTML += '<button onclick="seekUniques()">seekUniques<\/button> ';
+		info.innerHTML += '<button onclick="checkStopLocations()">checkStopLocations<\/button> ';
+		info.innerHTML += '<button onclick="getTimeSortedLog()">getTimeSortedLog<\/button> ';
+	
+		seekUniques();
+	}
+	var UDC = UDC || {};
+	
+	UDC.tripId = function () {
+		this.arrivalTimes = [];
+		this.assignment = null;
+		this.block = null;
+		this.route = null;
+		this.stopIds = [];
+		this.tripId = null;
+	}
+	var trips;
+	
+	UDC.stationId = function () {
+		this.latitude;
+		this.longitude;
+	}
+	var stations;	
+	
+	
+	UDC.timeId = function() {
+		this.CSVtime = null;
+		this.route = null;
+		this.stopId = null;
+		this.vehicle = null;
+	}
+	
+	var times;
+	
+	function seekUniques() {
+		trips = {};
+		stations = {};
+		
+		var startTime = new Date();
+		// info2.innerHTML = '';
+		
+		var dat, trip, id = 3, t, len = data.length - 1;
+		
+		for (var i = 1; i < len ; i++) {
+			dat = data[i];
+			trip = dat[id];
+			if ( trips[trip] == undefined) {
+				trips[trip]  = new UDC.tripId();
+				t = trips[trip];
+				// trips[trip].id = dat[index];
+				t.arrivalTimes[0] = dat[9];
+				t.count = 1;
+				t.route = dat[0];
+				t.stopIds[0] = dat[6]; 
+				
+			} else {
+				var t = trips[trip];
+				t.count++;
+				t.stopIds.push( dat[6] );
+				t.arrivalTimes.push( dat[9] );
+			}
+			station = dat[6];
+			if ( stations[station] == undefined) {
+				stations[station] = new UDC.stationId();
+				stations[station].latitude = dat[7];
+				stations[station].longitude = dat[8];
+			}	
+// if ( !(i % 10000) ) { console.log( 'current row: ', i) };
+		}
+		
+		var keys = Object.keys(trips);
+		var len = keys.length;
+		var sum = 0;
+		var limit = 1000;
+		info2.innerHTML =  'Number of unique ' + data[0][id] + ': ' + keys.length + '<br>Time to calculate in milliseconds: ' + (new Date() - startTime) + '<br><br>';
+		
+		info2.innerHTML += 'Sorted list of ' + data[0][id] + ': ' + keys.sort() + '<br><br>List of ' + data[0][id] + ' and their count:<br>';
+
+		if  ( len > limit ) {
+			info2.innerHTML += 'Log display now limited to under this number of records: ' + limit + '<br>';
+			info2.innerHTML += 'This is because displaying very long logs tends to freeze the browser...<br>';
+			len = limit;
+		}
+		for (var i = 0; i < len ; i++) {
+			info2.innerHTML += (i + 1) + '. trip: ' + keys[i] + ' count: ' + trips[keys[i]].count + '<br>'; 
+			sum += trips[keys[i]].count;
+		}
+		info2.innerHTML += 'Tally check: sum of counts: ' + sum + '<br>';
+		info2.innerHTML += 'Tally check: total number of records: ' + data.length  + ' << includes headers and blank last line<br>';
+	
+		checkStopLocations();
+	}
+	
+	function checkStopLocations() {
+		var keys = Object.keys(stations);
+		info2.innerHTML =  'Stops: ' + keys.length + '<br>';
+		
+		// var particles2;
+		scene.remove( particles );
+		geometry = new THREE.Geometry();
+		sprite = THREE.ImageUtils.loadTexture( 'disc.png' );
+		
+		var lat = 0, latSum = 0, lon = 0, lonSum = 0, len = keys.length;
+		
+		for (var i = 0 ; i < len; i++) {
+			var vertex = new THREE.Vector3();
+			lat = parseFloat(stations[keys[i]].latitude); 
+			vertex.x = 2000 * ( 122.45 + lat ) ;  // 200 * Math.random() - 100;
+			latSum +=lat;
+			vertex.y = 5; // 2000 * Math.random() - 1000;
+			lon = parseFloat(stations[keys[i]].longitude);
+			vertex.z = 2000 * (37.75 - lon ); // 200 * Math.random() - 100;
+			lonSum +=lon;
+			geometry.vertices.push( vertex );		
+		
+			// info2.innerHTML += vertex.x + ' | ' + vertex.z + ' StopId: ' + keys[i] + ' Latitude: ' + stations[keys[i]].latitude + ' Longitude:' + stations[keys[i]].longitude + '<br>';
+		}
+		
+		material = new THREE.ParticleBasicMaterial( { size: 10, sizeAttenuation: false, map: sprite, transparent: true } );
+		material.color.setHSV( 0.2, 0.2, 0.8 );
+	
+		particles = new THREE.ParticleSystem( geometry, material );
+		particles.sortParticles = true;
+		scene.add( particles );
+		
+		// info2.innerHTML += 'Average latitude; ' + (latSum / len) + ' ' + (lonSum / len);
+	}
+	
+	var keys;
+	function getTimeSortedLog() {
+		var startTime = new Date();
+		var daySecs = [''];
+		for (var i = 1; i < 9; i++) {
+			daySecs.push( (new Date('10/' + i + '/2012')).getTime() );
+		}	
+		daySecs = (new Date('10/1/2012')).getTime();
+		
+		times = {};
+		var dat, t, time, id = 9, len = data.length - 1;
+		count = 1;
+		for (var i = 1; i < len ; i++) {
+			dat = data[i];
+			t = new Date( dat[id] );
+			time = t.getTime() - daySecs;
+			// console.log(t, ' - time: ', time, ' t1:', t1, day);
+			if ( times[time] == undefined) {
+				times[time] = new UDC.timeId();
+				
+			} else if ( times[time + 1 * count] == undefined) {
+				time += 1 * count;
+				times[time] = new UDC.timeId();
+				count++;
+			} else if ( times[time + 1 * count] == undefined) {
+				time += 1 * count;
+				times[time] = new UDC.timeId();
+				count++;
+				// console.log(i, time + 2 * count, data[i]);
+			}
+			times[time].route = dat[0];
+			times[time].stopId = dat[6];
+			times[time].vehicle = dat[3];
+		}
+		keys = Object.keys(times);
+		info2.innerHTML = 'Times: ' + keys.length + '<br>Time to calculate in milliseconds: ' + (new Date() - startTime) + '<br><br>';
+		var i = parseInt(Math.random() * 200000);
+		info2.innerHTML += i + '. Random: ' + keys[i] + ' stopId: ' + times[keys[i]].stopId ;
+		var stuff = 0;
+		for (var t in times) {
+			stuff += parseInt(t);
+		}
+		console.log ('stuff', stuff);
+	}
+	
+	function putCubes() {
+		var startTime = new Date();
+		daySecs = (new Date('10/1/2012')).getTime();
+		
+		times = {};
+		var dat, t, time, id = 9, len = data.length - 1;
+		var lat, lon;
+		count = 1;
+		geometry = new THREE.CubeGeometry( 2,1,2 );
+		material = new THREE.MeshNormalMaterial();
+		for (var i = 1; i < 25000 ; i++) {
+			dat = data[i];
+			t = new Date( dat[id] );
+			time = t.getTime() - daySecs;
+			mesh = new THREE.Mesh( geometry, material );
+			lat = parseFloat(stations[dat[6]].latitude); 
+			mesh.position.x = 2000 * ( 122.45 + lat ) ; 
+			mesh.position.y = 0.0000001 * time;
+			lon = parseFloat(stations[dat[6]].longitude);
+			mesh.position.z = 2000 * (37.75 - lon );
+			scene.add( mesh );
+// console.log (mesh.position.y);
+		}
+		
+	}
+	
+	var container = document.createElement( 'div' );
+	document.body.appendChild( container );
+	container.style.cssText = 'position: absolute; right: 0; top: 60px;';
+	
+	
+	init();
+	animate();
+
+	function init() {
+	renderer = new THREE.WebGLRenderer( { antialias: true } );
+	
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    container.appendChild( renderer.domElement );
+
+    scene = new THREE.Scene();
+
+    camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera.position.set( 0, 100, 100 );
+
+    controls = new THREE.TrackballControls( camera, renderer.domElement );
+    
+    stats = new Stats();
+    stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+    document.body.appendChild( stats.domElement );    
+	
+	window.addEventListener( 'resize', onWindowResize, false );
+
+//  User stuff
+	geometry = new THREE.Geometry();
+
+	sprite = THREE.ImageUtils.loadTexture( 'disc.png' );
+
+	for ( i = 0; i < 10; i ++ ) {
+		var vertex = new THREE.Vector3();
+		vertex.x = 200 * Math.random() - 100;
+		vertex.y = 5; // 2000 * Math.random() - 1000;
+		vertex.z = 200 * Math.random() - 100;
+		geometry.vertices.push( vertex );
+	}
+
+	material = new THREE.ParticleBasicMaterial( { size: 3, sizeAttenuation: false, map: sprite, transparent: true } );
+	material.color.setHSV( 0.4, 0.2, 0.8 );
+
+	particles = new THREE.ParticleSystem( geometry, material );
+	particles.sortParticles = true;
+	scene.add( particles );
+	
+    var color = 0xeeeeeee;
+    material = new THREE.MeshBasicMaterial( {color: color, side: THREE.DoubleSide } );
+    geometry = new THREE.PlaneGeometry( 300, 300, 10, 10 );
+    mesh = new THREE.Mesh( geometry, material );
+    mesh.position.set(0, 0, 0);
+    mesh.rotation.x = -1.5708;
+    scene.add( mesh );
+  }
+
+  function animate() {
+    requestAnimationFrame( animate );
+    controls.update();
+    renderer.render( scene, camera );
+    stats.update();
+  }
+    
+  function onWindowResize() {
+    windowHalfX = window.innerWidth / 2;
+    windowHalfY = window.innerHeight / 2;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+  }	
+</script>
+</body>
+</html>
