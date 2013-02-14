@@ -5,7 +5,8 @@
 </head>
 <body>
 <script type='text/javascript'>
-	document.body.style.font = 'bold 12pt monospace';
+	document.body.style.font = 'normal 12pt monospace';
+	
 	 
 	var fileMenu = document.createElement( 'div' );
 	document.body.appendChild( fileMenu );
@@ -64,13 +65,15 @@
 
 			info.innerHTML = '<p>Loaded CSV file: ' + fileName + '<br>Lines read: ' + indexCount + '<br>' +
 			'Time to load in milliseconds: ' + (new Date() - startTime) + '<br>';
-			info.innerHTML += 'Samples of the data now in memory:<br>';
+			info.innerHTML += 'Samples of the data in memory:<br>';
 			info.innerHTML += 'Header:&nbsp &nbsp &nbsp ' + data[0] + '<br>';
 			info.innerHTML += 'First line:&nbsp ' + data[1] + '<br>';
 			info.innerHTML += 'Random line: ' + data[parseInt(Math.random() * len)] + '<br>';
 			info.innerHTML += 'Last line: &nbsp ' + data[ (len - 3) ] + '</p>';
 			
-			makeMenu();
+			// makeMenu();
+			
+			buildReport();
 			
 		} else { 
 			console.log('waiting...');
@@ -82,6 +85,7 @@
 		for (var i = 0, l = titles.length; i < l; i++) {
 			info.innerHTML += '<button onclick="seekUniques(' + i + ')">' + titles[i].toLowerCase() + '<\/button> ';
 		}
+		info2.innerHTML = '';
 	}
 	var UDC = UDC || {};
 	
@@ -89,14 +93,25 @@
 		this.id = null;
 		this.count = null;
 	}
-	var items = {};
+	
+	var items;
+	
+	function buildReport() {
+		var txt = '', fields = data[0], len = fields.length;
+		
+		for (var i = 0; i < len; i++) {
+			txt += seekUniques( i );
+		}
+		
+		info2.innerHTML = txt;
+	}
 	
 	function seekUniques( index ) {
 		items = {};
 		var startTime = new Date();
-		info2.innerHTML = '';
+		// info2.innerHTML = '';
 		
-		var dat, item, len = data.length - 1;
+		var dat, item, len = data.length - 1, min = 1000000, mnId, max = 0, maxId;
 		
 		for (var i = 1; i < len ; i++) {
 			dat = data[i];
@@ -108,28 +123,59 @@
 				
 			} else {
 				items[item].count++;
+				if (items[item].count > max) {
+					max = items[item].count; 
+					maxId = item;
+				}
 			}
 			
 			if ( !(i % 10000) ) { console.log( 'current row: ', i) };
 		}
-		
 		var keys = Object.keys(items);
-		var len = keys.length;
+		var lenK = keys.length;		
 		var sum = 0;
-		var limit = 1000;
-		info2.innerHTML =  'Number of unique ' + data[0][index] + ': ' + keys.length + '<br>Time to calculate in milliseconds: ' +(new Date() - startTime) + '<br><br>';
-		info2.innerHTML += 'Sorted list of ' + data[0][index] + ': ' + keys.sort() + '<br><br>List of ' + data[0][index] + ' and their count:<br>';
-		if  ( len > limit ) {
-			info2.innerHTML += 'Log display now limited to under this number of records: ' + limit + '<br>';
-			info2.innerHTML += 'This is because displaying very long logs tends to freeze the browser...<br>';
-			len = limit;
-		}
-		for (var i = 0; i < len ; i++) {
-			info2.innerHTML += (i + 1) + '. item: ' + keys[i] + ' count: ' + items[keys[i]].count + '<br>'; 
+		for (var i = 0; i < lenK ; i++) {
+			
+			if ( items[keys[i]].count < min ) { 
+				min = items[keys[i]].count; 
+				minId = keys[i];
+			}
+			// console.log( items[item].count , min );
 			sum += items[keys[i]].count;
 		}
-		info2.innerHTML += 'Tally check: sum of counts: ' + sum + '<br>';
-		info2.innerHTML += 'Tally check: total number of records: ' + data.length + ' << includes headers and blank last line<br>';
+		
+		var limit = 1000;
+		
+		var infotext =  '<p>' +
+		'Number of unique values for: <b>' + data[0][index].toLowerCase() + '</b>(s): ' + keys.length + '<br>' +
+		'First unique value: ' + keys[0] + '<br>' +
+		'Last unique value: ' + keys[keys.length - 1] + '<br>' + 
+		'Total instances for all values: ' + sum + '<br>' +
+		'Minimum instances for: ' + minId + ' = ' + min + '<br>' +
+		'Maximum instances for: ' + maxId + ' = ' + max + '<br>' +
+		'Average number of instances: ' + parseInt( sum/lenK) + '<br><br>' +
+		'</p>'; 
+		
+		// 'Time to calculate in milliseconds: ' +(new Date() - startTime) + '</p>';
+/*		
+		infotext += 'Sorted list of ' + data[0][index] + ': ' + keys.sort() + '<br><br>List of ' + data[0][index] + ' and their count:<br>';
+		
+		if  ( len > limit ) {
+			infotext += 'Log display now limited to under this number of records: ' + limit + '<br>';
+			infotext += 'This is because displaying very long logs tends to freeze the browser...<br>';
+			len = limit;
+		}
+		
+		sum = 0;
+		for (var i = 0; i < lenK ; i++) {
+			infotext += (i + 1) + '. item: ' + keys[i] + ' count: ' + items[keys[i]].count + '<br>'; 
+			sum += items[keys[i]].count;
+		}
+		infotext += 'Tally check: sum of counts: ' + sum + '<br>';
+		infotext += 'Tally check: total number of records: ' + data.length + ' << includes headers and blank last line<br>';
+*/
+		
+		return infotext;
 	}
 </script>
 </body>
