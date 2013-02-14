@@ -7,10 +7,6 @@
 <script src="http://mrdoob.github.com/three.js/build/three.min.js"></script>
 
 <script>
-	
-	// workaround for chrome bug: http://code.google.com/p/chromium/issues/detail?id=35980#c12
-	if ( window.innerWidth === 0 ) { window.innerWidth = parent.innerWidth; window.innerHeight = parent.innerHeight; }
-		
 	var camera, scene, renderer;
 	var geometry, material, mesh;
 
@@ -25,7 +21,21 @@
 		document.body.appendChild( info );
 		info.style.cssText = 'text-align: left;';
 		info.innerHTML = '<h1>urdacha</h1>' +
+		
 		'<p>Demo Files</p>' +
+		'<p><a href="globe-demos/globe-plus-planes-curved.html">data globe #1</a></p>' +
+		'<p>Anything to do with global transportation data kind of must have an image of a globe associated with it. ' +
+		'The benefit is that most everybody knows what a globe is for and where their place is on the globe. ' +
+		'On the other hand, a globe is a tired old theme and certainly not a great tool for displaying multivariate data. ' +
+		'So one idea is to develop some new concepts for what could be termed a \'data globe\'.' +
+		'The above link is the equivalent of a preliminary rough sketch. Most of the proposed effects are not yet coded. ' +
+		'The idea is that as you moved over the map, certain places would bubble out. They would come to you rather than you having to go there. ' +
+		'Think of a magnifying glass or the navigation bar on a Macintosh computer. ' +
+		'One aspect of the \'bubble\' that will be fun to explore is the spreading out of the data as it bubbles out. ' +
+		'This will make it easier for you to tap on an individual data point to find out more about it. ' +
+		'Another possibility that is not yet viewable, is the addition of shadows to help indicate the time of day for particular locations on the globe. ' +
+		'In any case, this is just the start. Who knows where this will end. Perhaps you will be able to drag and drop cities on top of one another to compare them...' +
+		'</p>' +
 		'<p><a href="load-csv.html" >load-csv.html</a></p>' +
 		'<p>Opens the six <a href="http://urbanprototyping.org/" target="_blank">Urban Data Challenge</a> CSV data files, and allows you to obtain summaries of the content. ' +
 		'The first Geneva file will likely crash your broswer. A second smaller version has been added. ' +
