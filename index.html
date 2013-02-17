@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-<meta charset="utf-8">
+<meta charset='utf-8'>
 </head>
 <body>
-<script src="http://mrdoob.github.com/three.js/build/three.min.js"></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
 
 <script>
 	var camera, scene, renderer;
@@ -22,13 +22,42 @@
 		info.style.cssText = 'text-align: left;';
 		info.innerHTML = '<h1>urdacha</h1>' +
 		
-		'<p>Demo Files</p>' +
-		'<p><a href="globe-demos/globe02/globe-black-shaders-stars-flags.html">data globe #2</a></p>' +
+		'<h2>Code, Wiki, links and More...</h2>' +
+		'<p><a href="https://github.com/jaanga/urdacha" target="_blank">github.com/jaanga/urdacha</a></p>' +
+		
+		'<h2>Demo Files</h2>' +
+		'<h3><a href="globe-demos/globe03-planes/globe-black-shaders-stars-planes">data globe #3</a></h3>' +
+		
+		'<p>2013-02-16 ~ There were not many comments on data globe #2, so data globe #3 took off. Fasten your seat belts. ' +
+		'Our friend Geoff who lives in Antony outside of Paris writes add-ons for <a href="http://www.flightgear.org/" target="_blank">FlightGear</a> ' +
+		'- a free, open source software flight similutor. A particularly nice utility service he helps provide (along with the flight crew at ' +
+		'<a href="http://www.fgx.ch/" target="_blank">FGX</a>) is real-time notification of who is in the air and where. ' +
+		'So the goal became to take this live text data and show it on our data globe.' +
+		'</p>' +
+		
+		'<p>Development so far has been quick and easy. The first test flight occured well within the first day of construction. So far there was only one big crash - ' +
+		'where a browser session had to be killed. Airplane positions as well as the text placards are being updated every ten seconds with few issues. ' +
+		'There is still work to be done: For the moment, the rotation angle (or heading) of the plane is a broken kluge. ' +
+		'The fix will involve figuring out the best way to carry out the matrix multiplication. After that it might be nice to display tiny models of the planes being flown. ' +
+		'And after that there\'s still a ton more that could be done - from showing the satellite images of the current cloud cover using data from ' +
+		' <a href="http://www.wunderground.com/" target="_blank">Weather Underdround</a> ' +
+		'to adding the ability to communicate with the pilots to making the bland white ribbon currently under the planes look like real sky writing ' +
+		' - and enabling pilots to choose their preferred color. And. of course, there are still resource-hogging issues going on as well. Welcome to the <s>real</s> ' +
+		' rotating world.' +
+		'</p>' +
+		
+		'<p>No matter how much \'eye-candy\' this particular implementation of a data globe may provide, it\'s important to remember that this is only ' +
+		'a small step towards building a useful and informative data globe...</p>' +
+		
+		'<h3><a href="globe-demos/globe02/globe-black-shaders-stars-flags.html">data globe #2</a></h3>' +
+		
 		'<p>2013-02-15 ~ Another globe, this time mostly black - with better stars. ' +
 		'Note the highlighting that occurs near the rim - this was accomplished with the addition of shaders. ' +
 		'City flags have been added to help identify the location more quickly. ' +
 		'The question that still needs answering is can a globe be used to visualize data or is a globe merely a handy navigation tool?</p>' +
-		'<p><a href="globe-demos/globe01/globe-plus-planes-curved.html">data globe #1</a></p>' +
+		
+		'<h3><a href="globe-demos/globe01/globe-plus-planes-curved.html" target="_blank">data globe #1</a></h3>' +
+		
 		'<p>2013-02-13 ~ Anything to do with global transportation data kind of must have an image of a globe associated with it. ' +
 		'The benefit is that most everybody knows what a globe is for and where their place is on the globe. ' +
 		'On the other hand, a globe is a tired old theme and certainly not a great tool for displaying multivariate data. ' +
@@ -39,38 +68,42 @@
 		'One aspect of the \'bubble\' that will be fun to explore is the spreading out of the data as it bubbles out. ' +
 		'This will make it easier for you to tap on an individual data point to find out more about it. ' +
 		'Another possibility that is not yet viewable, is the addition of shadows to help indicate the time of day for particular locations on the globe. ' +
-		'In any case, this is just the start. Who knows where this will end. Perhaps you will be able to drag and drop cities on top of one another to compare them...' +
+		'In any case, this is just the start. Who knows where this will end. ' +
+		'Perhaps you will be able to drag and drop cities on top of one another to compare them...' +
 		'</p>' +
-		'<p><a href="load-csv.html" >load-csv.html</a></p>' +
-		'<p>Opens the six <a href="http://urbanprototyping.org/" target="_blank">Urban Data Challenge</a> CSV data files, and allows you to obtain summaries of the content. ' +
-		'The first Geneva file will likely crash your broswer. A second smaller version has been added. ' +
+		
+		'<h3><a href="load-csv.html" >load-csv.html</a></h3>' +
+		'<p>2013-02-12 ~ Opens the six <a href="http://urbanprototyping.org/" target="_blank">Urban Data Challenge</a> CSV data files, and allows you to obtain summaries of the content. ' +
+		'The first Geneva file will likely crash your browser. A second smaller version has been added. ' +
 		'Once the second menu appears, be careful about clicking on the times and trip IDs - the volume of items can freeze your browser. '+
 		'When this happens prepared to close the tab and start over. '+
 		'Most testing has been done with the San Francisco real-time-arrivals file. ' +
 		'Open the JavaScript console - Function key 12 - and see more data about the progress. ' +
 		'It will take perhaps nearly 3000 waits before there\'s a display' +
 		'</p>' +
-		'<p><a href="load-csv-build-map.html" >load-csv-build-map.html</a></p>' +
-		'More of a joke than a demo. ' +
+		
+		'<h3><a href="load-csv-build-map.html" >load-csv-build-map.html</a></h3>' +
+		'<p>2013-02-12 ~ More of a joke than a demo. ' +
 		'First click shows you just 572 stops - no map or other detail. Notice the diagonal line of the stops on Market Street in top right. ' +
 		'Clicking putCubes will do just that - put cubes at the stop IDs of the first 25,000 records in the database of over 500,000. ' +
 		'Use mouse and wheel to rotate, pan and zoom. ' +
 		'It\'s lame, but it\'s a start. More and better in the next few days...' +
-		'';
+		'</p>';
 		
 		camera = new THREE.PerspectiveCamera( 75, 1, 1, 1000 );
-		camera.position.z = 500;
+		camera.position.z = 350;
 
 		scene = new THREE.Scene();
 
-		geometry = new THREE.IcosahedronGeometry( 200, 1 );
-		material = new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true, wireframeLinewidth: 2 } );
+		geometry = new THREE.IcosahedronGeometry( 200, parseInt( Math.random() * 5 ) );
+		material = new THREE.MeshBasicMaterial( { color: 0xffffff * Math.random(), wireframe: true, wireframeLinewidth: parseInt( Math.random() * 8) } );
 
 		mesh = new THREE.Mesh( geometry, material );
 		scene.add( mesh );
 
 		renderer = new THREE.CanvasRenderer();
-		renderer.setSize( 900, 900 );
+		renderer.setSize( 300, 300 );
+		renderer.domElement.style.cssText = 'border: solid red 0px; left: 0; position: absolute; top: 0;';
 
 		document.body.appendChild( renderer.domElement );
 	}
@@ -78,8 +111,8 @@
 	function animate() {
 		requestAnimationFrame( animate );
 
-		mesh.rotation.x = Date.now() * 0.00005;
-		mesh.rotation.y = Date.now() * 0.0005;
+		mesh.rotation.x = Date.now() * 0.00002;
+		mesh.rotation.y = Date.now() * 0.0002;
 
 		renderer.render( scene, camera );
 	}
