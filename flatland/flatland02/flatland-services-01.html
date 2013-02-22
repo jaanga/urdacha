@@ -1,0 +1,333 @@
+﻿<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0'>
+</head>
+<body>
+
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+<!--
+<script src='../../three.js/examples/js/Detector.js'></script>
+<script src='../../three.js/build/three.min.js'></script>
+<script src='../../three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='../../three.js/examples/js/libs/stats.min.js'></script>
+-->
+<script>
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
+
+	var renderer, scene, camera, controls, light, stats;
+	var geometry, material, mesh;
+	
+	var vars, startTime, data;
+	var info, info2;
+	
+	var count = 0;
+	var stops, color;
+	var group;
+	
+	var agencies;
+	// var selectedAgency = 'San Francisco Muni';
+	var selectedAgency = 'City of Oxford';
+	var agencyId;
+		
+	var latMin = 1000, latMax = -1000, lonMin = 1000, lonMax = -1000;
+
+	var latlon = [];
+	latlon[0] = [37.705, -122.2];
+	latlon[1] = [40.05633935,-79.8925631];
+	latlon[2] = [34.23166825,-119.0191889];
+	latlon[3] = [35.92707485,-79.05460070000001];
+	latlon[4] = [42.36479315,-71.08484805];
+	latlon[5] = [39.28630875,-76.616848];
+	latlon[6] = [40.8214314,-73.94785005];
+	latlon[7] = [34.3644332,-89.5228856]; // city of oxford
+	latlon[8] = [39.35866945,-76.6082639];
+	latlon[9] = [42.031619899999995,-93.646055];	
+	latlon[10] = [38.9073149,-77.03824];
+	latlon[11] = [40.7099886,-74.01092495];
+	latlon[12] = [37.5098099,-122.0950615];
+	latlon[13] = [37.8405257,-122.2788958];
+	latlon[14] = [38.79541705,-77.4142108];
+	latlon[15] = [33.07967385,-83.24371110000001];
+	latlon[16] = [34.144037,-118.257575];
+	latlon[17] = [34.17129075,-119.18825995];
+	latlon[18] = [42.34247485,-71.24034495000001];	
+	latlon[19] = [34.05, -118.2]; // lametro
+	latlon[20] = [39.34852435,-76.6175385];
+	latlon[21] = [37.83174885, -96.57499265 ];
+	latlon[22] = [42.354489900000004,-71.094614];
+	latlon[23] = [34.28235995,-118.86821965];
+	latlon[24] = [40.846264950000005,-73.90750495];
+	latlon[25] = [40.6521549,-74.008335];
+	latlon[26] = [40.6369999,-74.12947495];
+	latlon[27] = [32.9548699,-117.27485];
+	latlon[28] = [34.1, -117.3]; // omnitrans
+	latlon[29] = [30.33, -87.12864189999999]; // sria
+	latlon[30] = [45.51269995,-122.68471645];
+	latlon[31] = [39.000080800000006,-76.88696185];
+	latlon[32] = [39.500539950000004,-119.79740495];
+	latlon[33] = [37.1393621,-80.5475285];
+	latlon[34] = [40.76115435,-73.950826];
+	latlon[35] = [40.74237185,-74.18019615];
+	latlon[36] = [40.513650049999995,-74.45721];
+	latlon[37] = [37.77, -122.45]; // San Francisco
+	latlon[38] = [47.62062365,-122.3349102];
+	latlon[39] = [34.277194800000004,-118.73733345];	
+	latlon[40] = [45.56316995,-73.695045];
+	latlon[41] = [39.98093955,-75.15493545000001];
+	latlon[42] = [34.1770555,-118.93447875000001];
+	latlon[44] = [38.5489549,-121.721885];
+	latlon[45] = [39.28713985,-76.62549684999999];
+	latlon[46] = [44.97474905,-93.2243267];
+	latlon[47] = [34.2255161,-119.0756888];
+	latlon[48] = [36.9867246,-86.45472825];
+	latlon[49] = [39.94646725,-76.7339533];	
+	
+	// latlon[] = [0,0];
+	// latlon[37] = [37.771, -122.452];
+	var lat, lon;
+	var routes, routeNames=[];
+	
+	init();
+	animate();
+
+	function init() {
+		if ( ! Detector.webgl ) {
+			renderer = new THREE.CanvasRenderer( { antialias: true } );
+		} else {
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+		}
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+		scene = new THREE.Scene();
+
+		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000);
+		camera.position.set( -1300, 500, 0);
+		controls = new THREE.TrackballControls( camera, renderer.domElement );
+
+		stats = new Stats();
+		stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+		document.body.appendChild( stats.domElement );    
+
+		window.addEventListener( 'resize', onWindowResize, false );
+
+	//  User stuff
+
+		var css = document.createElement('style')
+		css.innerHTML = 'body {background-color: transparent; font: 600 12pt monospace; margin: 0; overflow: hidden; text-align: center; }' +
+			'a { color: #f00; text-decoration: none;}  ' +
+			'input[type=range] { -webkit-appearance: none; background-color: silver; height:20px; opacity: 0.5; width: 80px;}' +
+			'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }' ;
+		document.body.appendChild( css ); 
+
+		// loadCSV('stops.txt');
+		startTime = new Date();
+		
+		material = new THREE.MeshBasicMaterial( {color: 0xdddddd, opacity: 0.7, side: THREE.DoubleSide, transparent: true } );
+		geometry = new THREE.PlaneGeometry( 1500, 2000, 1, 1 );
+		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+		mesh = new THREE.Mesh( geometry, material );
+		// mesh.position.set(  37.75, 0, -122.45);
+		scene.add( mesh );
+		
+		info = document.createElement( 'div' );
+		document.body.appendChild( info );
+		info.style.cssText = 'top: 0px; color: ; position: absolute; width: 100%; ';
+		info.innerHTML = '<p>flatland nextbus stops & buses<br>' +
+			//'x:<input type="range" id="spin" min="-50" max="50" onchange="mesh.position.x=this.value;" step="5" value="' + mesh.position.x + '" ><br>' +
+			//'y:<input type="range" id="spin" min="0" max="50" onchange="mesh.position.y=this.value;" step="5" value="' + mesh.position.y + '" ><br>' +
+			//'z:<input type="range" id="spin" min="-50" max="50" onchange="mesh.position.z=this.value;" step="5" value="' + mesh.position.z + '" >' +
+		'</p>';   
+		
+		info2 = document.createElement( 'div' );
+		document.body.appendChild( info2 );
+		info2.style.cssText = 'top: 80px; color: ; position: absolute; width: 100%; ';
+		info2.innerHTML = '';
+		
+		geometry = new THREE.CubeGeometry( 3, 30, 3 );
+		
+		animate();
+		loadAgencies();
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+		controls.update();
+		renderer.render( scene, camera );
+		stats.update();
+	}
+
+	function onWindowResize() {
+		windowHalfX = window.innerWidth / 2;
+		windowHalfY = window.innerHeight / 2;
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+	}	
+
+	function loadAgencies() {
+		// fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList' ;
+		fname = '../nextbus-routes/nextbus-services.xml';
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, false);
+		xmlhttp.send(null);	
+		var xmlDoc = xmlhttp.responseXML;
+	
+		agencies = xmlDoc.getElementsByTagName("agency");
+		
+		var htm = '<select onchange="selectAgency(this.value);" title="select a different agency" >' ;
+		for ( var i = 0, len = agencies.length - 1; i < len; i++  ) {
+			var a = agencies[i].attributes.title.value;
+			if ( a !== selectedAgency ) {
+				htm += '<option>' + a +'</option>';					
+			} else {
+				htm += '<option selected="selected" >' + selectedAgency +'</option>';				
+			}
+		}
+		htm +='<\/select>';
+		info.innerHTML += htm;
+		// getLatLon();
+		selectAgency( selectedAgency );	
+// console.log(agencies);		
+	}
+	
+	function getLatLon() {
+		var a;
+		var i = 7;
+		htm = '';
+		for (var i = 39, l = agencies.length - 1; i < 50; i++) {
+			a = agencies[i].attributes;
+			fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=' +  a.tag.value;
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.open('GET', fname, false);
+			xmlhttp.send(null);	
+			var xmldoc = xmlhttp.responseXML;		
+			var route = xmldoc.getElementsByTagName("route");
+			if ( route[0] ) {
+				var atts = route[0].attributes;
+				var lat = parseFloat(atts.latMin.value) + 0.5 * (parseFloat(atts.latMax.value) - parseFloat(atts.latMin.value));
+				var lon = parseFloat(atts.lonMin.value) + 0.5 * (parseFloat(atts.lonMax.value) - parseFloat(atts.lonMin.value));
+				htm += 'latlon[' + i + '] = [' + lat + ',' + lon +  '];<br>' ;
+			} else {
+			
+console.log( i, xmldoc )	
+			}
+		}
+		info2.innerHTML = htm;
+	}
+	
+	function selectAgency( agency ) {
+// console.log(agency);
+		if ( agency == 'San Francisco Muni' ) {
+			agencyId = 'sf-muni';
+			fname = '../nextbus-routes/sfmuni-routelist.xml';
+			lat = latlon[37][0];
+			lon = latlon[37][1];
+console.log( 37, 'sf-muni');			
+		} else {
+			for (var i = 0, l = agencies.length - 1; i < l; i++) {
+				a = agencies[i].attributes;
+				if ( a.title.value == agency ) {
+					agencyId = a.tag.value;
+					fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=' +  a.tag.value;
+					lat = latlon[i][0];
+					lon = latlon[i][1];
+console.log(i, a.tag.value);
+					break;
+				}	
+			}
+		}
+		
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, false);
+		xmlhttp.send(null);	
+		var xmldoc = xmlhttp.responseXML;		
+		routes = xmldoc.getElementsByTagName("route");
+		
+		routeNames = [];
+		for (var i = 0, l = routes.length - 1; i < l; i++) {
+			routeNames.push(routes[i].attributes.tag.value);
+		}
+		scene.remove( group );
+		group = new THREE.Object3D();
+		loadStops(); 
+		
+	}	
+	
+	var xmlhttp;
+	function loadStops() {
+		fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=' + agencyId + '&r=' + routeNames[count];
+// console.log( count, agencyId);		
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, true);
+
+		xmlhttp.onreadystatechange = callbackXML;
+		xmlhttp.send(null);	
+/*		
+		var xmldoc = xmlhttp.responseXML;	
+		var r;
+		route = xmldoc.getElementsByTagName("route");
+		
+		if ( route[0] !== undefined ) {
+			r = route[0].attributes;
+			color = parseInt('0x' + r.color.value );
+			// if ( parseFloat(r.latMin.value) < latMin ) { latMin =  parseFloat(r.latMin.value); }
+			// if ( parseFloat(r.latMax.value) > latMax ) { latMax =  parseFloat(r.latMax.value); }
+			// if ( parseFloat(r.lonMin.value) < lonMin ) { lonMin =  parseFloat(r.lonMin.value); }
+			// if ( parseFloat(r.lonMax.value) > lonMax ) { lonMax =  parseFloat(r.lonMax.value); }
+		}
+		stops = xmldoc.getElementsByTagName("stop");		
+		addStops();
+*/
+	}
+	
+	function callbackXML( obj) {
+		if ( xmlhttp.readyState == 4) {
+			var xmldoc = xmlhttp.responseXML;
+// console.log(xmldoc);			
+			route = xmldoc.getElementsByTagName("route");
+			if ( route[0] !== undefined ) {
+				color = parseInt('0x' + route[0].attributes.color.value );
+			} else {
+// console.log(  );
+			}
+			stops = xmldoc.getElementsByTagName("stop");
+			addStops();
+		} else { 
+			// console.log('waiting...');
+		}		
+	}
+	
+	
+	function addStops() {
+		material = new THREE.MeshBasicMaterial( { color: color } );
+		for (var i = 0, l = stops.length - 1; i < l; i++) {
+			if ( stops[i].attributes.lat !== undefined) {
+				mesh = new THREE.Mesh( geometry, material );
+				var atts = stops[i].attributes;
+				mesh.position.set( 10000 * (parseFloat(atts.lat.value) - lat ) , -15.5 , 10000 * ( - lon + parseFloat(atts.lon.value)) );
+				group.add( mesh );
+			}
+		} 
+		scene.add( group); 
+		count++
+		if (count < routeNames.length ) {
+			loadStops( count );
+			info2.innerHTML = 'Routes loaded: ' + count + ' out of ' + (routes.length - 2);
+		} else {
+			console.log('time: ', new Date() - startTime ); 
+			count = 0
+			// var latnew = latMin + 0.5 * (latMax - latMin) ;
+			// var lonnew = lonMin + 0.5 * (lonMax - lonMin);
+			// console.log(latMin, latMax, lonMin, lonMax, latnew, lonnew);	
+			// loadBusesXML( count );
+		}
+	}	
+</script>
+</body>
+</html>

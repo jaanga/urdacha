@@ -1,0 +1,248 @@
+﻿<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0'>
+</head>
+<body>
+
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+<!--
+<script src='../../three.js/examples/js/Detector.js'></script>
+<script src='../../three.js/build/three.min.js'></script>
+<script src='../../three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='../../three.js/examples/js/libs/stats.min.js'></script>
+-->
+<script>
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
+
+	var renderer, scene, camera, controls, light, stats;
+	var geometry, material, mesh;
+	
+	var vars, startTime, data;
+	var info, info2;
+	
+	var xmlhttp, count = 0, stops;
+	var stopNames = ['1','2','3','5','6','71','71L','8AX','8BX','8X','9','9L','10','12','14','16X','17','18','19','21','22','23','24','27','28','28L','29','30','45','31','33','35','36','37','38','39','41','43','44','47','48','49','52','54','56','POWELL-MASON','POWELL-HYDE','CALIFORNIA ','66','67','76X','80X','81X','82X','83X','88','90','91','J ','N ','J-OWL','K-OWL','L-OWL','M-OWL','N-OWL','T-OWL','KT','S ','M ','L ','F','1AX','1BX','31AX','31BX','38AX','38BX','108','14L','14X','30X','38L','NX'];
+
+	var headsUp;
+	var mouse = { x: -1, y: -1 };
+	projector = new THREE.Projector();
+	
+	init();
+	animate();
+
+	function init() {
+		if ( ! Detector.webgl ) {
+			renderer = new THREE.CanvasRenderer( { antialias: true } );
+		} else {
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+		}
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+		scene = new THREE.Scene();
+
+		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 10000);
+		camera.position.set( -1300, 500, 0);
+		controls = new THREE.TrackballControls( camera, renderer.domElement );
+
+		stats = new Stats();
+		stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+		document.body.appendChild( stats.domElement );    
+
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+	//  User stuff
+
+		var css = document.createElement('style')
+		css.innerHTML = 'body {background-color: transparent; font: 600 12pt monospace; margin: 0; overflow: hidden; text-align: center; }' +
+			'a { color: #f00; text-decoration: none;}  ' +
+			'input[type=range] { -webkit-appearance: none; background-color: silver; height:20px; opacity: 0.5; width: 80px;}' +
+			'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }' ;
+		document.body.appendChild( css ); 
+
+		// loadCSV('stops.txt');
+		startTime = new Date();
+		
+		loadXML( count);
+		
+		// loadBusesXML( count );
+		
+		material = new THREE.MeshBasicMaterial( {color: 0xaaaaaa, opacity: 0.7, side: THREE.DoubleSide, transparent: true } );
+		geometry = new THREE.PlaneGeometry( 1500, 2000, 1, 1 );
+		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+		mesh = new THREE.Mesh( geometry, material );
+		// mesh.position.set(  37.75, 0, -122.45);
+		scene.add( mesh );
+		
+		info = document.createElement( 'div' );
+		document.body.appendChild( info );
+		info.style.cssText = 'top: 0px; color: ; position: absolute; width: 100%; ';
+		info.innerHTML = '<p>flatland nextbus stops & buses<br>' +
+			//'x:<input type="range" id="spin" min="-50" max="50" onchange="mesh.position.x=this.value;" step="5" value="' + mesh.position.x + '" ><br>' +
+			//'y:<input type="range" id="spin" min="0" max="50" onchange="mesh.position.y=this.value;" step="5" value="' + mesh.position.y + '" ><br>' +
+			//'z:<input type="range" id="spin" min="-50" max="50" onchange="mesh.position.z=this.value;" step="5" value="' + mesh.position.z + '" >' +
+		'</p>';   
+		
+		info2 = document.createElement( 'div' );
+		document.body.appendChild( info2 );
+		info2.style.cssText = 'top: 100px; color: ; position: absolute; width: 100%; ';
+
+		headsUp = document.createElement( 'div' );
+		document.body.appendChild( headsUp );
+		headsUp.style.cssText = 'background-color: #ddd; border-radius: 8px; display: none; left: 50px; opacity: 0.85; padding: 5px 5px 10px 5px; ' +
+			'position: absolute; text-align: left;';	
+		headsUp.innerHTML = '<h1>Stuff</h1>';		
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+		controls.update();
+		renderer.render( scene, camera );
+		stats.update();
+	}
+
+	function onWindowResize() {
+		windowHalfX = window.innerWidth / 2;
+		windowHalfY = window.innerHeight / 2;
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+	}	
+	
+	function loadXML( count ) {
+		fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=' + stopNames[ count ];
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, true);
+		
+		xmlhttp.onreadystatechange = callbackXML;
+		xmlhttp.send(null);	
+	}
+	
+	var xmldoc, route, color;
+	
+	function callbackXML() {
+		if (xmlhttp.readyState == 4) {
+			xmlDoc = xmlhttp.responseXML;
+// console.log(xmlDoc);			
+			route = xmlDoc.getElementsByTagName("route");
+			if ( route[0] !== undefined ) {
+				color = parseInt('0x' + route[0].attributes.color.value );
+			} else {
+// console.log(  );
+			}
+			stops = xmlDoc.getElementsByTagName("stop");
+			addStops();
+		} else { 
+			// console.log('waiting...');
+		}		
+	}	
+		
+	function addStops() {
+		geometry = new THREE.CubeGeometry( 3, 20, 3 );
+		// geometry = new THREE.CubeGeometry( 0.0002, 0.005, 0.0002 );
+		material = new THREE.MeshBasicMaterial( { color: color } );
+		for (var i = 0, l = stops.length - 1; i < l; i++) {
+			
+			if ( stops[i].attributes.lat !== undefined) {
+				mesh = new THREE.Mesh( geometry, material );
+				var atts = stops[i].attributes;
+				mesh.position.set( 10000 * (parseFloat(atts.lat.value) - 37.77 ) , -10.5 , 10000 * (122.45 + parseFloat(atts.lon.value)) );
+				scene.add( mesh );
+			}
+		} 
+		count++
+		if (count < stopNames.length ) {
+			loadXML(count );
+		} else {
+			console.log('time: ', new Date() - startTime ); 
+			count = 0
+			loadBusesXML( count );
+		
+		}
+	}
+			
+	function loadBusesXML( count ) {
+		fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=' + stopNames[ count ];
+		fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=sf-muni&r=' + stopNames[ count ];
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, true);
+		
+		xmlhttp.onreadystatechange = callbackBusesXML;
+		xmlhttp.send(null);	
+	}			
+	
+	var vehicles;
+	
+	function callbackBusesXML() {
+		if (xmlhttp.readyState == 4) {
+			xmlDoc = xmlhttp.responseXML;
+// console.log(xmlDoc);			
+			vehicles = xmlDoc.getElementsByTagName("vehicle");
+// console.log( vehicles[0] );
+			addBuses();
+		} else { 
+			// console.log('waiting...');
+
+		}		
+	}	
+
+	function addBuses() {
+		geometry = new THREE.CubeGeometry( 3, 6, 10 );
+		// geometry = new THREE.CubeGeometry( 0.0002, 0.005, 0.0002 );
+		material = new THREE.MeshNormalMaterial( );
+		var d2r = Math.PI / 180;
+		for (var i = 0, l = vehicles.length - 1; i < l; i++) {
+			
+			if ( vehicles[i].attributes.lat !== undefined) {
+				mesh = new THREE.Mesh( geometry, material );
+				var atts = vehicles[i].attributes;
+				mesh.position.set( 10000 * (parseFloat(atts.lat.value) - 37.77 ) , 3 , 10000 * (122.45 + parseFloat(atts.lon.value)) );
+				mesh.rotation.y = atts.heading.value * d2r;
+				scene.add( mesh );
+			}
+		} 
+		count++
+		if (count < stopNames.length ) {
+			loadBusesXML(count );
+		} else {
+			console.log('time: ', new Date() - startTime ); 
+		}
+	}	
+	
+	var interescts, intersected;
+	
+	function onDocumentMouseMove( event ) {
+		// event.preventDefault();
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		
+		var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+		projector.unprojectVector( vector, camera );
+		var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+		intersects = raycaster.intersectObjects( scene.children );
+
+		if ( intersects.length > 0 ) {
+			if ( intersected != intersects[ 0 ].object ) { // not same one
+console.log('intersects: ', intersects);			
+				intersected = intersects[ 0 ].object;	
+				intersected.material.color.setHex( Math.random() * 0xffffff );
+			}
+			headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
+			headsUp.style.bottom = 10 + 0.5 * window.innerHeight + mouse.y * 0.5 * window.innerHeight+ 'px';
+			headsUp.style.display = 'block';
+			var c =  intersected.material.color;
+			headsUp.innerHTML =  'id: ' + intersected.id + '<br>red: ' + c.r + '<br>green: ' + c.g + '<br>blue: ' + c.b;;
+		} else {
+			headsUp.style.display = 'none';
+		}
+	}	
+	
+</script>
+</body>
+</html>
