@@ -339,6 +339,7 @@ console.log(i, a.tag.value);
 				var z = 10000 * ( - lon + parseFloat(atts.lon.value))
 				mesh = new THREE.Mesh( cube, material );
 				mesh.position.set( x, 0, z );
+				mesh.type = 'stop';
 				group.add( mesh );
 			
 				vector = new THREE.Vector3( x, 1 + special, z);
@@ -349,7 +350,8 @@ console.log(i, a.tag.value);
 		} 
 		
 		ribbon = new THREE.Ribbon(ribbonGeo, material);
-		group.add (ribbon );
+		ribbon.type = 'route';
+		group.add ( ribbon );
 		scene.add( group); 
 		count++
 		if (count < routeNames.length ) {
@@ -396,6 +398,7 @@ console.log(i, a.tag.value);
 				var atts = vehicles[i].attributes;
 				mesh.position.set( 10000 * (parseFloat(atts.lat.value) - lat ) , 505 , 10000 * ( - lon + parseFloat(atts.lon.value)) );
 				mesh.rotation.y = atts.heading.value * d2r;
+				mesh.type = 'bus';
 				group.add( mesh );
 			}
 		} 
@@ -423,15 +426,21 @@ console.log(i, a.tag.value);
 		if ( intersects.length > 0 ) {
 	
 			if ( intersected != intersects[ 0 ].object ) { // not same one
-// console.log('intersects: ', intersects);				
+			
 				intersected = intersects[ 0 ].object;	
-				intersected.material.color.setHex( Math.random() * 0xffffff );
+console.log('intersected: ', intersected);					
+				// intersected.material.color.setHex( Math.random() * 0xffffff );
+			
+				headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
+				headsUp.style.bottom = 10 + 0.5 * window.innerHeight + mouse.y * 0.5 * window.innerHeight+ 'px';
+				headsUp.style.display = 'block';
+				var c =  intersected;
+				if ( c.type == 'stop' ) {
+					headsUp.innerHTML =  'This is a ' + intersected.type + '<br>Useful data could be here on Friday...<br>id: ' + intersected.id + '<br>red: ' + c.r + '<br>green: ' + c.g + '<br>blue: ' + c.b;;
+				} else {
+					headsUp.innerHTML =  'This is a ' + intersected.type + '<br>Useful data could be here on Friday...<br>';
+				}
 			}
-			headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
-			headsUp.style.bottom = 10 + 0.5 * window.innerHeight + mouse.y * 0.5 * window.innerHeight+ 'px';
-			headsUp.style.display = 'block';
-			var c =  intersected.material.color;
-			headsUp.innerHTML =  'Useful data could be here on Friday...<br>id: ' + intersected.id + '<br>red: ' + c.r + '<br>green: ' + c.g + '<br>blue: ' + c.b;;
 		} else {
 			headsUp.style.display = 'none';
 		}
