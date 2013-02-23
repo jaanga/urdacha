@@ -8,35 +8,23 @@
 	document.body.style.font = 'normal 12pt monospace';
 
 //  http://jaanga.github.com/urdacha/load-csv-api.html?filename=loadcountdesc/loadcountdesc.csv
+
+//  file:///C:/Dropbox/Public/git-repos/urdacha/load-csv-api.html?filename=loadcountdesc/loadcount500.csv
 //  file:///C:/Dropbox/Public/git-repos/urdacha/load-csv-api.html?filename=loadcountdesc/loadcountdesc.csv
 // 	file:///C:/Dropbox/Public/git-repos/urdacha/load-csv-api.html?filename=public-transportation/san-francisco/realtime-arrivals.csv&keys=0,3,6
 // 	file:///C:/Dropbox/Public/git-repos/urdacha/load-csv-api.html?filename=public-transportation/san-francisco/passenger-count.csv&keys=1
 
-
-/*	 
-	var fileMenu = document.createElement( 'div' );
-	document.body.appendChild( fileMenu );
-	fileMenu.innerHTML = '<h3 style="margin: 0;">Load and Parse CSV Files</h3>' +
-	'Sample Urban Data Challenge CSV files: ' +
-	'<button title="Theo: this file always crashes my broeser" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time.csv\' )" >Geneva schedule-real-time</button> ' +
-	'<button title="Theo: Reduced data set of the above" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time-200k.csv\' )" >Geneva schedule-real-time-200k</button> ' +
-	'<button title="Theo: smallest file. Loads fastest. Using this file for most of my testing." onclick="loadCSV( \'public-transportation/san-francisco/realtime-arrivals.csv\' )" >San Francisco real-time-arrivals</button> ' +
-	'<button title="" onclick="loadCSV( \'public-transportation/san-francisco/scheduled-arrivals.csv\' )" >San Francisco scheduled-arrivals</button> ' +
-	'<button onclick="loadCSV( \'public-transportation/san-francisco/passenger-count.csv\' )" >San Francisco passenger-count.csv</button> ' +
-	'<button onclick="loadCSV( \'public-transportation/zurich/passenger-counts.csv\' )" >Zurich passenger-counts.csv</button> ' +
-	'<button onclick="loadCSV( \'weather/weather_zurich_and_geneva.csv\' )" >Weather weather_zurich_and_geneva.csv</button> ' +
-	'';
-*/
+	var csv1, csv2;
+	var vars, startTime, fname, data;
+	var xmlhttp;
+	var items;
 	
-	var info = document.createElement( 'div' );
-	document.body.appendChild( info );
-	info.innerHTML = '';
-
-	var info2 = document.createElement( 'div' );
-	document.body.appendChild( info2 );
-	info2.innerHTML = ''; //'<button onclick="seekUniques()">seekUniques</button><br>';
-
-	var vars, startTime, data;
+	var OBJ = OBJ || {};
+	
+	OBJ.itemId = function () {
+		this.id = null;
+		this.count = null;
+	}
 	
 	init();
 	
@@ -53,92 +41,74 @@
 			}
 		}
 		
+		csv1 = document.createElement( 'div' );
+		document.body.appendChild( csv1 );
+		csv1.innerHTML = 'Usage:<br>load-csv-api.html?filename=&lt;filename>.csv&keys=0,3,6 << keys not required<br>' +
+			'Use JavaScript console ( F12 ) to monitor loading...';
+
+		csv2 = document.createElement( 'div' );
+		document.body.appendChild( csv2 );
+		csv2.innerHTML = '';
+		
 // console.log (args, vars);
-		loadCSV( vars.filename );
+		startTime = new Date();
+		if ( vars.filename ) {
+			loadCSV( vars.filename );
+		}
 	}
 	
 	
 	function loadCSV( fname ) {
-		startTime = new Date();
-		fileName = fname;
-		
-		indexFile = new XMLHttpRequest();
-		indexFile.open('GET', fname, true);
-		
-		indexFile.onreadystatechange = callbackIndex;
-		indexFile.send(null);
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open( 'GET', fname, true );	
+		xmlhttp.onreadystatechange = callback;
+		xmlhttp.send( null );
 	}
 	
-	function callbackIndex() {
-		if (indexFile.readyState == 4) {
-			var allText, indexLines, indexCount;
-			data = [];
-			allText = indexFile.responseText;
-			
-			indexLines = allText.split(/\r\n|\n/);
-			indexCount = indexLines.length;
-		
-			var i, separator, len = indexLines.length;
-			
-			if ( fileName == 'public-transportation/zurich/passenger-counts.csv' ) {
-				separator = ';';
-			} else {
-				separator = ',';
+	function callback() {
+		if ( xmlhttp.readyState == 4  ) {
+			var dataLines = xmlhttp.responseText;
+			dataLines = dataLines.split(/\r\n|\n/);
+			var dataLength = dataLines.length;
+			var separator = ',';
+			data = [];			
+			for ( var i = 0; i < dataLength; i++ ) {
+				data.push( dataLines[i].split( separator ) );	
 			}
+			csv1.innerHTML = '<p>Loaded CSV file: ' + vars.filename + '<br>Lines read: ' + dataLength + '<br>' +
+				'Time to load in milliseconds: ' + (new Date() - startTime) + '<br>' +
+				'Samples of the data in memory:<br>' +
+				'Header:&nbsp &nbsp &nbsp ' + data[0] + '<br>' +
+				'First line:&nbsp ' + data[1] + '<br>' +
+				'Random line: ' + data[parseInt(Math.random() * dataLength)] + '<br>' +
+				'Last line: &nbsp ' + data[ (dataLength - 3) ] + '</p>';
 				
-			for ( i = 0; i < len; i++ ) {
-				data.push( indexLines[i].split( separator ) );	
-			}
-
-			info.innerHTML = '<p>Loaded CSV file: ' + fileName + '<br>Lines read: ' + indexCount + '<br>' +
-			'Time to load in milliseconds: ' + (new Date() - startTime) + '<br>';
-			info.innerHTML += 'Samples of the data in memory:<br>';
-			info.innerHTML += 'Header:&nbsp &nbsp &nbsp ' + data[0] + '<br>';
-			info.innerHTML += 'First line:&nbsp ' + data[1] + '<br>';
-			info.innerHTML += 'Random line: ' + data[parseInt(Math.random() * len)] + '<br>';
-			info.innerHTML += 'Last line: &nbsp ' + data[ (len - 3) ] + '</p>';
-			
 			buildReport();
-			
 		} else { 
 			console.log('waiting...');
 		}
 	}	
 
-	var OBJ = OBJ || {};
-	
-	OBJ.itemId = function () {
-		this.id = null;
-		this.count = null;
-	}
-	
-	var items;
-	
 	function buildReport() {
-		var txt = '', fields = data[0], len = fields.length;
-		
-		for (var i = 0; i < len; i++) {
-			txt += seekUniques( i );
+		var i, txt = '', len = data[0].length;
+		for ( i = 0; i < len; i++) {
+			csv2.innerHTML += seekUniques( i );
+			console.log( 'current index: ', i);
 		}
-		
-		info2.innerHTML = txt;
 	}
 	
 	function seekUniques( index ) {
 		items = {};
 		var startTime = new Date();
-		// info2.innerHTML = '';
-		
-		var dat, item, len = data.length - 1, min = 1000000, minId, max = 0, maxId;
+		var  len = data.length - 1, dat, item, min = 1000000, minId, max = 0, maxId;
 		
 		for (var i = 1; i < len ; i++) {
 			dat = data[i];
 			item = dat[index];
 			if ( items[item] == undefined) {
-				items[item]  = new OBJ.itemId();
+				items[item] = new OBJ.itemId();
 				items[item].id = dat[index];
 				items[item].count = 1;
-				
 			} else {
 				items[item].count++;
 				if (items[item].count > max) {
@@ -146,14 +116,12 @@
 					maxId = item;
 				}
 			}
-			
-			// if ( !(i % 10000) ) { console.log( 'current row: ', i) };
+			// if ( !(i % 100000) ) { console.log( 'current row: ', i) };
 		}
-		var keys = Object.keys(items);
-		var lenK = keys.length;		
+		
+		var keys = Object.keys(items), lenK = keys.length;		
 		var sum = 0;
 		for (var i = 0; i < lenK ; i++) {
-			
 			if ( items[keys[i]].count < min ) { 
 				min = items[keys[i]].count; 
 				minId = keys[i];
@@ -162,36 +130,30 @@
 			sum += items[keys[i]].count;
 		}
 		
-		var limit = 1000;
-		
 		var infotext =  '<p>' +
-		'<b>' + data[0][index] + '</b><br>' +
-		'Number of unique values:' + keys.length + '<br>' +
-		'First unique value: ' + keys[0] + '<br>' +
-		'Last unique value: ' + keys[keys.length - 1] + '<br>' + 
-		'Total instances for all values: ' + sum + '<br>' +
-		'Minimum instances for: ' + minId + ' = ' + min + '<br>' +
-		'Maximum instances for: ' + maxId + ' = ' + max + '<br>' +
-		'Average number of instances: ' + parseInt( sum/lenK) + '<br>' +
-		'</p>'; 
-		
-		// 'Time to calculate in milliseconds: ' +(new Date() - startTime) + '</p>';
+			'<b>' + data[0][index] + '</b><br>' +
+			'Number of unique values:' + keys.length + '<br>' +
+			'First unique value: ' + keys[0] + '<br>' +
+			'Last unique value: ' + keys[keys.length - 1] + '<br>' + 
+			'Total instances for all values: ' + sum + '<br>' +
+			'Minimum instances for: ' + minId + ' = ' + min + '<br>' +
+			'Maximum instances for: ' + maxId + ' = ' + max + '<br>' +
+			'Average number of instances: ' + parseInt( sum/lenK) + '<br>' +
+			'</p>'; 
 		
 		if ( vars.keys !== undefined ) {
 			if ( vars.keys.indexOf(index) > -1) {
 				infotext += '<p>List of ' + data[0][index] + ' unique values:<br>' + keys + '<br></p>';
 			}
 		}	
-
 /*		
+		var limit = 1000;
 		<br>List of ' + data[0][index] + ' and their count:
-
 		if  ( len > limit ) {
 			infotext += 'Log display now limited to under this number of records: ' + limit + '<br>';
 			infotext += 'This is because displaying very long logs tends to freeze the browser...<br>';
 			len = limit;
-		}
-		
+		}	
 		sum = 0;
 		for (var i = 0; i < lenK ; i++) {
 			infotext += (i + 1) + '. item: ' + keys[i] + ' count: ' + items[keys[i]].count + '<br>'; 
@@ -200,7 +162,6 @@
 		infotext += 'Tally check: sum of counts: ' + sum + '<br>';
 		infotext += 'Tally check: total number of records: ' + data.length + ' << includes headers and blank last line<br>';
 */
-		
 		return infotext;
 	}
 </script>
