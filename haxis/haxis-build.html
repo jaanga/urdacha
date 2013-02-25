@@ -205,9 +205,13 @@
 		zKeys = keys;
 		zDelta = 100 / zKeys.length;
 		
+		csv2.innerHTML += seekUniques( 13 );
+		var dir = keys;
+		// zDelta = 100 / zKeys.length;
+		
 // console.log(xDelta,yDelta,zDelta);		
-		geometry = new THREE.CubeGeometry( 2, 2, 2 );
-		// geometry = new THREE.TetrahedronGeometry( 3 );
+		// geometry = new THREE.CubeGeometry( 2, 2, 2 );
+		geometry = new THREE.CylinderGeometry( 2, 0, 4, 4 );
 		
 		
 		material = new THREE.MeshNormalMaterial();	
@@ -218,7 +222,8 @@
 // console.log( keys.indexOf(dat[x]) );
 			mesh = new THREE.Mesh( geometry, material );
 			mesh.position.set( xDelta * xKeys.indexOf( dat[x] ) - 50, yDelta * yKeys.indexOf(dat[y]) - 50, zDelta * zKeys.indexOf(dat[z]) - 50 );
-// console.log( mesh.position );
+			// geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+			console.log( mesh.position );
 			scene.add( mesh );
 		}
 		geometry = new THREE.CubeGeometry( 100, 100, 100 );
