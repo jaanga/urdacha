@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0'>
+</head>
+<body>
+<!--
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+-->
+<script src='../../three.js/examples/js/Detector.js'></script>
+<script src='../../three.js/build/three.min.js'></script>
+<script src='../../three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='../../three.js/examples/js/libs/stats.min.js'></script>
+
+<script>
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
+//  http://jaanga.github.com/urdacha/load-csv-api.html?filename=../loadcountdesc/loadcountdesc.csv
+//  file:///C:/Dropbox/Public/git-repos/urdacha/haxis/haxis.html?filename=../loadcountdesc/loadcountdesc.csv
+
+// 	file:///C:/Dropbox/Public/git-repos/urdacha/load-csv-api.html?filename=public-transportation/san-francisco/realtime-arrivals.csv&keys=0,3,6
+// 	file:///C:/Dropbox/Public/git-repos/urdacha/load-csv-api.html?filename=public-transportation/san-francisco/passenger-count.csv&keys=1
+	
+	var renderer, scene, camera, controls, light, stats;
+	var geometry, material, mesh, info;
+
+	var csv1, csv2;
+	var vars, startTime, fname, data;
+	var xmlhttp;
+	var items;
+	var OBJ = OBJ || {};
+	
+	OBJ.itemId = function () {
+		this.id = null;
+		this.count = null;
+	}
+	
+	init();
+	animate();
+	
+	function init() {
+		if ( ! Detector.webgl ) {
+			renderer = new THREE.CanvasRenderer( { antialias: true } );
+		} else {
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+		}
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+		scene = new THREE.Scene();
+
+		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 1000 );
+		camera.position.set(-90, 105, 100);
+		controls = new THREE.TrackballControls( camera, renderer.domElement );
+
+		stats = new Stats();
+		stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+		document.body.appendChild( stats.domElement );    
+
+		window.addEventListener( 'resize', onWindowResize, false );
+
+// user	three.js	
+
+		var css = document.createElement('style')
+		css.innerHTML = 'body {background-color: transparent; font: 600 12pt monospace; }' +
+			'a { color: #f00; text-decoration: none;}  ' +
+			'input[type=range] { -webkit-appearance: none; background-color: silver; height:20px; opacity: 0.5; width: 80px;}' +
+			'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }' ;
+		document.body.appendChild( css ); 
+
+		material = new THREE.MeshBasicMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide } );
+		geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
+		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+		mesh = new THREE.Mesh( geometry, material );
+		scene.add( mesh );
+
+		geometry = new THREE.CubeGeometry( 10, 10, 10 );
+		material = new THREE.MeshNormalMaterial();
+		mesh = new THREE.Mesh( geometry, material );
+		// scene.add( mesh );
+		
+		info = document.createElement( 'div' );
+		document.body.appendChild( info );
+		info.style.cssText = ' color: ; position: absolute; text-align: center; top: 0px; width: 100%; z-index: 100; ';
+		info.innerHTML = '<p>haxis<br>' +
+			// 'x:<input type="range" id="spin" min="-50" max="50" onchange="mesh.position.x=this.value;" step="5" value="' + mesh.position.x + '" ><br>' +
+			// 'y:<input type="range" id="spin" min="0" max="50" onchange="mesh.position.y=this.value;" step="5" value="' + mesh.position.y + '" ><br>' +
+			// 'z:<input type="range" id="spin" min="-50" max="50" onchange="mesh.position.z=this.value;" step="5" value="' + mesh.position.z + '" >' +
+		'</p>';  
+
+// CSV		
+		var args = document.location.search.substring(1).split('&');
+		vars = {};
+		for ( var i = 0, arg, kvp; i < args.length; i++) {
+			arg = unescape(args[i]);
+			if (arg.indexOf('=') == -1) {
+				vars[arg.trim()] = true;
+			} else {
+				kvp = arg.split('=');
+				vars[kvp[0].trim()] = kvp[1].trim();
+			}
+		}
+		
+		csv1 = document.createElement( 'div' );
+		document.body.appendChild( csv1 );
+		csv1.style.cssText = 'position: absolute; top: 50px; width: 300px;';
+		csv1.innerHTML = '';
+
+		csv2 = document.createElement( 'div' );
+		document.body.appendChild( csv2 );
+		csv2.style.cssText = 'position: absolute; top: 300px; width: 300px;';
+		csv2.innerHTML = '';		
+		
+// console.log (args, vars);
+		startTime = new Date();
+	// fname = '../loadcountdesc/loadcountdesc.csv';
+		fname = '../loadcountdesc/loadcount500.csv';
+		loadCSV( fname );
+	}
+	
+	function loadCSV( fname ) {
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open( 'GET', fname, true );	
+		xmlhttp.onreadystatechange = callback;
+		xmlhttp.send( null );
+	}
+	
+	function callback() {
+		if ( xmlhttp.readyState == 4  ) {
+			var dataLines = xmlhttp.responseText;
+			dataLines = dataLines.split(/\r\n|\n/);
+			var dataLength = dataLines.length;
+			var separator = ',';
+			data = [];			
+			for ( var i = 0; i < dataLength; i++ ) {
+				data.push( dataLines[i].split( separator ) );	
+			}
+			var htm = '<p>Loaded CSV file: ' + fname + '<br>Lines read: ' + dataLength + '<br>' +
+				'Time to load in milliseconds: ' + (new Date() - startTime) + '<br>' +
+				'Samples of the data in memory:<br>' +
+				'Header:&nbsp &nbsp &nbsp ' + data[0] + '<br>' +
+				'First line:&nbsp ' + data[1] + '<br>' +
+				'Random line: ' + data[parseInt(Math.random() * dataLength)] + '<br>' +
+				'Last line: &nbsp ' + data[ (dataLength - 3) ] + '</p>';
+			// csv1.innerHTML = htm;	
+			buildReport();	
+		} else { 
+			console.log('waiting...');
+		}
+	}	
+
+	var x = 9, y = 10, z = 14;
+	function buildReport() {
+		var txt = '', fields = data[0], len = fields.length;	
+		for (var i = 0; i < len; i++) {
+			txt += seekUniques( i );
+		}
+		var htm = 'X: <select onchange="x = this.options.selectedIndex; console.log(x);" title="select the X-axis" >' +
+			buildSelect( fields, x ) +
+			' Y: <select onchange="y = this.options.selectedIndex;" >' +
+			buildSelect( fields, y ) +
+			' Z: <select onchange="z = this.options.selectedIndex;" title="select the Z-axis" >' +
+			buildSelect( fields, z ) +
+			'<br><button onclick="haxisIt(x, y, z)" >Haxis It</button> ' ;
+		info.innerHTML += htm;
+		
+		haxisIt(x, y, z);
+	}
+
+	function buildSelect(  fields, selected ) {
+		var htm = '';
+		for ( var i = 0, len = fields.length - 1; i < len; i++  ) {
+			var a = fields[i];
+			if ( i !== selected ) {
+				htm += '<option>' + a +'</option>';					
+			} else {
+				htm += '<option selected="selected" >' + a +'</option>';				
+			}
+		}
+		htm +='<\/select>';
+		return htm;
+	}
+	var keys;
+	var xKeys, xDelta;
+	var yKeys, yDelta;
+	var zKeys, zDelta;
+	
+	function haxisIt(x, y, z) {
+		scene = new THREE.Scene();
+		//
+		newSign( data[0][x] );
+
+		csv2.innerHTML = seekUniques( x );
+		xKeys = keys;
+		xDelta = 100 / xKeys.length;
+		
+		csv2.innerHTML += seekUniques( y );
+		yKeys = keys;
+		yDelta = 100 / yKeys.length;
+		
+		csv2.innerHTML += seekUniques( z );
+		zKeys = keys;
+		zDelta = 100 / zKeys.length;
+		
+// console.log(xDelta,yDelta,zDelta);		
+		geometry = new THREE.CubeGeometry( 2, 2, 2 );
+		// geometry = new THREE.TetrahedronGeometry( 3 );
+		
+		
+		material = new THREE.MeshNormalMaterial();	
+		var  l = data.length - 2;
+		// var l = 1000;
+		for (var i = 1; i < l; i += 1) {
+			dat = data[i];
+// console.log( keys.indexOf(dat[x]) );
+			mesh = new THREE.Mesh( geometry, material );
+			mesh.position.set( xDelta * xKeys.indexOf( dat[x] ) - 50, yDelta * yKeys.indexOf(dat[y]) - 50, zDelta * zKeys.indexOf(dat[z]) - 50 );
+// console.log( mesh.position );
+			scene.add( mesh );
+		}
+		geometry = new THREE.CubeGeometry( 100, 100, 100 );
+		material = new THREE.MeshNormalMaterial( { wireframe: true });		
+		mesh = new THREE.Mesh( geometry, material );
+		scene.add( mesh );
+	}
+	
+	function seekUniques( index ) {
+		items = {};
+		var startTime = new Date();		
+		var dat, item, len = data.length - 1, min = 1000000, minId, max = 0, maxId;
+		// var len = 1000;
+		for (var i = 1; i < len ; i++) {
+			dat = data[i];
+			item = dat[index];
+			if ( items[item] == undefined) {
+				items[item]  = new OBJ.itemId();
+				items[item].id = dat[index];
+				items[item].count = 1;
+				
+			} else {
+				items[item].count++;
+				if (items[item].count > max) {
+					max = items[item].count; 
+					maxId = item;
+				}
+			}
+			// if ( !(i % 10000) ) { console.log( 'current row: ', i) };
+		}
+		keys = Object.keys(items);
+		var lenK = keys.length;		
+		var sum = 0;
+		for (var i = 0; i < lenK ; i++) {
+			if ( items[keys[i]].count < min ) { 
+				min = items[keys[i]].count; 
+				minId = keys[i];
+			}
+			sum += items[keys[i]].count;
+		}
+		
+		var infotext =  '<p>' +
+			'<b>' + data[0][index] + '</b><br>' +
+			'Number of unique values:' + keys.length + '<br>' +
+			'First unique value: ' + keys[0] + '<br>' +
+			'Last unique value: ' + keys[keys.length - 1] + '<br>' + 
+			'Total instances for all values: ' + sum + '<br>' +
+			'Minimum instances for: ' + minId + ' = ' + min + '<br>' +
+			'Maximum instances for: ' + maxId + ' = ' + max + '<br>' +
+			'Average number of instances: ' + parseInt( sum/lenK) + '<br>' +
+			'</p>'; 
+
+		// infotext += '<p>List of ' + data[0][index] + ' unique values:<br>' + keys + '<br></p>';
+
+		// return infotext;
+		return '';
+	}
+	
+	function animate() {
+		requestAnimationFrame( animate );
+		controls.update();
+		renderer.render( scene, camera );
+		stats.update();
+	}
+
+	function onWindowResize() {
+		windowHalfX = window.innerWidth / 2;
+		windowHalfY = window.innerHeight / 2;
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+	}	
+	var sign;
+	
+	function newSign( ) {
+		if( sign !== undefined ) { scene.remove( sign ); }
+		geometry = new THREE.PlaneGeometry( 100, 20, 1, 1 );
+		// geometry.applyMatrix( new THREE.Matrix4().makeRotationY( - Math.PI / 2 ) );
+		
+		material = canvasText( data[0][x] , { color: '#000000', fontSize: '48', height: 80,  width: 600 }  ); 
+		sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( -1.5708, 0, 0);
+		sign.position.set( 20, 50, 65);
+		scene.add( sign );		
+		
+		material = canvasText( data[0][z] , { color: '#000000', fontSize: '48', height: 80,  width: 600 }  ); 
+		sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( -1.5708,0 , -1.5708);
+		sign.position.set( -65, 50, 20);
+		scene.add( sign );			
+
+		material = canvasText( data[0][y] , { color: '#000000', fontSize: '48', height: 80,  width: 600 }  ); 
+		sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( 0,0 , -1.5708);
+		sign.position.set( 50, -30, -65);
+		scene.add( sign );				
+	}
+	
+	function canvasText ( text1, parameters ) {
+
+		canvas = document.createElement("canvas");
+		
+		var width = ( parameters['width'] ) ? parameters['width'] : 300 ;
+		canvas.width = width;
+		var height = ( parameters['height'] ) ? parameters['height'] : 150 ;
+		canvas.height = height; 
+		
+		context = canvas.getContext("2d");
+		// context.globalAlpha = 0.8;
+		context.fillStyle =  ( parameters['backgroundColor'] !== undefined ) ? parameters['backgroundColor'] : 'transparent';
+		context.fillRect( 0, 0, width, height );
+		//context.lineWidth = 2;
+		//context.strokeRect(0, 0, width, height);	
+		context.fillStyle = ( parameters['color']) ? parameters['color'] : '#ffffff';
+		
+		context.font = ( parameters['fontSize'] !== undefined ) ? parameters['fontSize'] + "pt Arial bold" : '16pt Arial bold';
+		context.textAlign = "left";
+		context.textBaseline = "top";
+		context.fillText(text1, 5, 0);
+		//context.fillText(text2, 5, 200);
+		//context.fillText(text3, 5, 60);
+		//context.fillText(text4, 5, 80);
+		//context.fillText(text5, 5, 100);
+		
+		map = new THREE.Texture( canvas );
+		map.needsUpdate = true;
+		return new THREE.MeshBasicMaterial( { map: map,  side: THREE.DoubleSide, transparent: true } );
+	}	
+</script>
+</body>
+</html>

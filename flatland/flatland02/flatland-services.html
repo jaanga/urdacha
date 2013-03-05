@@ -239,7 +239,7 @@ console.log( 37, 'sf-muni');
 					fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=' +  a.tag.value;
 					lat = latlon[i][0];
 					lon = latlon[i][1];
-console.log(i, a.tag.value);
+console.log(i, a.tag.value, a.color);
 					break;
 				}	
 			}
@@ -311,8 +311,10 @@ console.log(i, a.tag.value);
 			route = xmldoc.getElementsByTagName("route");
 			if ( route[0] !== undefined ) {
 				color = parseInt('0x' + route[0].attributes.color.value );
+var txt = '"' + route[0].attributes.tag.value + '": "0x' + route[0].attributes.color.value + '",';
+console.log( txt );				
 				if ( route[0].attributes.tag.value.indexOf('X') > 0 ) {
-					console.log( route[0].attributes.tag.value );
+
 					special = 200;
 				} else if ( route[0].attributes.title.value.indexOf('Owl') > 0 ) {
 					special = 0;

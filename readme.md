@@ -14,3 +14,10 @@ And Challenge data on GitHub here:
 https://github.com/swissnexSF/Urban-Data-Challenge
 
 Repo & file created: 2013-02-10
+
+
+### Change Log
+
+2013-03-04 ~ Theo
+* Renamed haxis.html to haxis-r1-static.html
+* Uploaded new haxis.html - plays the data
