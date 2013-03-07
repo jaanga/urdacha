@@ -20,20 +20,19 @@
 <script src='routeColors.js'></script>
 <script>
 	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
-
+	
 	var HAX = HAX || {};
-	// var controls, light, stats;
-	// var geometry, material, mesh;
-
+	var controls, light, stats;
+	var geometry, material, mesh;
+	
 	// var objects = [];
 	var keys;
 	var data, dataLength, dataCount;
 	var dataPlay;
-	var callbackCount = 0;
 
 	var htm, info, updates, headsUp;
-	// var mouse = { x: -1, y: -1 };
-	// var projector = new THREE.Projector();
+	var mouse = { x: -1, y: -1 };
+	var projector = new THREE.Projector();
 
 	init();
 	animate();
@@ -44,20 +43,19 @@
 		} else {
 			HAX.renderer = new THREE.WebGLRenderer( { antialias: true } );
 		}
-
-		// var container = document.createElement( 'div' );
-		// document.body.appendChild( container );
-		// HAX.camera = {};
-		HAX.camFov = 40;
+		
+		var container = document.createElement( 'div' );
+		document.body.appendChild( container );
+		
 		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
 		// HAX.renderer.shadowMapEnabled = true;
-		document.body.appendChild( HAX.renderer.domElement );
+		container.appendChild( HAX.renderer.domElement );
 		HAX.scene = new THREE.Scene();
 
-		HAX.camera = new THREE.PerspectiveCamera( HAX.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
+		HAX.camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 1000 );
 		HAX.camera.position.set(-90, 105, 100);
-		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
-
+		controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
+		
 		var light = new THREE.DirectionalLight( 0xffffff, 2 );
 		light.position.set( 1, 1, 1 ).normalize();
 		HAX.scene.add( light );
@@ -65,14 +63,14 @@
 		var light = new THREE.DirectionalLight( 0xffffff, 1.3 );
 		light.position.set( -1, -1, -1 ).normalize();
 		HAX.scene.add( light );
-
-		var light = new THREE.AmbientLight( 0xffffff);
+		
+		light = new THREE.AmbientLight( 0xffffff);
 		light.color.setHSL( 0.1, 0.5, 0.3 );
-		HAX.scene.add( light );
+		HAX.scene.add( light );		
 
-		HAX.stats = new Stats();
-		HAX.stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
-		document.body.appendChild( HAX.stats.domElement );
+		stats = new Stats();
+		stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+		document.body.appendChild( stats.domElement );
 
 		window.addEventListener( 'resize', onWindowResize, false );
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -81,38 +79,34 @@
 		var css = document.createElement('style')
 		css.innerHTML = 'body {background-color: transparent; font: 600 12pt monospace; }' +
 			'a { color: #f00; text-decoration: none;}  ' +
-			' h1, h2 {margin: 0; }' +
 			'input[type=range] { -webkit-appearance: none; background-color: silver; height:20px; opacity: 0.5; width: 80px;}' +
-			'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }' +
-			'div.right {background-color: #eee; border: 1px solid; margin: 10px; opacity: 0.8; padding: 5px; }';
+			'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }' ;
 		document.body.appendChild( css );
 
-		var material = new THREE.MeshBasicMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide } );
-		var geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
+		material = new THREE.MeshBasicMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide } );
+		geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
-		var mesh = new THREE.Mesh( geometry, material );
+		mesh = new THREE.Mesh( geometry, material );
 		// HAX.scene.add( mesh );  // show while loading
 
 		mesh = new THREE.AxisHelper( 50 );
 		mesh.position.set( -50, -50, -50 );
-		HAX.scene.add( mesh );
+		// HAX.scene.add( mesh );
 
 		info = document.createElement( 'div' );
 		document.body.appendChild( info );
 		// info.style.cssText = ' color: ; position: absolute; text-align: center; top: 0px; width: 100%; zIndex: 100; ';
-
+		
 		info.style.cssText = ' position: absolute; top: 20px; right: 20px; ' ;
-		htm = '<div class="right">' +
-				'<h1>hAxis <span onclick="toggleHelp()" style="color: #aaa;" >[?]</span></h1>' +
-			'</div>' +
-			
-			'<div class="right">' +
-				'<h2>City</h2>' +
-				'<input type="radio" onchange="selectCity(this.id);" name="city" id="geneva">Geneva<br> ' +
-				'<input type="radio" onchange="selectCity(this.id);" name="city" id="san-francisco">San Francisco<br> ' +
-				'<input type="radio" onchange="selectCity(this.id);" name="city" id="zurich">Zurich ' +
-			'</div>';
-		info.innerHTML = htm;
+		htm = '<h1 style="background-color: #eee; border: 1px solid; opacity: 0.8; padding: 5px;" >hAxis ' +
+			'<span onclick="toggleHelp()" style="color: #aaa;" >[?]</span></h1><div>' +
+			'<div style="background-color: #eee; border: 1px solid; opacity: 0.8; padding: 5px;">' +
+			'<h2 style="margin: 0;">City</h2>' +
+			'<input type="radio" onchange="selectCity(this.id);" name="city" id="geneva">Geneva<br> ' +
+			'<input type="radio" onchange="selectCity(this.id);" name="city" id="san-francisco">San Francisco<br> ' +
+			'<input type="radio" onchange="selectCity(this.id);" name="city" id="zurich">Zurich ' +
+			'</div><br>';
+		info.innerHTML  = htm;
 
 		updates = document.createElement( 'div' );
 		document.body.appendChild( updates );
@@ -125,8 +119,8 @@
 			'position: absolute; text-align: left;';
 		headsUp.innerHTML = '<h1>Stuff</h1>';
 /*
+// CSV
 
-// Parse Query String
 		var args = document.location.search.substring(1).split('&');
 		vars = {};
 		for ( var i = 0, arg, kvp; i < args.length; i++) {
@@ -139,46 +133,40 @@
 			}
 		}
 */
-		
-		initHelp();
 		initObjects();
-
+		initHelp();
+		
 		selectCity( 'san-francisco' )
+		
 	}
-
+	
 	function selectCity( city ) {
 		dataPlay = false;
 		if ( city == 'geneva' ) {
 			var fname = '../public-transportation/geneva/schedule-real-time-200k.csv';
 			HAX.separator = ',';
-			HAX.x = 1; HAX.y = 9; HAX.z = 12; HAX.date = 0; HAX.time = 12; HAX.city = city; HAX.color = 1; 
-			HAX.direction = 6,HAX.directionString = "A"; HAX.lineField = 1;
-
+			HAX.x = 1, HAX.y = 9, HAX.z = 12, HAX.date = 0, HAX.time = 12, HAX.city = city, HAX.color = 1;;
+			//document.getElementById("geneva").checked=true;
 		} else if ( city == 'zurich' ) {
 			var fname = '../public-transportation/zurich/passenger-counts.csv';
 			HAX.separator = ';';
-			HAX.x = 2; HAX.y = 6; HAX.z = 5; HAX.date = 0; HAX.time = 3; HAX.city = city; HAX.color = 2; 
-			HAX.direction = 4,HAX.directionString = "1"; HAX.lineField = 2;
-			// document.getElementById("san-francisco").checked=false;
-			// document.getElementById("zurich").checked=true;
-		} else {
-			//var fname = '../loadcountdesc/loadcountdesc.csv';
+			HAX.x = 2, HAX.y = 6, HAX.z = 5, HAX.date = 0, HAX.time = 3, HAX.city = city, HAX.color = 2;
+			document.getElementById("san-francisco").checked=false;
+			document.getElementById("zurich").checked=true;
+		} else {	
+			var fname = '../loadcountdesc/loadcountdesc.csv';
 			// var fname = '../loadcountdesc/loadcount500.csv';
-			var fname = '../public-transportation/san-francisco/passenger-count.csv';
 			HAX.separator = ',';
-			HAX.x = 9; HAX.y = 10; HAX.z = 1; HAX.date = 7; HAX.time = 15;  HAX.city = city; HAX.color = 9;
-			HAX.direction = 13; HAX.directionString = "0"; HAX.lineField = 9; HAX.lineSubSetField = 14;
+			HAX.x = 9, HAX.y = 10, HAX.z = 1, HAX.date = 7, HAX.time = 15,  HAX.city = city, HAX.color = 9;
 			document.getElementById("san-francisco").checked=true;
 		}
-
+		
 		loadCSV( fname );
 	}
-
-	function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
-
+	
 	function initObjects() {
-		var geometry = new THREE.CubeGeometry( 3, 3, 3 );
-		var material = new THREE.MeshPhongMaterial( {color: 0xff0000, ambient: 0xffffff } );
+		geometry = new THREE.CubeGeometry( 3, 3, 3 );
+		material = new THREE.MeshPhongMaterial( {color: 0xff0000, ambient: 0xffffff } );
 		HAX.objects = [];
 		var cube;
 		for (var i = 0; i < 300; i++) {
@@ -186,37 +174,20 @@
 			HAX.objects.push( cube );
 			HAX.scene.add( cube );
 		}
-
-		geometry = new THREE.Geometry();
-		material = new THREE.LineBasicMaterial( { color: 0xff0000, opacity: 0.5 } );
-		HAX.lines = [];
-		HAX.points = [];
-		var line;
-		for (var i = 0; i < 100; i++) {
-			geometry.vertices.push(
-				v( 0, 0, -50),
-				v( 0, 0, 50)
-			);
-			line = new THREE.Line( geometry, material );
-			HAX.lines.push( line );
-			HAX.scene.add( line );
-		}
-		
-		HAX.speed = 30;
-	}
-
+	}	
+	
 	function initHelp() {
 		helpbar = document.createElement( 'div' );
 		document.body.appendChild( helpbar );
 		helpbar.style.cssText = 'background-color: #eee; border-radius: 10px; box-shadow: 10px 10px 5px #444; display: block; height: 200px%; overflow: auto; ' +
-			'padding: 5px 5px 5px 15px; opacity: 0.9; position: fixed; left: 100px; top: 100px; width: 300px; z-index: 200;';
+			'padding: 5px 5px 5px 15px; opacity: 0.9; position: fixed; left: 100px; top: 100px; width: 300px; z-index: 200;'; 
 		helpbar.innerHTML = '<div onclick="toggleHelp()">' +
 			'<p style="margin: 0; text-align: right;"><i>click here to close...</i></p>' +
 			'<h2>hAxis</h2>' +
 			'<p>Made by the Urdacha team for the</p>' +
 			'<p><a href="http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/" target="_blank">Urban Data Challenge</a></p>' +
 			'<p>hAxis = hackathon + Axis</p>' +
-			'<div>';
+			'<div>';	
 	}
 
 	function loadCSV( fname ) {
@@ -226,6 +197,8 @@
 		HAX.xmlhttp.send( null );
 	}
 
+	var callbackCount = 0;
+	
 	function callback() {
 		if ( HAX.xmlhttp.readyState == 4  ) {
 			updates.innerHTML = 'Finished loading. Now parsing the data...';
@@ -238,106 +211,88 @@
 					data.push( dataLines[i].split( HAX.separator ) );
 				}
 			}, 0);
-
+			
 			updates.innerHTML = 'Finished Parsing. Now building the screen';
-			setTimeout( function() {
-				buildReport();
-			}, 0);
+			setTimeout( function() {	
+				buildReport();	
+			}, 0);	
 		} else {
 			callbackCount++;
 			updates.innerHTML = 'Ajax Responses: ' + callbackCount;
 		}
 	}
-
+	
 	function togglePlay() {
-// console.log( dataPlay );
+// console.log( dataPlay );	
 		if ( dataPlay == true ) {
 			dataPlay = false ;
 		} else {
 			dataPlay = true;
 		}
 	}
-
+	
 	function toggleHelp() {
 		if (helpbar.style.display == 'none' ) {
 			helpbar.style.display = 'block';
 		} else {
 			helpbar.style.display = 'none';
 		}
-	}
-
+	} 		
+	
 	var xCoords, xKeys, xDelta;
 	var yCoords, yDelta;
 	var zCoords, zDelta;
-
+	
 	function buildReport() {
-	// add if not data
 		var fields = data[0];
 		var color;
 		var htm2 = htm +
-			'<div class="right">' +
-				'<h2>Player</h2>' +
-				'<p><button onclick="togglePlay()" >Toggle Play/Pause</button></p>' +
-				'X: <select onchange="HAX.x = this.options.selectedIndex; buildReport();" title="select the X-axis" >' +
-				buildSelect( fields, HAX.x ) +
-				'<br>Y: <select onchange="HAX.y = this.options.selectedIndex; buildReport()" title="select the Y-axis" ><br>' +
-				buildSelect( fields, HAX.y ) +
-				'<br>Z: <select onchange="HAX.z = this.options.selectedIndex; buildReport()" title="select the Z-axis" ><br>' +
-				buildSelect( fields, HAX.z ) + '<br>' +
-				
-				'<br>Colors: <select onchange="HAX.color = this.options.selectedIndex; buildReport()" title="select the filed that the colors indicate" ><br>' +
-				buildSelect( fields, HAX.color ) + '<br>' +
-				'Lines: <select onchange="HAX.lineField = this.options.selectedIndex; buildReport()" title="select the field that lines connect" ><br>' +
-				buildSelect( fields, HAX.lineField ) + '<br>' +
-				'Disconnect: <select onchange="HAX.lineSubSetField = this.options.selectedIndex; buildReport()" title="select the field that causes lines to disconnect" ><br>' +
-				buildSelect( fields, HAX.lineSubSetField ) + '<br><br>' +
-				
-				
-				'Replay Speed: <input title="number of lines to read per frame" style="width: 200px;" type="range" min="2" max="100" onchange="HAX.speed=this.value; haxisIt();" step="1" value="' + HAX.speed + '" ><br>' +
-				'Field of View: <input title="higher number = wider view. May help you to see inside the matrix." style="width: 100px;" type="range" min="10" max="150" onchange="setFov( this.value ); haxisIt();" step="1" value="' + HAX.camFov + '" ><br>' +
-				'Choose Record: <input title="Set the current data line" style="width: 200px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value; haxisIt();" step="500" value="' + dataCount + '" ><br>' +
+			'<div style="background-color: #eee; border: 1px solid; opacity: 0.8; padding: 5px;">' +
+			'<h2 style="margin: 0;">Player</h2>' +
+			'<p><button onclick="togglePlay()" >Toggle Play/Pause</button></p>' +
+			'X: <select onchange="HAX.x = this.options.selectedIndex; buildReport();" title="select the X-axis" >' +
+			buildSelect( fields, HAX.x ) +
+			'<br>Y: <select onchange="HAX.y = this.options.selectedIndex; buildReport()" title="select the Y-axis" ><br>' +
+			buildSelect( fields, HAX.y ) +
+			'<br>Z: <select onchange="HAX.z = this.options.selectedIndex; buildReport()" title="select the Z-axis" ><br>' +
+			buildSelect( fields, HAX.z ) + '<br>' +
+			'<br>Colors: <select onchange="HAX.color = this.options.selectedIndex; buildReport()" title="select the color indicator" ><br>' +
+			buildSelect( fields, HAX.color ) + '<br><br>' +			
+			
+			// '  <button onclick="buildReport()" >Apply new headings</button></p> ' 
+			'Line: <input style="width: 200px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value;" step="500" value="' + dataCount + '" ><br>' +
 			'</div>' ;
 		info.innerHTML = htm2;
 		document.getElementById( HAX.city ).checked=true;
 
 		HAX.scene = new THREE.Scene();
 		newSign();
-		dataCount = 1;
-
-		//xCoords = findCoords( HAX.x );
-		//xKeys = keys;
-		xKeys = findSets( HAX.x );
+		dataCount = 0;
+		
+		xCoords = findCoords( HAX.x );
+		xKeys = keys;
 		xDelta = 100 / xKeys.length;
 
-		//yCoords = findCoords( HAX.y );
-		//yKeys = keys;
-		yKeys = findSets( HAX.y );
+		yCoords = findCoords( HAX.y );
+		yKeys = keys;
 		yDelta = 100 / yKeys.length;
 
-		// zCoords = findCoords( HAX.z );
-		// zKeys = keys;
-		zKeys = findSets( HAX.z );
+		zCoords = findCoords( HAX.z );
+		zKeys = keys;
 		zDelta = 100 / zKeys.length;
-
-		HAX.colorsSet = findSets( HAX.color );
-		HAX.colors = colorful(  HAX.colorsSet );
 		
-		HAX.lineSets = {};
-		HAX.lineSets.element = function() {
-			this.points = [];
-			this.subSet = null;
-		}		
-		HAX.lineSetChanges = 0;
-
-// Let's roll...
+		HAX.colors = [];
+		
+		colorful( HAX.colors, xKeys.length );
 		dataPlay = true;
 	}
 
-	function setFov( camFov) {
-		HAX.camFov = camFov;
-		HAX.camera = new THREE.PerspectiveCamera( camFov, window.innerWidth / window.innerHeight, 1, 1000 );
-		HAX.camera.position.set(-90, 105, 100);
-		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
+	HAX.trips = {};
+	HAX.trip = function() {
+		this.pointsX = [];
+		this.pointsY = [];
+		this.pointsZ = [];
+		
 	}
 	
 	function buildSelect(  fields, selected ) {
@@ -353,105 +308,56 @@
 		htm +='<\/select>';
 		return htm;
 	}
-
-
+	var color; 
+	
 	function haxisIt() {
-		var color;
-		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
+		var dat, c; 
+		geometry = new THREE.CylinderGeometry( 2, 0, 4, 5 );
 		// geometry = new THREE.CubeGeometry( 2, 2, 2 );
-		for (var record, mesh, material, pos, line, i = 1; i < HAX.speed; i++) {
-			record = data[ dataCount ];
+		for (var i = 1; i < 30; i++) {
 
-			color = HAX.colors[ HAX.colorsSet.indexOf( record[ HAX.color ] ) ];
+			dat = data[ dataCount ];
+			color = HAX.colors[ xKeys.indexOf( dat[HAX.color] ) ];
+// console.log(color)			
 
-			if ( color == undefined ) {
-				color =  0xff8888;
-// console.log( HAX.color, record[ HAX.color ],xKeys.indexOf( record[ HAX.color ] ), xKeys, color );
+			c = HAX.objects.shift();
+			HAX.scene.remove( c );					
+
+			if ( dat[13] != '0' ) {
+				geometry.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI ) );
+			} else {
+// console.log( dat[13] );
 			}
-			
-			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
-			material.color.setHSL( color, 0.8, 0.5 );
-
-// direction
-			if ( record[ HAX.direction ] != HAX.directionString ) {
-				cyl.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI ) );
-			}
-
-			item = HAX.objects.shift();
-			HAX.scene.remove( item );
-
-			mesh = new THREE.Mesh( cyl, material );
+			if ( color != undefined ) {
+				material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
+				material.color.setHSL( color, 0.8, 0.5 );
+			} else {
+				material = new THREE.MeshPhongMaterial( {color: 0xff8888 } );
+				console.log(material);
+			}			
+			cube = new THREE.Mesh( geometry, material );
 			// cube.material.color.setHSL( color, 0.8, 0.5 );
-			pos = v( xDelta * xKeys.indexOf( record[HAX.x] ) - 50, yDelta * yKeys.indexOf( record[HAX.y] ) - 50, zDelta * zKeys.indexOf( record[HAX.z] ) - 50 );
-			
-			mesh.position = pos ;
+			cube.position.set( xDelta * xKeys.indexOf( dat[HAX.x] ) - 50, yDelta * yKeys.indexOf( dat[HAX.y] ) - 50, zDelta * zKeys.indexOf( dat[HAX.z] ) - 50 );
 // console.log( mesh.position );
-			mesh.record = record;
-			HAX.objects.push( mesh );
-			HAX.scene.add( mesh );
-
-			var element = record[ HAX.lineField ];
-			if ( HAX.lineSets[element] == undefined ) {
-				HAX.lineSets[element] = new HAX.lineSets.element();
-				HAX.lineSets[element].lineSubSet = record[ HAX.lineSubSetField ];
-// console.log (element );
-			}
-			if ( HAX.lineSets[element].lineSubSet != record[ HAX.lineSubSetField ] ) {
-				HAX.lineSets[element].points.shift();
-				HAX.lineSets[element].points = [];
-// console.log( dataCount, HAX.lineSets[element].lineSubSet, record[ HAX.lineSubSetField ] );	
-				HAX.lineSetChanges++;
-			} else if( HAX.lineSets[element].points.length > 30 ) {
-				HAX.lineSets[element].points.shift();
-			}	
-			HAX.lineSets[element].points.push( pos );
-			
-			item = HAX.lines.shift();
-			HAX.scene.remove( item );
-			
-			geometry = new THREE.Geometry();
-			material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-			material.color.setHSL( color, 0.8, 0.5 );
-
-			geometry.vertices = HAX.lineSets[element].points; 
-			line = new THREE.Line( geometry, material );
-			HAX.lines.push(line );
-			HAX.scene.add( line );
-
+			cube.dat = dat;
+			HAX.objects.push( cube );
+			HAX.scene.add( cube );
 			dataCount++;
 		}
-		updates.innerHTML = 'City: ' + HAX.city + '| File > Total lines: ' + dataLength + ' Current line: ' + dataCount + ' | Day: ' + record[HAX.date] + ' Time: ' + record[HAX.time] + '<br>' +
-		'Replay speed: ' + HAX.speed + ' Camera FOV: ' + HAX.camFov + '<br>' +
-		'X: ' + data[0][HAX.x] + 's: ' + xKeys.length + ' ~ Y: ' + data[0][HAX.y] + 's: ' + yKeys.length + ' ~ Z: ' + data[0][HAX.z] + 's: ' + zKeys.length +
-		' ~ Line changes: ' + HAX.lineSetChanges;
+		updates.innerHTML = 'Stats | City: ' + HAX.city + ' Total lines: ' + dataLength + ' Current line: ' + dataCount + ' Day: ' + dat[HAX.date] + ' Time: ' + dat[HAX.time];
 		if ( dataCount > dataLength - 30 ) { dataCount = 1; }
 	}
 
-	function findSets( fieldId ) {
-		var sets = {};
-		sets.element = function() {
-		};
-		for (var record, field, i = 1; i < dataLength - 2 ; i++) {
-			record = data[i];
-			field = record[ fieldId ];
-			if ( sets[ field ] == undefined ) {
-				sets[ field ] = new sets.element;
-			}
-		}
-// console.log( sets );	
-		var keys = Object.keys( sets );
-		return keys;
-	}
-/*
-	function findCoordsXXX( index ) {
+
+	function findCoords( index ) {
 		var dat, item;
 		var items = {};
 		var OBJ = {};
 			OBJ.itemId = function () {
 			this.id = null;
 			this.count = null;
-		}
-
+		}			
+		
 		for (var i = 1; i < dataLength - 2 ; i++) {
 			dat = data[i];
 			item = dat[index];
@@ -468,46 +374,45 @@
 		keys = Object.keys(items);
 		return items;
 	}
-*/
-	function colorful( arr ) {
-		var delta = 1.0 / arr.length;	
-		var colList = [];
-		for ( var i = 0, len = arr.length - 1; i < len; i++ ) {
-			colList.push( i *  delta );
-		}	
-		return colList;
-	}
+	
+	function colorful( arr, count ) {
+		var delta = 1.0 / count;
+		for (var i = 0; i < count; i++ ) {
+			arr.push( i *  delta );
+		}
+		return arr;
+	}	
 
 	function animate() {
 		requestAnimationFrame( animate );
-		HAX.controls.update();
+		controls.update();
 		HAX.renderer.render( HAX.scene, HAX.camera );
 		if ( data != undefined && dataPlay ) haxisIt();
-		HAX.stats.update();
+		stats.update();
 	}
 
 	function newSign( ) {
 		// if( sign !== undefined ) { HAX.scene.remove( sign ); }
 		geometry = new THREE.PlaneGeometry( 100, 20, 1, 1 );
-
+		
 		material = canvasText( data[0][HAX.x] , { color: '#ff0000', fontSize: '48', height: 80,  width: 600 }  );
 		var sign = new THREE.Mesh( geometry, material );
 		sign.rotation.set( -1.5708, 0, 0);
 		sign.position.set( 0, -50, -60);
 		HAX.scene.add( sign );
-
+		
 		material = canvasText( data[0][HAX.y] , { color: '#00ff00', fontSize: '48', height: 80, width: 600 }  );
 		sign = new THREE.Mesh( geometry, material );
 		sign.rotation.set( 0,0 , -1.5708);
 		sign.position.set( -60, -15, -50);
-		HAX.scene.add( sign );
+		HAX.scene.add( sign );		
 
 		material = canvasText( data[0][HAX.z] , { color: '#0000ff', fontSize: '48', height: 80,  width: 600 }  );
 		sign = new THREE.Mesh( geometry, material );
 		sign.rotation.set( -1.5708,0 , -1.5708);
 		sign.position.set( -60, -50, 0);
 		HAX.scene.add( sign );
-
+		
 		sign = new THREE.AxisHelper( 50 );
 		sign.position.set( -50, -50, -50 );
 		HAX.scene.add( sign );
@@ -546,11 +451,9 @@
 	}
 
 	function onDocumentMouseMove( event ) {
-		var interescts;
-		var intersected;
-		var projector = new THREE.Projector();
+	
+	var interescts, intersected;
 		// event.preventDefault();
-		var mouse = { x: -1, y: -1 };
 		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
@@ -564,7 +467,7 @@
 				intersected = intersects[ 0 ].object;
 			}
 			if ( intersects.length > 1 ) {
-// console.log('intersects: ', intersects);
+				console.log('intersects: ', intersects);
 				// intersected.material.color.setHex( Math.random() * 0xffffff );
 			}
 			headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
@@ -572,11 +475,10 @@
 			headsUp.style.display = 'block';
 			// var c =  intersected.material.color;
 			// headsUp.innerHTML =  'red: ' + c.r + '<br>green: ' + c.g + '<br>blue: ' + c.b;
-			headsUp.innerHTML =  'X: ' + data[0][HAX.x] + ' ' + intersected.record[HAX.x] + '<br>Y: ' +
-				data[0][HAX.y] + ' ' + intersected.record[HAX.y] + '<br>Z: ' +
-				data[0][HAX.z] + ' ' + intersected.record[HAX.z] + '<br>' +
-				'Number of identical events: ' + intersects.length + '<br>' +
-				intersected.record;
+			headsUp.innerHTML =  'X: ' + data[0][HAX.x] + ' ' + intersected.dat[HAX.x] + '<br>Y: ' +
+				data[0][HAX.y] + ' ' + intersected.dat[HAX.y] + '<br>Z: ' +
+				data[0][HAX.z] + ' ' + intersected.dat[HAX.z] + '<br>' +
+				'Number of identical events: ' + intersects.length;
 		} else {
 			headsUp.style.display = 'none';
 		}

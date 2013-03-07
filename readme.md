@@ -18,6 +18,10 @@ Repo & file created: 2013-02-10
 
 ### Change Log
 
+
+2013-03-05 ~ Theo
+* Added in-built color code generator that always supplies the same come to the same type of record
+
 2013-03-04 ~ Theo
 * Renamed haxis.html to haxis-r1-static.html
 * Uploaded new haxis.html - plays the data
