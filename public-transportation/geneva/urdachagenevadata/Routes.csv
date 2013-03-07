@@ -1,0 +1,169 @@
+ID, Name,Network_Code,Route_Code,Route_Direction,Route_Destination
+kml_1, kml_1,reseau_2012,D,A,St-Julien-Gare / Vitam'Parc
+kml_2, kml_2,reseau_2012,11,A,Bout-du-Monde
+kml_3, kml_3,reseau_2012,NE,A,Gex-Le Turet
+kml_4, kml_4,reseau_2012,NJ,A,Chancy-Douane
+kml_5, kml_5,reseau_2012,22,R,Nations
+kml_6, kml_6,reseau_2012,Z,R,Gare Cornavin
+kml_7, kml_7,reseau_2012,06,R,Vernier-Village
+kml_8, kml_8,reseau_2012,51,R,C.O. Renard
+kml_9, kml_9,reseau_2012,Z,A,Bossy / Bois-Chatton
+kml_10, kml_10,reseau_2012,35,R,Beau-Séjour
+kml_11, kml_11,reseau_2012,M4,A,Molard
+kml_12, kml_12,reseau_2012,22,A,Tours-de-Carouge
+kml_13, kml_13,reseau_2012,K,A,Chancy-Douane / Pougny-Gare
+kml_14, kml_14,reseau_2012,NO,A,Bardonnex
+kml_15, kml_15,reseau_2012,1,R,Petit Bel-Air
+kml_16, kml_16,reseau_2012,2,R,Genève-Plage
+kml_17, kml_17,reseau_2012,S,A,Satigny-Gare
+kml_18, kml_18,reseau_2012,NK,A,Monniaz
+kml_19, kml_19,reseau_2012,35,A,Augustins
+kml_20, kml_20,reseau_2012,A,A,Gy-Eglise / Corsinge-Village
+kml_21, kml_21,reseau_2012,TAC2,R,ZI de Montréal
+kml_22, kml_22,reseau_2012,19,,
+kml_23, kml_23,reseau_2012,W,A,Satigny-Gare
+kml_24, kml_24,reseau_2012,08,A,Veyrier-Douane/Veyrier-Tournettes
+kml_25, kml_25,reseau_2012,21,R,Cressy
+kml_26, kml_26,reseau_2012,T,R,La Plaine
+kml_27, kml_27,reseau_2012,NS,A,Hermance
+kml_28, kml_28,reseau_2012,TAC3,A,Prés des Plans_e
+kml_29, kml_29,reseau_2012,03,R,Gardiol
+kml_30, kml_30,reseau_2012,TAC3,R,Prés des Plans_i
+kml_31, kml_31,reseau_2012,51,A,Mervelet
+kml_32, kml_32,reseau_2012,15,R,Palettes
+kml_33, kml_33,reseau_2012,TAC5,A,Pas-de-l'Echelle Ecole / Etrembières Mairie
+kml_34, kml_34,reseau_2012,15,A,Nations
+kml_35, kml_35,reseau_2012,84,R,P+R Sous-Moulin
+kml_36, kml_36,reseau_2012,5,R,Thônex-Vallard-Dne
+kml_37, kml_37,reseau_2012,34,A,Chevrier
+kml_38, kml_38,reseau_2012,34,R,Veyrier-Tournettes
+kml_39, kml_39,reseau_2012,08,R,OMS
+kml_40, kml_40,reseau_2012,54,R,Satigny-Gare
+kml_41, kml_41,reseau_2012,G,A,Corsier-Village / Veigy
+kml_42, kml_42,reseau_2012,TAC4,A,Albert Hénon
+kml_43, kml_43,reseau_2012,47,R,Croisée Confignon
+kml_44, kml_44,reseau_2012,O,A,Meyrin-Gravière
+kml_45, kml_45,reseau_2012,81,R,Rive
+kml_46, kml_46,reseau_2012,41,A,Petit-Veyrier
+kml_47, kml_47,reseau_2012,E,A,Hermance
+kml_48, kml_48,reseau_2012,12,A,Moillesulaz
+kml_49, kml_49,reseau_2012,M2,R,Pâquis
+kml_50, kml_50,reseau_2012,46,R,Bellins
+kml_51, kml_51,reseau_2012,47,A,Bernex-Saule
+kml_52, kml_52,reseau_2012,03,A,Crêts-de-Champel
+kml_53, kml_53,reseau_2012,28,R,Jardin-Botanique
+kml_54, kml_54,reseau_2012,46,A,Bardonnex
+kml_55, kml_55,reseau_2012,54,A,Gare ZIMEYSA
+kml_56, kml_56,reseau_2012,TACD3,A,Gaillard-Fossard
+kml_57, kml_57,reseau_2012,12B,R,Augustins
+kml_58, kml_58,reseau_2012,15,,Palettes
+kml_59, kml_59,reseau_2012,X,A,Dardagny / Russin
+kml_60, kml_60,reseau_2012,A,R,Rive
+kml_61, kml_61,reseau_2012,NP,A,Corsier-Village
+kml_62, kml_62,reseau_2012,C,A,Jussy-Meurets / Monniaz
+kml_63, kml_63,reseau_2012,TAC1,R,Lycée J. Monnet
+kml_64, kml_64,reseau_2012,NO,R,vide
+kml_65, kml_65,reseau_2012,DN,A,St-Julien-Gare
+kml_66, kml_66,reseau_2012,NC,A,La Plaine
+kml_67, kml_67,reseau_2012,12,R,Palettes
+kml_68, kml_68,reseau_2012,41,R,Tours-de-Carouge
+kml_69, kml_69,reseau_2012,DN,R,Valleiry Chef-Lieu
+kml_70, kml_70,reseau_2012,85,R,Vuillonnex
+kml_71, kml_71,reseau_2012,31,R,Puplinge-Marquis
+kml_72, kml_72,reseau_2012,44,R,Tours-de-Carouge
+kml_73, kml_73,reseau_2012,G,R,Rive
+kml_74, kml_74,reseau_2012,36,R,Vieille-Ville
+kml_75, kml_75,reseau_2012,NJ,R,Rive
+kml_76, kml_76,reseau_2012,96,A,Jussy-Meurets
+kml_77, kml_77,reseau_2012,07,A,Tours Lignon
+kml_78, kml_78,reseau_2012,85,A,Rte d'Epeisses
+kml_79, kml_79,reseau_2012,Y,R,Fernex-Mairie
+kml_80, kml_80,reseau_2012,1,A,Jardin-Botanique
+kml_81, kml_81,reseau_2012,86,,
+kml_82, kml_82,reseau_2012,28,A,Parfumerie
+kml_83, kml_83,reseau_2012,B,R,Vésenaz-Eglise
+kml_84, kml_84,reseau_2012,TACD3,R,Pré des Plans
+kml_85, kml_85,reseau_2012,NV,A,Prés des Plans
+kml_86, kml_86,reseau_2012,Gb,A,P+R Veigy
+kml_87, kml_87,reseau_2012,14,R,P+R Bernex
+kml_88, kml_88,reseau_2012,ND,A,Gland
+kml_89, kml_89,reseau_2012,Gb,R,Rive
+kml_90, kml_90,reseau_2012,14,A,Meyrin-Gravière
+kml_91, kml_91,reseau_2012,Y,A,Val-Thoiry
+kml_92, kml_92,reseau_2012,9,A,Tours Lignon
+kml_93, kml_93,reseau_2012,96,R,Malagnou
+kml_94, kml_94,reseau_2012,23,A,Le Rolliet / ZIPLO
+kml_95, kml_95,reseau_2012,45,A,Troinex-Ville / Croix-de-Rozon-Dne
+kml_96, kml_96,reseau_2012,X,R,La Plaine / Chancy-Dne
+kml_97, kml_97,reseau_2012,5,A,Aéroport
+kml_98, kml_98,reseau_2012,07,R,Hôpital
+kml_99, kml_99,reseau_2012,L,R,Petite-Vendée
+kml_100, kml_100,reseau_2012,TAC5,R,Bonne Centre
+kml_101, kml_101,reseau_2012,36,A,Place de Neuve
+kml_102, kml_102,reseau_2012,F,R,Gare Cornavin
+kml_103, kml_103,reseau_2012,V,A,C.S. La Bécassière
+kml_104, kml_104,reseau_2012,M1,A,Molard
+kml_105, kml_105,reseau_2012,TAC4,R,Bonne Centre
+kml_106, kml_106,reseau_2012,81,A,C.O. Bois-Caran
+kml_107, kml_107,reseau_2012,NT,A,Divonne-Gare
+kml_108, kml_108,reseau_2012,W,R,Choully
+kml_109, kml_109,reseau_2012,2,A,Onex-Cité
+kml_110, kml_110,reseau_2012,45,R,Tours-de-Carouge
+kml_111, kml_111,reseau_2012,B,A,Chevrens
+kml_112, kml_112,reseau_2012,O,R,Lycée International
+kml_113, kml_113,reseau_2012,M3,R,Genève-Plage
+kml_114, kml_114,reseau_2012,23,R,Aéroport
+kml_115, kml_115,reseau_2012,31,A,P+R Sous-Moulin
+kml_116, kml_116,reseau_2012,44,A,Croix-de-Rozon-Dne
+kml_117, kml_117,reseau_2012,V,R,Gare Cornavin
+kml_118, kml_118,reseau_2012,NA,A,Jean Monnet
+kml_119, kml_119,reseau_2012,TAC2,A,Gaillard-Fossard
+kml_120, kml_120,reseau_2012,53,R,Bouchet
+kml_121, kml_121,reseau_2012,12,,
+kml_122, kml_122,reseau_2012,32,R,Sainte-Clotilde
+kml_123, kml_123,reseau_2012,TAC1,A,Chêne-Bourg Gare
+kml_124, kml_124,reseau_2012,42,R,Carouge
+kml_125, kml_125,reseau_2012,33,A,Chevrier
+kml_126, kml_126,reseau_2012,86,A,ZIPLO
+kml_127, kml_127,reseau_2012,14,,
+kml_128, kml_128,reseau_2012,Eb,A,Hermance
+kml_129, kml_129,reseau_2012,33,R,Rive
+kml_130, kml_130,reseau_2012,21,A,Gare Eaux-Vives
+kml_131, kml_131,reseau_2012,Eb,R,Rive
+kml_132, kml_132,reseau_2012,S,R,Pré-Lauret
+kml_133, kml_133,reseau_2012,04,R,Bel-Air
+kml_134, kml_134,reseau_2012,T,A,P+R Challex-La Halle
+kml_135, kml_135,reseau_2012,E,R,Rive
+kml_136, kml_136,reseau_2012,C,R,P+R Sous-Moulin / Malagnou
+kml_137, kml_137,reseau_2012,NM,A,Avusy
+kml_138, kml_138,reseau_2012,53,A,Machéry
+kml_139, kml_139,reseau_2012,12B,A,Gare Chêne-Bourg
+kml_140, kml_140,reseau_2012,VB,R,Entrée-Versoix / Colovrex
+kml_141, kml_141,reseau_2012,VB,A,C.S. La Bécassière
+kml_142, kml_142,reseau_2012,84,A,Petit-Bel-Air
+kml_143, kml_143,reseau_2012,19,A,Onex-Cité
+kml_144, kml_144,reseau_2012,D,R,Bel-Air
+kml_145, kml_145,reseau_2012,19,R,Vernier-Village
+kml_146, kml_146,reseau_2012,NT,,
+kml_147, kml_147,reseau_2012,K,R,Petite-Vendée
+kml_148, kml_148,reseau_2012,10,R,Aéroport
+kml_149, kml_149,reseau_2012,32,A,Plainpalais
+kml_150, kml_150,reseau_2012,43,A,Loëx-Hôpital
+kml_151, kml_151,reseau_2012,57,A,Gare Vernier-Meyrin
+kml_152, kml_152,reseau_2012,41S,A,Petit-Veyrier
+kml_153, kml_153,reseau_2012,04,A,P+R Perly
+kml_154, kml_154,reseau_2012,L,A,Avusy
+kml_155, kml_155,reseau_2012,41S,R,Tours-de-Carouge
+kml_156, kml_156,reseau_2012,F,A,Ferney-Mairie / Gex-ZAC
+kml_157, kml_157,reseau_2012,NS,R,Chantepoulet
+kml_158, kml_158,reseau_2012,11,R,Jardin-Botanique
+kml_159, kml_159,reseau_2012,NA,R,Rive
+kml_160, kml_160,reseau_2012,06,A,Genève-Plage
+kml_161, kml_161,reseau_2012,10,A,Rive
+kml_162, kml_162,reseau_2012,9,R,Petit Bel-Air
+kml_163, kml_163,reseau_2012,86,R,Nations
+kml_164, kml_164,reseau_2012,80,A,C.O. Bois-Caran
+kml_165, kml_165,reseau_2012,43,R,Stade de Genève
+kml_166, kml_166,reseau_2012,42,A,Croisée-de-Confignon
+kml_167, kml_167,reseau_2012,80,R,Rive
+kml_168, kml_168,reseau_2012,57,R,Aéroport
