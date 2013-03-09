@@ -18,6 +18,11 @@ Repo & file created: 2013-02-10
 
 ### Change Log
 
+2013-03-09 ~ Theo
+* hAxis r3 uploaded.
+* r3 loads and reads local files
+* r3 sorts the data that's on the axis
+* r3 has the beginnings of a user interface along with intro text
 
 2013-03-05 ~ Theo
 * Added in-built color code generator that always supplies the same come to the same type of record
