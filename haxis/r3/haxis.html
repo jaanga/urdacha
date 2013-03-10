@@ -28,7 +28,7 @@
 	var zCoords, zDelta;
 	var keys;
 	var data, dataLength, dataCount;
-	var dataPlay;
+	var dataPlay = false;
 	var htm;
 
 	init();
@@ -347,7 +347,10 @@
 		requestAnimationFrame( animate );
 		HAX.controls.update();
 		HAX.renderer.render( HAX.scene, HAX.camera );
-		if ( data != undefined && dataPlay ) haxisIt();
+		if ( data != undefined && dataPlay ) {
+	console.log( new Date() );	
+		haxisIt();
+		}
 		HAX.stats.update();
 	}
 
