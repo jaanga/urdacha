@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0'>
+</head>
+<body>
+
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+<!--
+<script src='../../three.js/examples/js/Detector.js'></script>
+<script src='../../three.js/build/three.min.js'></script>
+<script src='../../three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='../../three.js/examples/js/libs/stats.min.js'></script>
+-->
+<script src='sidebars.js'></script>
+<script>
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
+
+	var HAX = HAX || {};
+
+	var xCoords, xKeys, xDelta;
+	var yCoords, yDelta;
+	var zCoords, zDelta;
+	var keys;
+	var data, dataLength, dataCount;
+	var dataPlay = false;
+
+	HAX.geneva = { separator: ',', x: 1, y: 9, z: 12, date: 0, time: 12, city: 'Geneva', color: 1,
+		direction: 6, directionString: 'A', lineField: 1, lineSubSetField: 14 };
+		
+	HAX.zurich = { separator: ';', x: 2, y: 6, z: 5, date: 0, time: 3, city: 'Zurich', color: 2,
+		direction: 4, directionString: "1", lineField: 2, lineSubSetField: 14 };
+		
+	HAX.sanFrancisco = { separator: ',', x: 10, y: 9, z: 11, date: 8, time: 15, city: "San Francisco", color: 9, 
+		direction: 13, directionString: '0', lineField: 9, lineSubSetField: 14 };
+
+	
+	init();
+	animate();
+	
+// must hit Enter AND reload...	
+	function setUrlHash() {
+		if ( location.hash == '' ) {
+			HAX.city = 'sanFrancisco';
+		} else {
+			var h, urlHash, item;
+			
+			urlHash = location.hash.split('#');
+			item = urlHash[1].split('=');
+			HAX.city = item[1];
+			var h = HAX[ HAX.city ];
+			for (var i = 2, len = urlHash.length; i < len; i++) {
+				item = urlHash[i].split('=');
+				if ( h[ item[0] ] != undefined ) {
+					h[item[0] ] = item[1];
+				}
+	// console.log('hash', item, f[item[0] ].current);				
+			}
+			HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + '#date=' + h['date'] + '#time=' + h['time'] + '#color=' + h['color'] + 
+			'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'];
+		}
+	}	
+	
+	function updateUrlHash() {
+		var h = HAX[ HAX.city ];
+		HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + '#date=' + h['date'] + '#time=' + h['time'] + '#color=' + h['color'] + 
+		'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'];
+		permalink.href = "#" + HAX.link;
+		window.location.hash = HAX.link;
+		// setStatusBar();
+	}
+	
+	function resetPermalink() {
+		window.history.pushState( '', '', window.location.pathname);
+		permalink.href = '';
+		setUrlHash();
+	}
+
+	function init() {
+		if ( ! Detector.webgl ) {
+			HAX.renderer = new THREE.Canvas.renderer( { antialias: true } );
+		} else {
+			HAX.renderer = new THREE.WebGLRenderer( { antialias: true } );
+		}
+setUrlHash();
+		HAX.camFov = 40;
+		HAX.speed = 30;
+		
+		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( HAX.renderer.domElement );
+		HAX.scene = new THREE.Scene();
+
+		HAX.camera = new THREE.PerspectiveCamera( HAX.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
+		HAX.camera.position.set(-90, 105, 100);
+		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
+
+		var light = new THREE.DirectionalLight( 0xffffff, 2 );
+		light.position.set( 1, 1, 1 ).normalize();
+		HAX.scene.add( light );
+
+		var light = new THREE.DirectionalLight( 0xffffff, 1.3 );
+		light.position.set( -1, -1, -1 ).normalize();
+		HAX.scene.add( light );
+
+		var light = new THREE.AmbientLight( 0xffffff);
+		light.color.setHSL( 0.1, 0.5, 0.3 );
+		HAX.scene.add( light );
+
+		HAX.stats = new Stats();
+		HAX.stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+		document.body.appendChild( HAX.stats.domElement );
+
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+// Assets
+
+		mesh = new THREE.AxisHelper( 50 );
+		mesh.position.set( -50, -50, -50 );
+		HAX.scene.add( mesh );
+
+		sidebarLeft.innerHTML =
+			'<div class="control" onclick="toggleBar( sidebarLeft )">[X]</div>' +
+
+			'<h1>hAxis r3</h1>' +
+			'<p><i>2013-03-09 ~ first release</i></p>' +
+			'<p>Made by the <a href="http://www.urdacha.info" target="_blank">Urdacha</a> team for the:</p>' +
+			'<p><a href="http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/" target="_blank">Urban Data Challenge</a></p>' +
+			'<p>Watch the numeric data come alive as animated objects in 3D.</p>' +
+			'<p>Use your pointing device to update the view.</p>' +
+			'<p><b><i>Rotate</i></b>: Left button/1 finger down<br><b><i>Zoom</i></b>: Wheel/2 fingers<br><b><i>Pan</i></b>: Right button/2 fingers down</p>' +
+			'<p>hAxis = hackathon + Axis</p>' +
+			'<p><small>Copyright &copy; 2013 the Urdacha authors. License: MIT License</small></p>' +
+			'<p><a href="https://github.com/jaanga/urdacha/wiki/hAxis" target="_blank">Record issues</a></p>' +
+			'<p><button onclick="HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement ); HAX.camera.position.set(-90, 105, 100); " >reset the view</button></p>' +
+		'';
+
+		statusBar.innerHTML =
+			'<div id="toggle" class="control" onclick="toggleStatusBar()">[-]</div>' +
+			'<div class="control" onclick="toggleBar( sidebarLeft ); toggleBar( sidebarRight );">[<span style="font-size: small; vertical-align: text-top; ">[]</span>] &nbsp;</div>' +
+			'<h2>Status</h2>' +
+			'<div id="toggled">' +
+				'<p>Choose a file over on the right sidebar. Updates will appear here...</p>' +
+				'<p>The default view is for testing purposes. It displays latitude longitude and routes. ' +
+				'Depending on how you set the view, you should vaguely be able to see a distorted map of San Francisco.</p>' +
+				'<p>Current issues include the heads-up display not appearing as it should.</p>' +
+			'</div>';
+		HAX.updates = document.getElementById('toggled');
+
+		sidebarRight.innerHTML =
+			'<div class="control" onclick="toggleBar( sidebarRight )">[X]</div>' +
+			'<h2>Control Panel</h2>' +
+			'<div>' + 
+				'<p><a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a> &nbsp; <a href="" onclick="resetPermalink" >Reset permalnk</a></p>' +
+
+				'<h3>City Type</h3>' +
+				'<input type="radio" onchange="HAX.city = this.id;" name="city" id="geneva">Geneva<br> ' +
+				'<input type="radio" onchange="HAX.city = this.id;" name="city" id="sanFrancisco">San Francisco<br> ' +
+				'<input type="radio" onchange="HAX.city = this.id; console.log(HAX.city);" name="city" id="zurich">Zurich ' +
+				'<h3>Data File</h3>'+
+				'<input type="file" id="files" name="file" />' +
+				
+			'</div><br>' +
+			'<div id="sbrBody">' +
+			'</div>' +
+		'';
+		document.getElementById( HAX.city ).checked=true;
+		initObjects();
+	}
+
+	function initObjects() {
+		var geometry = new THREE.CubeGeometry( 3, 3, 3 );
+		var material = new THREE.MeshPhongMaterial( {color: 0xff0000, ambient: 0xffffff } );
+		HAX.objects = [];
+		var cube;
+		for (var i = 0; i < 300; i++) {
+			cube = new THREE.Mesh( geometry, material );
+			HAX.objects.push( cube );
+			HAX.scene.add( cube );
+		}
+
+		geometry = new THREE.Geometry();
+		material = new THREE.LineBasicMaterial( { color: 0xff0000, opacity: 0.5 } );
+		HAX.lines = [];
+		HAX.points = [];
+		var line;
+		for (var i = 0; i < 100; i++) {
+			geometry.vertices.push(
+				v( 0, 0, -50),
+				v( 0, 0, 50)
+			);
+			line = new THREE.Line( geometry, material );
+			HAX.lines.push( line );
+			HAX.scene.add( line );
+		}
+	}
+
+	document.getElementById('files').addEventListener('change', handleFileSelect, false);
+	function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
+
+
+	
+	function selectCity( city, response ) {
+		dataPlay = false;
+	
+		var dataLines = response;
+		dataLines = dataLines.split(/\r\n|\n/);
+		dataLines[0] = dataLines[0].replace(/["']/g, "");
+		dataLength = dataLines.length - 2;
+		data = [];
+		var sep = HAX[ HAX.city ].separator;
+		for ( var i = 0; i < dataLength; i++ ) {
+			data.push( dataLines[i].split( sep ) );
+		}
+		
+		buildReport();
+	}
+	
+
+	function buildReport() {
+		var fields = data[0];
+		var h = HAX[ HAX.city ];
+
+		var htm2 =
+			'<h3>Player</h3>' +
+			'<p><button onclick="togglePlay()" >Toggle Play/Pause</button></p>' +
+			'X: <select onchange="HAX[ HAX.city ].x = this.options.selectedIndex; buildReport(); updateReadOut( \'x\', HAX[ HAX.city ].x); " title="select the X-axis" >' +
+			buildSelect( fields, HAX[ HAX.city ].x ) +
+			'<br>Y: <select onchange="HAX[ HAX.city ].y = this.options.selectedIndex; buildReport(); updateReadOut( \'y\', HAX[ HAX.city ].y);" title="select the Y-axis" ><br>' +
+			buildSelect( fields, h.y ) +
+			'<br>Z: <select onchange="HAX[ HAX.city ].z = this.options.selectedIndex; buildReport(); updateReadOut( \'z\', HAX[ HAX.city ].z);" title="select the Z-axis" ><br>' +
+			buildSelect( fields, h.z ) + '<br>' +
+
+			'<br>Colors: <select onchange="HAX[ HAX.city ].color = this.options.selectedIndex; buildReport(); updateReadOut( \'color\', HAX[ HAX.city ].color);" title="select the filed that the colors indicate" ><br>' +
+			buildSelect( fields, h.color ) + '<br>' +
+			'Lines: <select onchange="HAX[ HAX.city ].lineField = this.options.selectedIndex; buildReport(); updateReadOut( \'lineField\', HAX[ HAX.city ].lineField);" title="select the field that lines connect" ><br>' +
+			buildSelect( fields, h.lineField ) + '<br>' +
+			'Disconnect: <select onchange="HAX[ HAX.city ].lineSubSetField = this.options.selectedIndex; buildReport(); updateReadOut( \'lineSubSetField\', HAX[ HAX.city ].lineSubSetField);" title="select the field that causes lines to disconnect" ><br>' +
+			buildSelect( fields, h.lineSubSetField ) + '<br><br>' +
+
+			'Replay Speed:<br> <input title="number of lines to read per frame" style="width: 200px;" type="range" min="2" max="100" onchange="HAX.speed=this.value; haxisIt();" step="1" value="' + HAX.speed + '" ><br>' +
+			'Field of View: <br><input title="higher number = wider view. May help you to see inside the matrix." style="width: 100px;" type="range" min="10" max="150" onchange="setFov( this.value ); haxisIt();" step="1" value="' + HAX.camFov + '" ><br>' +
+			'Choose Record: <br><input title="Set the current data line" style="width: 200px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value; haxisIt();" step="500" value="' + dataCount + '" ><br>' +
+		'' ;
+
+		sbrBody.innerHTML = htm2;
+
+		HAX.scene = new THREE.Scene();
+		newSign();
+		dataCount = 1;
+
+		xKeys = findSets( h.x );
+		xDelta = 100 / xKeys.length;
+
+		yKeys = findSets( h.y );
+		yDelta = 100 / yKeys.length;
+
+		zKeys = findSets( h.z );
+		zDelta = 100 / zKeys.length;
+
+		HAX.colorsSet = findSets( h.color );
+		HAX.colors = colorful(  HAX.colorsSet );
+
+		HAX.lineSets = {};
+		HAX.lineSets.element = function() {
+			this.points = [];
+			this.subSet = null;
+		}
+		HAX.lineSetChanges = 0;
+
+// Let's roll...
+		dataPlay = true;
+	}
+
+	// Updates the numbers after the input/range  - and - updates the hash
+	function updateReadOut( item, value ) {  	
+		//var sp = document.getElementById('w' + item );
+		//sp.innerHTML = value;
+// console.log( item, value );		
+		var h = HAX[ HAX.city ];
+		h[ item ] = value;
+		updateUrlHash();
+	}
+	
+	function buildSelect( fields, selected ) {
+		var htm = '';
+		sel = parseInt(selected);
+		for ( var i = 0, len = fields.length - 1; i < len; i++  ) {
+// console.log( i, fields, selected)		
+			if ( i !== sel) {
+				htm += '<option>' + (i + 1) + ' - ' + fields[i] + '</option>';
+			} else {
+		
+				htm += '<option selected="selected" >' + (i + 1) + ' - ' + fields[i] + '</option>';
+			}
+		}
+		htm +='<\/select>';
+		
+		return htm;
+	}
+
+	function haxisIt() {
+		var color;
+		var h = HAX[ HAX.city ];
+		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
+		// geometry = new THREE.CubeGeometry( 2, 2, 2 );
+		for (var record, mesh, material, pos, line, i = 1; i < HAX.speed; i++) {
+			record = data[ dataCount ];
+
+			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.color ] ) ];
+
+			if ( color == undefined ) {
+				color =  0xff8888;
+// console.log( HAX.color, record[ HAX.color ],xKeys.indexOf( record[ HAX.color ] ), xKeys, color );
+			}
+
+			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
+			material.color.setHSL( color, 0.8, 0.5 );
+
+// direction
+			if ( record[ h.direction ] != HAX.directionString ) {
+				cyl.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI ) );
+			}
+
+			item = HAX.objects.shift();
+			HAX.scene.remove( item );
+
+			mesh = new THREE.Mesh( cyl, material );
+			// cube.material.color.setHSL( color, 0.8, 0.5 );
+			pos = v( xDelta * xKeys.indexOf( record[ h.x] ) - 50, yDelta * yKeys.indexOf( record[ h.y] ) - 50, zDelta * zKeys.indexOf( record[ h.z] ) - 50 );
+
+			mesh.position = pos ;
+			mesh.record = record;
+			HAX.objects.push( mesh );
+			HAX.scene.add( mesh );
+
+			var element = record[ h.lineField ];
+			if ( HAX.lineSets[element] == undefined ) {
+				HAX.lineSets[element] = new HAX.lineSets.element();
+				HAX.lineSets[element].lineSubSet = record[ h.lineSubSetField ];
+			}
+			if ( HAX.lineSets[element].lineSubSet != record[ h.lineSubSetField ] ) {
+				HAX.lineSets[element].points.shift();
+				HAX.lineSets[element].points = [];
+// console.log( dataCount, HAX.lineSets[element].lineSubSet, record[ HAX.lineSubSetField ] );
+				HAX.lineSetChanges++;
+			} else if( HAX.lineSets[element].points.length > 30 ) {
+				HAX.lineSets[element].points.shift();
+			}
+			HAX.lineSets[element].points.push( pos );
+
+			item = HAX.lines.shift();
+			HAX.scene.remove( item );
+
+			geometry = new THREE.Geometry();
+			material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+			material.color.setHSL( color, 0.8, 0.5 );
+
+			geometry.vertices = HAX.lineSets[element].points;
+			line = new THREE.Line( geometry, material );
+			HAX.lines.push(line );
+			HAX.scene.add( line );
+
+			dataCount++;
+		}
+		
+		HAX.updates.innerHTML = 'City: ' + h.city + '<br>' +
+		'Total lines in file: ' + dataLength + ' ~ Current line: ' + dataCount + '<br>' +
+		'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
+		'Replay speed: ' + HAX.speed + ' Camera FOV: ' + HAX.camFov + '<br>' +
+		'X: ' + data[0][ h.x] + ': ' + xKeys.length + ' Y: ' + data[0][ h.y] + ': ' + yKeys.length + ' Z: ' + data[0][ h.z] + ': ' + zKeys.length + '<br>' +
+		'Lines disconnected: ' + HAX.lineSetChanges;
+		if ( dataCount > dataLength - HAX.speed - 1 ) { dataCount = 1; }
+	}
+
+	function findSets( fieldId ) {
+		var sets = {};
+		sets.element = function() {
+		};
+		for (var record, field, i = 1; i < dataLength - 2 ; i++) {
+			record = data[i];
+			field = record[ fieldId ];
+			if ( sets[ field ] == undefined ) {
+				sets[ field ] = new sets.element;
+			}
+		}
+		var keys = Object.keys( sets );
+		keys.sort( function(a,b){return a-b} )
+		return keys;
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+		HAX.controls.update();
+		HAX.renderer.render( HAX.scene, HAX.camera );
+		if ( data != undefined && dataPlay == true ) {
+// console.log( new Date() );	
+			haxisIt();
+		}
+		HAX.stats.update();
+	}
+
+	function togglePlay() {
+// console.log( dataPlay );
+		if ( dataPlay == true ) {
+			dataPlay = false ;
+		} else {
+			dataPlay = true;
+		}
+	}
+
+	function setFov( camFov) {
+		HAX.camFov = camFov;
+		HAX.camera = new THREE.PerspectiveCamera( camFov, window.innerWidth / window.innerHeight, 1, 1000 );
+		HAX.camera.position.set(-90, 105, 100);
+		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
+	}
+
+	function colorful( arr ) {
+		var delta = 1.0 / arr.length;
+		var colList = [];
+		for ( var i = 0, len = arr.length - 1; i < len; i++ ) {
+			colList.push( i *  delta );
+		}
+		return colList;
+	}
+
+	function newSign( ) {
+		// if( sign !== undefined ) { HAX.scene.remove( sign ); }
+		var h = HAX[ HAX.city ];
+		geometry = new THREE.PlaneGeometry( 100, 20, 1, 1 );
+
+		material = canvasText( data[0][h.x] , { color: '#ff0000', fontSize: '48', height: 80,  width: 600 }  );
+		var sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( -1.5708, 0, 0);
+		sign.position.set( 0, -50, -60);
+		HAX.scene.add( sign );
+
+		material = canvasText( data[0][h.y] , { color: '#00ff00', fontSize: '48', height: 80, width: 600 }  );
+		sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( 0,0 , -1.5708);
+		sign.position.set( -60, -15, -50);
+		HAX.scene.add( sign );
+
+		material = canvasText( data[0][h.z] , { color: '#0000ff', fontSize: '48', height: 80,  width: 600 }  );
+		sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( -1.5708,0 , -1.5708);
+		sign.position.set( -60, -50, 0);
+		HAX.scene.add( sign );
+
+		sign = new THREE.AxisHelper( 50 );
+		sign.position.set( -50, -50, -50 );
+		HAX.scene.add( sign );
+	}
+
+	function canvasText ( text1, parameters ) {
+		canvas = document.createElement("canvas");
+		var width = ( parameters['width'] ) ? parameters['width'] : 300 ;
+		canvas.width = width;
+		var height = ( parameters['height'] ) ? parameters['height'] : 150 ;
+		canvas.height = height;
+
+		context = canvas.getContext("2d");
+		context.fillStyle =  ( parameters['backgroundColor'] !== undefined ) ? parameters['backgroundColor'] : 'transparent';
+		context.fillRect( 0, 0, width, height );
+		//context.lineWidth = 2;
+		//context.strokeRect(0, 0, width, height);
+		context.fillStyle = ( parameters['color']) ? parameters['color'] : '#ffffff';
+
+		context.font = ( parameters['fontSize'] !== undefined ) ? parameters['fontSize'] + "pt Arial bold" : '16pt Arial bold';
+		context.textAlign = ( parameters['textAlign'] ) ? parameters['textAlign'] : 'left' ;
+		context.textBaseline = "top";
+		context.fillText(text1, 5, 0);
+
+		map = new THREE.Texture( canvas );
+		map.needsUpdate = true;
+		return new THREE.MeshBasicMaterial( { map: map,  side: THREE.DoubleSide, transparent: true } );
+	}
+
+	function handleFileSelect( evt ) {
+		reader = new FileReader();
+		reader.onerror = errorHandler;
+		reader.onprogress = function(e) {
+			HAX.updates.textContent = 'Loaded: ' + e.loaded + ' out of ' + e.total;
+		}
+		reader.onabort = function(e) {
+			alert('File read cancelled');
+		};
+		reader.onloadstart = function(e) {
+			HAX.updates.textContent = 'loading';
+		};
+		reader.onload = function(e) {
+			if (e.target.readyState == FileReader.DONE) { // DONE == 2
+// console.log( e);
+				selectCity( HAX.city, e.target.result );
+			}
+		}
+		// Read in the image file as a binary string.
+		reader.readAsBinaryString(evt.target.files[0]);
+	}
+
+	function errorHandler(evt) {
+		switch(evt.target.error.code) {
+			case evt.target.error.NOT_FOUND_ERR:
+			alert('File Not Found!');
+			break;
+		case evt.target.error.NOT_READABLE_ERR:
+			alert('File is not readable');
+			break;
+		case evt.target.error.ABORT_ERR:
+			break; // noop
+		default:
+			alert('An error occurred reading this file.');
+		};
+	}
+
+	function onWindowResize() {
+		windowHalfX = window.innerWidth / 2;
+		windowHalfY = window.innerHeight / 2;
+		HAX.camera.aspect = window.innerWidth / window.innerHeight;
+		HAX.camera.updateProjectionMatrix();
+		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
+	}
+
+	function onDocumentMouseMove( event ) {
+		if ( data == undefined ) return;
+		var interescts;
+		var intersected;
+		var projector = new THREE.Projector();
+		// event.preventDefault();
+		var mouse = { x: -1, y: -1 };
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+		var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+		projector.unprojectVector( vector, HAX.camera );
+		var raycaster = new THREE.Raycaster( HAX.camera.position, vector.sub( HAX.camera.position ).normalize() );
+		intersects = raycaster.intersectObjects( HAX.objects );
+
+		if ( intersects.length > 0 ) {
+			if ( intersected != intersects[ 0 ].object ) { // not same one
+				intersected = intersects[ 0 ].object;
+			}
+			if ( intersects.length > 1 ) {
+console.log('intersects: ', intersects);
+				// intersected.material.color.setHex( Math.random() * 0xffffff );
+			}
+			headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
+			headsUp.style.bottom = 10 + 0.5 * window.innerHeight + mouse.y * 0.5 * window.innerHeight+ 'px';
+			headsUp.style.display = 'block';
+			// var c =  intersected.material.color;
+			// headsUp.innerHTML =  'red: ' + c.r + '<br>green: ' + c.g + '<br>blue: ' + c.b;
+			var h = HAX[ HAX.city ];
+			headsUp.innerHTML =  'X: ' + data[0][ h.x] + ' ' + intersected.record[ h.x] + '<br>Y: ' +
+				data[0][ h.y] + ' ' + intersected.record[ h.y] + '<br>Z: ' +
+				data[0][ h.z] + ' ' + intersected.record[ h.z] + '<br>' +
+				'Number of identical events: ' + intersects.length + '<br>' +
+				'<br>All the data [for testing]: <br>' +
+				intersected.record;
+		} else {
+			headsUp.style.display = 'none';
+		}
+	}
+</script>
+</body>
+</html>
