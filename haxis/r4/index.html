@@ -39,7 +39,6 @@
 	HAX.sanFrancisco = { separator: ',', x: 10, y: 9, z: 11, date: 8, time: 15, city: "San Francisco", color: 9, 
 		direction: 13, directionString: '0', lineField: 9, lineSubSetField: 14 };
 
-	
 	init();
 	animate();
 	
@@ -61,7 +60,8 @@
 				}
 	// console.log('hash', item, f[item[0] ].current);				
 			}
-			HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + '#date=' + h['date'] + '#time=' + h['time'] + '#color=' + h['color'] + 
+			HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + '#date=' + h['date'] + '#time=' + h['time'] + 
+			'#color=' + h['color'] + 
 			'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'];
 		}
 	}	
@@ -98,6 +98,10 @@ setUrlHash();
 		HAX.camera = new THREE.PerspectiveCamera( HAX.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
 		HAX.camera.position.set(-90, 105, 100);
 		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
+		HAX.controls.minDistance = 5;
+		HAX.controls.maxDistance = 300;
+		HAX.controls.zoomSpeed = 0.5;
+		HAX.controls.dynamicDampingFactor = 0.9;
 
 		var light = new THREE.DirectionalLight( 0xffffff, 2 );
 		light.position.set( 1, 1, 1 ).normalize();
@@ -115,20 +119,16 @@ setUrlHash();
 		HAX.stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
 		document.body.appendChild( HAX.stats.domElement );
 
-		window.addEventListener( 'resize', onWindowResize, false );
-		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
 // Assets
 
-		mesh = new THREE.AxisHelper( 50 );
-		mesh.position.set( -50, -50, -50 );
-		HAX.scene.add( mesh );
+		// mesh = new THREE.AxisHelper( 50 );
+		// mesh.position.set( -50, -50, -50 );
+		// HAX.scene.add( mesh );
 
 		sidebarLeft.innerHTML =
 			'<div class="control" onclick="toggleBar( sidebarLeft )">[X]</div>' +
-
-			'<h1>hAxis r3</h1>' +
-			'<p><i>2013-03-09 ~ first release</i></p>' +
+			'<h1>hAxis r4</h1>' +
+			'<p><i>2013-03-17 ~ still pre-release/i></p>' +
 			'<p>Made by the <a href="http://www.urdacha.info" target="_blank">Urdacha</a> team for the:</p>' +
 			'<p><a href="http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/" target="_blank">Urban Data Challenge</a></p>' +
 			'<p>Watch the numeric data come alive as animated objects in 3D.</p>' +
@@ -136,7 +136,7 @@ setUrlHash();
 			'<p><b><i>Rotate</i></b>: Left button/1 finger down<br><b><i>Zoom</i></b>: Wheel/2 fingers<br><b><i>Pan</i></b>: Right button/2 fingers down</p>' +
 			'<p>hAxis = hackathon + Axis</p>' +
 			'<p><small>Copyright &copy; 2013 the Urdacha authors. License: MIT License</small></p>' +
-			'<p><a href="https://github.com/jaanga/urdacha/wiki/hAxis" target="_blank">Record issues</a></p>' +
+			'<p><a href="https://github.com/jaanga/urdacha/wiki/hAxis-Issues-and-Wish-List" target="_blank">Report issues</a></p>' +
 			'<p><button onclick="HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement ); HAX.camera.position.set(-90, 105, 100); " >reset the view</button></p>' +
 		'';
 
@@ -170,6 +170,10 @@ setUrlHash();
 			'</div>' +
 		'';
 		document.getElementById( HAX.city ).checked=true;
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+		document.getElementById('files').addEventListener('change', handleFileSelect, false);
+		
 		initObjects();
 	}
 
@@ -181,29 +185,28 @@ setUrlHash();
 		for (var i = 0; i < 300; i++) {
 			cube = new THREE.Mesh( geometry, material );
 			HAX.objects.push( cube );
+			cube.position.set(100 * Math.random() - 50, 0, 0 ); // if they are all in the same place, really slows things down...
 			HAX.scene.add( cube );
 		}
 
 		geometry = new THREE.Geometry();
-		material = new THREE.LineBasicMaterial( { color: 0xff0000, opacity: 0.5 } );
+		material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 		HAX.lines = [];
-		HAX.points = [];
+		// HAX.points = [];
 		var line;
+		geometry.vertices.push(
+			v( 0, 0, -50),
+			v( 0, 0, 50)
+		);		
 		for (var i = 0; i < 100; i++) {
-			geometry.vertices.push(
-				v( 0, 0, -50),
-				v( 0, 0, 50)
-			);
 			line = new THREE.Line( geometry, material );
 			HAX.lines.push( line );
 			HAX.scene.add( line );
 		}
+		
 	}
 
-	document.getElementById('files').addEventListener('change', handleFileSelect, false);
 	function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
-
-
 	
 	function selectCity( city, response ) {
 		dataPlay = false;
@@ -221,7 +224,6 @@ setUrlHash();
 		buildReport();
 	}
 	
-
 	function buildReport() {
 		var fields = data[0];
 		var h = HAX[ HAX.city ];
@@ -308,22 +310,21 @@ setUrlHash();
 		var color;
 		var h = HAX[ HAX.city ];
 		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
-		// geometry = new THREE.CubeGeometry( 2, 2, 2 );
 		for (var record, mesh, material, pos, line, i = 1; i < HAX.speed; i++) {
 			record = data[ dataCount ];
 
 			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.color ] ) ];
-
+/*
 			if ( color == undefined ) {
 				color =  0xff8888;
-// console.log( HAX.color, record[ HAX.color ],xKeys.indexOf( record[ HAX.color ] ), xKeys, color );
+console.log( HAX.color, record[ HAX.color ],xKeys.indexOf( record[ HAX.color ] ), xKeys, color );
 			}
-
+*/
 			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
 			material.color.setHSL( color, 0.8, 0.5 );
 
 // direction
-			if ( record[ h.direction ] != HAX.directionString ) {
+			if ( record[ h.direction ] != h.directionString ) {
 				cyl.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI ) );
 			}
 
@@ -349,7 +350,7 @@ setUrlHash();
 				HAX.lineSets[element].points = [];
 // console.log( dataCount, HAX.lineSets[element].lineSubSet, record[ HAX.lineSubSetField ] );
 				HAX.lineSetChanges++;
-			} else if( HAX.lineSets[element].points.length > 30 ) {
+			} else if( HAX.lineSets[element].points.length > 10 ) {
 				HAX.lineSets[element].points.shift();
 			}
 			HAX.lineSets[element].points.push( pos );
@@ -398,7 +399,7 @@ setUrlHash();
 		requestAnimationFrame( animate );
 		HAX.controls.update();
 		HAX.renderer.render( HAX.scene, HAX.camera );
-		if ( data != undefined && dataPlay == true ) {
+		if ( dataPlay == true ) {
 // console.log( new Date() );	
 			haxisIt();
 		}
@@ -406,6 +407,7 @@ setUrlHash();
 	}
 
 	function togglePlay() {
+		if (data == undefined) return; 
 // console.log( dataPlay );
 		if ( dataPlay == true ) {
 			dataPlay = false ;
@@ -424,7 +426,7 @@ setUrlHash();
 	function colorful( arr ) {
 		var delta = 1.0 / arr.length;
 		var colList = [];
-		for ( var i = 0, len = arr.length - 1; i < len; i++ ) {
+		for ( var i = 0, len = arr.length; i < len; i++ ) {
 			colList.push( i *  delta );
 		}
 		return colList;
@@ -532,8 +534,9 @@ setUrlHash();
 		var interescts;
 		var intersected;
 		var projector = new THREE.Projector();
-		// event.preventDefault();
+		
 		var mouse = { x: -1, y: -1 };
+		// event.preventDefault();
 		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 

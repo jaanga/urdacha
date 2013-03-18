@@ -18,6 +18,13 @@ Repo & file created: 2013-02-10
 
 ### Change Log
 
+2013-03-17 ~ Theo
+* Stopped creating innumerable vertices when creating lines. FPS now reasonable again.
+* speeded up animate();
+* now build sufficient list of colors, delete error trap
+* fixed broken directiob handling; seems to have greatly speeded up intersection finding!
+* adjusted zoom speed and damping
+ 
 2013-03-09 ~ Theo
 * hAxis r3 uploaded.
 * r3 loads and reads local files
