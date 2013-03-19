@@ -18,6 +18,9 @@ Repo & file created: 2013-02-10
 
 ### Change Log
 
+2013-03-19 ~ Theo
+* hAxis r4 pre-release uploaded
+
 2013-03-17 ~ Theo
 * Stopped creating innumerable vertices when creating lines. FPS now reasonable again.
 * speeded up animate();
