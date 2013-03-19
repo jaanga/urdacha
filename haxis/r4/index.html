@@ -37,7 +37,7 @@
 		direction: 4, directionString: "1", lineField: 2, lineSubSetField: 14 };
 		
 	HAX.sanFrancisco = { separator: ',', x: 10, y: 9, z: 11, date: 8, time: 15, city: "San Francisco", color: 9, 
-		direction: 13, directionString: '0', lineField: 9, lineSubSetField: 14 };
+		direction: 13, directionString: '0', lineField: 9, lineSubSetField: 14, camX: -90, camY: 105, camZ: 100 };
 
 	init();
 	animate();
@@ -62,14 +62,19 @@
 			}
 			HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + '#date=' + h['date'] + '#time=' + h['time'] + 
 			'#color=' + h['color'] + 
-			'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'];
+			'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'] +
+			'#camX=' + h['camX'] + '#camY=' + h['camY'] + '#camZ=' + h['camZ'];
+			loadSF_Day( '../../improved-csv/sf_day1.csv'); 
 		}
 	}	
 	
 	function updateUrlHash() {
 		var h = HAX[ HAX.city ];
-		HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + '#date=' + h['date'] + '#time=' + h['time'] + '#color=' + h['color'] + 
-		'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'];
+		HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + 
+		'#date=' + h['date'] + '#time=' + h['time'] + 
+		'#color=' + h['color'] + 
+		'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'] +
+		'#camX=' + HAX.camera.position.x + '#camY=' + HAX.camera.position.y + '#camZ=' + HAX.camera.position.z;
 		permalink.href = "#" + HAX.link;
 		window.location.hash = HAX.link;
 		// setStatusBar();
@@ -87,16 +92,18 @@
 		} else {
 			HAX.renderer = new THREE.WebGLRenderer( { antialias: true } );
 		}
-setUrlHash();
+
+
 		HAX.camFov = 40;
 		HAX.speed = 30;
-		
+setUrlHash();
+var h = HAX[ HAX.city ];
 		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( HAX.renderer.domElement );
 		HAX.scene = new THREE.Scene();
 
 		HAX.camera = new THREE.PerspectiveCamera( HAX.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
-		HAX.camera.position.set(-90, 105, 100);
+		HAX.camera.position.set( h.camX, h.camY, h.camZ);
 		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
 		HAX.controls.minDistance = 5;
 		HAX.controls.maxDistance = 300;
@@ -158,12 +165,14 @@ setUrlHash();
 
 	function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
 	
-	var xmlhttp, callbackCount = 0;
+	var xmlhttp, callbackCount;
 	function loadSF_Day( fname ) {
 		xmlhttp = new XMLHttpRequest();
 		xmlhttp.open( 'GET', fname, true );
 		xmlhttp.onreadystatechange = callbackCSV;
 		xmlhttp.send( null );
+		callbackCount = 0;
+		dataPlay = false;
 	}
 	
 	function callbackCSV() {
@@ -174,7 +183,7 @@ setUrlHash();
 		} else {
 			callbackCount++;
 console.log('waiting...');
-			HAX.updates.innerHTML = ' Responses from server (need 20K+): ' + callbackCount;
+			HAX.updates.innerHTML = ' Responses from server (need 20,000+): ' + callbackCount;
 		}
 	}	
 	
@@ -200,11 +209,16 @@ console.log('waiting...');
 		var htm2 =
 			'<h3>Player</h3>' +
 			'<p><button onclick="togglePlay()" >Toggle Play/Pause</button></p>' +
-			'X: <select onchange="HAX[ HAX.city ].x = this.options.selectedIndex; buildReport(); updateReadOut( \'x\', HAX[ HAX.city ].x); " title="select the X-axis" >' +
+			'Replay Speed: &nbsp;<input title="number of lines to read per frame" style="width: 180px;" type="range" min="2" max="100" onchange="HAX.speed=this.value; haxisIt();" step="1" value="' + HAX.speed + '" ><br>' +
+			'Field of View: <input title="higher number = wider view. May help you to see inside the matrix." style="width: 180px;" type="range" min="10" max="150" onchange="setFov( this.value ); haxisIt();" step="1" value="' + HAX.camFov + '" ><br>' +
+			'Choose Record: <input title="Set the current data line" style="width: 180px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value; haxisIt();" step="500" value="' + dataCount + '" ><br>' +
+
+			
+			'<br><scan style="font-weight: 600; color: red;">X-axis:</scan><select onchange="HAX[ HAX.city ].x = this.options.selectedIndex; buildReport(); updateReadOut( \'x\', HAX[ HAX.city ].x); " title="select the X-axis" >' +
 			buildSelect( fields, HAX[ HAX.city ].x ) +
-			'<br>Y: <select onchange="HAX[ HAX.city ].y = this.options.selectedIndex; buildReport(); updateReadOut( \'y\', HAX[ HAX.city ].y);" title="select the Y-axis" ><br>' +
+			'<br><scan style="font-weight: 600; color: green;">Y-axis:</scan><select onchange="HAX[ HAX.city ].y = this.options.selectedIndex; buildReport(); updateReadOut( \'y\', HAX[ HAX.city ].y);" title="select the Y-axis" ><br>' +
 			buildSelect( fields, h.y ) +
-			'<br>Z: <select onchange="HAX[ HAX.city ].z = this.options.selectedIndex; buildReport(); updateReadOut( \'z\', HAX[ HAX.city ].z);" title="select the Z-axis" ><br>' +
+			'<br><scan style="font-weight: 600; color: blue;">Z-axis:</scan><select onchange="HAX[ HAX.city ].z = this.options.selectedIndex; buildReport(); updateReadOut( \'z\', HAX[ HAX.city ].z);" title="select the Z-axis" ><br>' +
 			buildSelect( fields, h.z ) + '<br>' +
 
 			'<br>Colors: <select onchange="HAX[ HAX.city ].color = this.options.selectedIndex; buildReport(); updateReadOut( \'color\', HAX[ HAX.city ].color);" title="select the filed that the colors indicate" ><br>' +
@@ -214,11 +228,8 @@ console.log('waiting...');
 			'Disconnect: <select onchange="HAX[ HAX.city ].lineSubSetField = this.options.selectedIndex; buildReport(); updateReadOut( \'lineSubSetField\', HAX[ HAX.city ].lineSubSetField);" title="select the field that causes lines to disconnect" ><br>' +
 			buildSelect( fields, h.lineSubSetField ) + '<br><br>' +
 
-			'Replay Speed:<br> <input title="number of lines to read per frame" style="width: 200px;" type="range" min="2" max="100" onchange="HAX.speed=this.value; haxisIt();" step="1" value="' + HAX.speed + '" ><br>' +
-			'Field of View: <br><input title="higher number = wider view. May help you to see inside the matrix." style="width: 100px;" type="range" min="10" max="150" onchange="setFov( this.value ); haxisIt();" step="1" value="' + HAX.camFov + '" ><br>' +
-			'Choose Record: <br><input title="Set the current data line" style="width: 200px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value; haxisIt();" step="500" value="' + dataCount + '" ><br>' +
-			'<p><a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a> &nbsp; <a href="" onclick="resetPermalink" >Reset permalnk</a></p>' +
 
+			'<p><a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a> &nbsp; <a href="" onclick="resetPermalink" >Reset permalnk</a></p>' +
 			'' ;
 
 		sbrBody.innerHTML = htm2;
