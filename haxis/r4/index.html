@@ -158,7 +158,7 @@ setUrlHash();
 
 	function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
 	
-	var xmlhttp;
+	var xmlhttp, callbackCount = 0;
 	function loadSF_Day( fname ) {
 		xmlhttp = new XMLHttpRequest();
 		xmlhttp.open( 'GET', fname, true );
@@ -172,9 +172,9 @@ setUrlHash();
 			var dataLines = xmlhttp.responseText;
 			selectCity( 'sanFrancisco', dataLines );
 		} else {
-			// callbackCount++;
+			callbackCount++;
 console.log('waiting...');
-			//statusBar.innerHTML = stbHTML + ' Responses: ' + FGx.callbackCount;
+			statusBar.innerHTML = stbHTML + ' Responses from server (need 20K+): ' + callbackCount;
 		}
 	}	
 	
