@@ -119,60 +119,12 @@ setUrlHash();
 		HAX.stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
 		document.body.appendChild( HAX.stats.domElement );
 
-// Assets
-
-		// mesh = new THREE.AxisHelper( 50 );
-		// mesh.position.set( -50, -50, -50 );
-		// HAX.scene.add( mesh );
-
-		sidebarLeft.innerHTML =
-			'<div class="control" onclick="toggleBar( sidebarLeft )">[X]</div>' +
-			'<h1>hAxis r4</h1>' +
-			'<p><i>2013-03-17 ~ still pre-release/i></p>' +
-			'<p>Made by the <a href="http://www.urdacha.info" target="_blank">Urdacha</a> team for the:</p>' +
-			'<p><a href="http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/" target="_blank">Urban Data Challenge</a></p>' +
-			'<p>Watch the numeric data come alive as animated objects in 3D.</p>' +
-			'<p>Use your pointing device to update the view.</p>' +
-			'<p><b><i>Rotate</i></b>: Left button/1 finger down<br><b><i>Zoom</i></b>: Wheel/2 fingers<br><b><i>Pan</i></b>: Right button/2 fingers down</p>' +
-			'<p>hAxis = hackathon + Axis</p>' +
-			'<p><small>Copyright &copy; 2013 the Urdacha authors. License: MIT License</small></p>' +
-			'<p><a href="https://github.com/jaanga/urdacha/wiki/hAxis-Issues-and-Wish-List" target="_blank">Report issues</a></p>' +
-			'<p><button onclick="HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement ); HAX.camera.position.set(-90, 105, 100); " >reset the view</button></p>' +
-		'';
-
-		statusBar.innerHTML =
-			'<div id="toggle" class="control" onclick="toggleStatusBar()">[-]</div>' +
-			'<div class="control" onclick="toggleBar( sidebarLeft ); toggleBar( sidebarRight );">[<span style="font-size: small; vertical-align: text-top; ">[]</span>] &nbsp;</div>' +
-			'<h2>Status</h2>' +
-			'<div id="toggled">' +
-				'<p>Choose a file over on the right sidebar. Updates will appear here...</p>' +
-				'<p>The default view is for testing purposes. It displays latitude longitude and routes. ' +
-				'Depending on how you set the view, you should vaguely be able to see a distorted map of San Francisco.</p>' +
-				'<p>Current issues include the heads-up display not appearing as it should.</p>' +
-			'</div>';
-		HAX.updates = document.getElementById('toggled');
-
-		sidebarRight.innerHTML =
-			'<div class="control" onclick="toggleBar( sidebarRight )">[X]</div>' +
-			'<h2>Control Panel</h2>' +
-			'<div>' + 
-				'<p><a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a> &nbsp; <a href="" onclick="resetPermalink" >Reset permalnk</a></p>' +
-
-				'<h3>City Type</h3>' +
-				'<input type="radio" onchange="HAX.city = this.id;" name="city" id="geneva">Geneva<br> ' +
-				'<input type="radio" onchange="HAX.city = this.id;" name="city" id="sanFrancisco">San Francisco<br> ' +
-				'<input type="radio" onchange="HAX.city = this.id; console.log(HAX.city);" name="city" id="zurich">Zurich ' +
-				'<h3>Data File</h3>'+
-				'<input type="file" id="files" name="file" />' +
-				
-			'</div><br>' +
-			'<div id="sbrBody">' +
-			'</div>' +
-		'';
+		initText(); // in sidebar.js
+		
 		document.getElementById( HAX.city ).checked=true;
 		window.addEventListener( 'resize', onWindowResize, false );
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		document.getElementById('files').addEventListener('change', handleFileSelect, false);
+		document.getElementById('files').addEventListener('change', handleFileSelect, false);		
 		
 		initObjects();
 	}
@@ -192,7 +144,6 @@ setUrlHash();
 		geometry = new THREE.Geometry();
 		material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 		HAX.lines = [];
-		// HAX.points = [];
 		var line;
 		geometry.vertices.push(
 			v( 0, 0, -50),
@@ -203,10 +154,29 @@ setUrlHash();
 			HAX.lines.push( line );
 			HAX.scene.add( line );
 		}
-		
 	}
 
 	function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
+	
+	var xmlhttp;
+	function loadSF_Day( fname ) {
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open( 'GET', fname, true );
+		xmlhttp.onreadystatechange = callbackCSV;
+		xmlhttp.send( null );
+	}
+	
+	function callbackCSV() {
+		var airport, ap;
+		if ( xmlhttp.readyState == 4  ) {
+			var dataLines = xmlhttp.responseText;
+			selectCity( 'sanFrancisco', dataLines );
+		} else {
+			// callbackCount++;
+console.log('waiting...');
+			//statusBar.innerHTML = stbHTML + ' Responses: ' + FGx.callbackCount;
+		}
+	}	
 	
 	function selectCity( city, response ) {
 		dataPlay = false;
@@ -220,7 +190,6 @@ setUrlHash();
 		for ( var i = 0; i < dataLength; i++ ) {
 			data.push( dataLines[i].split( sep ) );
 		}
-		
 		buildReport();
 	}
 	
@@ -248,7 +217,9 @@ setUrlHash();
 			'Replay Speed:<br> <input title="number of lines to read per frame" style="width: 200px;" type="range" min="2" max="100" onchange="HAX.speed=this.value; haxisIt();" step="1" value="' + HAX.speed + '" ><br>' +
 			'Field of View: <br><input title="higher number = wider view. May help you to see inside the matrix." style="width: 100px;" type="range" min="10" max="150" onchange="setFov( this.value ); haxisIt();" step="1" value="' + HAX.camFov + '" ><br>' +
 			'Choose Record: <br><input title="Set the current data line" style="width: 200px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value; haxisIt();" step="500" value="' + dataCount + '" ><br>' +
-		'' ;
+			'<p><a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a> &nbsp; <a href="" onclick="resetPermalink" >Reset permalnk</a></p>' +
+
+			'' ;
 
 		sbrBody.innerHTML = htm2;
 
@@ -297,7 +268,6 @@ setUrlHash();
 			if ( i !== sel) {
 				htm += '<option>' + (i + 1) + ' - ' + fields[i] + '</option>';
 			} else {
-		
 				htm += '<option selected="selected" >' + (i + 1) + ' - ' + fields[i] + '</option>';
 			}
 		}
@@ -314,12 +284,6 @@ setUrlHash();
 			record = data[ dataCount ];
 
 			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.color ] ) ];
-/*
-			if ( color == undefined ) {
-				color =  0xff8888;
-console.log( HAX.color, record[ HAX.color ],xKeys.indexOf( record[ HAX.color ] ), xKeys, color );
-			}
-*/
 			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
 			material.color.setHSL( color, 0.8, 0.5 );
 
