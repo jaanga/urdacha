@@ -68,22 +68,6 @@
 		}
 	}
 	
-	function buildSelect( fields, selected ) {
-		var htm = '';
-		sel = parseInt(selected);
-		for ( var i = 0, len = fields.length - 1; i < len; i++  ) {
-// console.log( i, fields, selected)		
-			if ( i !== sel) {
-				htm += '<option>' + (i + 1) + ' - ' + fields[i] + '</option>';
-			} else {
-				htm += '<option selected="selected" >' + (i + 1) + ' - ' + fields[i] + '</option>';
-			}
-		}
-		htm +='<\/select>';
-		
-		return htm;
-	}
-	
 	function initText() {
 		sidebarLeft.innerHTML =
 			'<div class="control" onclick="toggleBar( sidebarLeft )">[X]</div>' +
@@ -106,7 +90,7 @@
 		statusBar.innerHTML =
 			'<div id="toggle" class="control" onclick="toggleStatusBar()">[-]</div>' +
 			'<div class="control" onclick="toggleBar( sidebarLeft ); toggleBar( sidebarRight );">[<span style="font-size: small; vertical-align: text-top; ">[]</span>] &nbsp;</div>' +
-			'<h2>hAxis</h2>' +
+			'<h2>Status</h2>' +
 			'<div id="toggled">' +
 				'<p>Choose a file over on the right sidebar. Updates will appear here...</p>' +
 				'<p>The default view is for testing purposes. It displays latitude longitude and routes. ' +
@@ -122,17 +106,17 @@
 				'<h3>Load City Data</h3>' +
 				'For overview:<br><small>Click a link below. Prepare to wait 15/20 seconds for data to download from server.</small>' +
 				'<table style="margin: 0 0 10px 0" ><tr><td width="150px">' +
-				'<a href="#" onclick="HAX.fname = \'sf_day1.csv\'; loadSF_Day(); " >SF Day 1</a><br>' + 
-				'<a href="#" onclick="HAX.fname = \'sf_day2.csv\'; loadSF_Day(); " >SF Day 2</a><br>' + 
-				'<a href="#" onclick="HAX.fname = \'sf_day3.csv\'; loadSF_Day(); " >SF Day 3</a><br>' + 
-				'<a href="#" onclick="HAX.fname = \'sf_day4.csv\'; loadSF_Day(); " >SF Day 4</a><br>' + 
+				'<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day1.csv\'); " >SF Day 1</a><br>' + 
+				'<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day2.csv\'); " >SF Day 2</a><br>' + 
+				'<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day3.csv\'); " >SF Day 3</a><br>' + 
+				'<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day4.csv\'); " >SF Day 4</a><br>' + 
 				'</td><td valign="top">' +
-				'<a href="#" onclick="HAX.fname = \'sf_day5.csv\'; loadSF_Day(); " >SF Day 5</a><br>' + 
-				'<a href="#" onclick="HAX.fname = \'sf_day6.csv\'; loadSF_Day(); " >SF Day 6</a><br>' + 
-				'<a href="#" onclick="HAX.fname = \'sf_day7.csv\'; loadSF_Day(); " >SF Day 7</a><br>' + 
+				'<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day5.csv\'); " >SF Day 5</a><br>' + 
+				'<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day6.csv\'); " >SF Day 6</a><br>' + 
+				'<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day7.csv\'); " >SF Day 7</a><br>' + 
 				// '<a href="#" onclick="loadSF_Day( \'../../improved-csv/sf_day4.csv\'); " >SF Day 4</a><br>' + 
 				'</td></tr></table>' +				
-				/*
+				
 				'For research:<div style="font-size: small; margin: 0 0 5px 0; padding: 0;">' +
 				'1. <a href="https://github.com/jaanga/urdacha/tree/gh-pages/improved-csv" target="_blank">Download files</a> ' +
 				'2. Select type 3. Choose file</div>' +
@@ -140,44 +124,8 @@
 				'<input type="radio" onchange="HAX.city = this.id;" name="city" id="sanFrancisco">San Francisco type<br> ' +
 				'<input type="radio" onchange="HAX.city = this.id; console.log(HAX.city);" name="city" id="zurich">Zurich type<br>' +
 				'<input type="file" id="files" name="file" /></p>' +
-				*/
 			'</div><hr>' +
 			'<div id="sbrBody">' +
-			'</div>	' +		
-			'<p><a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a> &nbsp; <a href="" onclick="resetPermalink" >Reset permalnk</a></p>';
+			'</div>' +
 		'';
-		
-		if (HAX.bars == 0 ) {
-			toggleBar( sidebarLeft );
-			toggleBar( sidebarRight );
-			toggleStatusBar(0);
-		}
 	}
-	
-	function updateSbr( fields, h) {
-	
-		var htm2 = '<h3>Player Manager</h3>' +
-			'<p><button onclick="togglePlay()" >Toggle Play/Pause</button></p>' +
-			'Replay Speed: &nbsp;<input title="number of lines to read per frame" style="width: 180px;" type="range" min="2" max="100" onchange="HAX.cameraData.speed=this.value; haxisIt();" step="1" value="' + HAX.speed + '" ><br>' +
-			'Field of View: <input title="higher number = wider view. May help you to see inside the matrix." style="width: 180px;" type="range" min="10" max="150" onchange="setFov( this.value ); haxisIt();" step="1" value="' + HAX.camFov + '" ><br>' +
-			'Choose Record: <input title="Set the current data line" style="width: 180px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value; haxisIt();" step="500" value="' + dataCount + '" ><br>' +
-
-			'<br><scan style="font-weight: 600; color: red;">X-axis: </scan><select onchange="HAX.x = this.options.selectedIndex; buildReport(); updateReadOut( \'x\', HAX.x); " title="select the X-axis" >' +
-			buildSelect( fields, HAX.x ) +
-			'<br><scan style="font-weight: 600; color: green;">Y-axis: </scan><select onchange="HAX.y = this.options.selectedIndex; buildReport(); updateReadOut( \'y\', HAX.y);" title="select the Y-axis" ><br>' +
-			buildSelect( fields, HAX.y ) +
-			'<br><scan style="font-weight: 600; color: blue;">Z-axis: </scan><select onchange="HAX.z = this.options.selectedIndex; buildReport(); updateReadOut( \'z\', HAX.z);" title="select the Z-axis" ><br>' +
-			buildSelect( fields, HAX.z ) + '<br>' +
-
-			'<br>Colors: &nbsp; &nbsp; <select onchange="HAX.color = this.options.selectedIndex; buildReport(); updateReadOut( \'color\', HAX.color);" title="select the filed that the colors indicate" ><br>' +
-			buildSelect( fields, HAX.color ) + '<br>' +
-			'Lines: &nbsp; &nbsp; &nbsp;<select onchange="HAX.lineField = this.options.selectedIndex; buildReport(); updateReadOut( \'lineField\', HAX.lineField);" title="select the field that lines connect" ><br>' +
-			buildSelect( fields, HAX.lineField ) + '<br>' +
-			'Disconnect: <select onchange="HAX.lineSubSetField = this.options.selectedIndex; buildReport(); updateReadOut( \'lineSubSetField\', HAX.lineSubSetField);" title="select the field that causes lines to disconnect" ><br>' +
-			//sbrBody.innerHTML = htm2;			
-			buildSelect( fields, HAX.lineSubSetField ) + '<br><br>' +
-
-		'';
-		sbrBody.innerHTML = htm2;
-	}
-	

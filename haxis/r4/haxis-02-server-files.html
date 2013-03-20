@@ -29,7 +29,7 @@
 	var keys;
 	var data, dataLength, dataCount;
 	var dataPlay = false;
-/*
+
 	HAX.geneva = { separator: ',', x: 1, y: 9, z: 12, date: 0, time: 12, city: 'Geneva', color: 1,
 		direction: 6, directionString: 'A', lineField: 1, lineSubSetField: 14 };
 		
@@ -37,72 +37,44 @@
 		direction: 4, directionString: "1", lineField: 2, lineSubSetField: 14 };
 		
 	HAX.sanFrancisco = { separator: ',', x: 10, y: 9, z: 11, date: 8, time: 15, city: "San Francisco", color: 9, 
-		direction: 13, directionString: '0', lineField: 9, lineSubSetField: 14 };
-		
-	HAX.cameraData = { camFov: 40, camX: -90, camY: 105, camZ: 100, lookX: 0, lookY: 1, lookZ: 0, speed: 30 };
+		direction: 13, directionString: '0', lineField: 9, lineSubSetField: 14, camX: -90, camY: 105, camZ: 100 };
 
-	HAX.fileData = { folder: '../../improved-csv/', fname: 'sf_day1.csv' };
-*/
-
-	var HAX = {
-		title: 'San Francisco',
-		x: 10, y: 9, z: 11, 
-		date: 8, time: 15, color: 9, 
-		direction: 13, directionString: '0', lineField: 9, lineSubSetField: 14,
-		camFov: 40, camX: -90, camY: 105, camZ: 100, 
-		rotX: 0, rotY: 0, rotZ: 0,
-		upX: 0, upY: 1, upZ: 0, speed: 30,
-		folder: '../../improved-csv/', fname: 'sf_day1.csv',
-		separator: ',',
-		bars: 1
-	}
-	
 	init();
 	animate();
 	
 // must hit Enter AND reload...	
 	function setUrlHash() {
-// console.log('hash', location.hash);	
 		if ( location.hash == '' ) {
-			// HAX = nohash;
+			HAX.city = 'sanFrancisco';
 		} else {
-			readHash( );
+			var h, urlHash, item;
+			
+			urlHash = location.hash.split('#');
+			item = urlHash[1].split('=');
+			HAX.city = item[1];
+			var h = HAX[ HAX.city ];
+			for (var i = 2, len = urlHash.length; i < len; i++) {
+				item = urlHash[i].split('=');
+				if ( h[ item[0] ] != undefined ) {
+					h[item[0] ] = item[1];
+				}
+	// console.log('hash', item, f[item[0] ].current);				
+			}
+			HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + '#date=' + h['date'] + '#time=' + h['time'] + 
+			'#color=' + h['color'] + 
+			'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'] +
+			'#camX=' + h['camX'] + '#camY=' + h['camY'] + '#camZ=' + h['camZ'];
+			loadSF_Day( '../../improved-csv/sf_day1.csv'); 
 		}
-		loadSF_Day(); 
-	}	
-	
-	function readHash() {
-		var item;
-		var a = location.hash.split('#');
-		for (var i = 1, len = a.length; i < len; i++) {
-			item = a[i].split('=');
-			HAX[item[0]] = item[1];
-		}
-	}
-
-	function buildHash() {
-		var h = HAX;
-		var link = 
-			'title=' + h.title + 
-			'#x=' + h.x +  '#y=' + h.y + '#z=' + h.z + 
-			'#date=' + h.date + 
-			'#time=' + h.time + 
-			'#color=' + h.color + 
-			'#direction=' + h.direction + 
-			'#lineField=' + h.lineField + 
-			'#lineSubSetField=' + h.lineSubSetField +
-			'#camX=' + h.camX + '#camY=' + h.camY + '#camZ=' + h.camZ +
-			'#rotX=' + h.rotX + '#rotY=' + h.rotY + '#rotZ=' + h.rotZ +
-			'#upX=' + h.upX + '#upY=' + h.upY + '#upZ=' + h.upZ +
-			'#folder=' + h.folder + '#fname=' + h.fname + 
-			'#separator=' + h.separator +
-			'#bars=' + h.bars;
-		return link;
 	}	
 	
 	function updateUrlHash() {
-		HAX.link = buildHash();
-		
+		var h = HAX[ HAX.city ];
+		HAX.link = 'city=' + HAX.city + '#x=' + h['x'] + '#y=' + h['y'] + '#z=' + h['z'] + 
+		'#date=' + h['date'] + '#time=' + h['time'] + 
+		'#color=' + h['color'] + 
+		'#direction=' + h['direction'] + '#lineField=' + h['lineField'] + '#lineSubSetField=' + h['lineSubSetField'] +
+		'#camX=' + HAX.camera.position.x + '#camY=' + HAX.camera.position.y + '#camZ=' + HAX.camera.position.z;
 		permalink.href = "#" + HAX.link;
 		window.location.hash = HAX.link;
 		// setStatusBar();
@@ -115,23 +87,23 @@
 	}
 
 	function init() {
-		setUrlHash();
-		
 		if ( ! Detector.webgl ) {
 			HAX.renderer = new THREE.Canvas.renderer( { antialias: true } );
 		} else {
 			HAX.renderer = new THREE.WebGLRenderer( { antialias: true } );
 		}
 
-		var h = HAX;
+
+		HAX.camFov = 40;
+		HAX.speed = 30;
+setUrlHash();
+var h = HAX[ HAX.city ];
 		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( HAX.renderer.domElement );
 		HAX.scene = new THREE.Scene();
 
-		HAX.camera = new THREE.PerspectiveCamera( h.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
+		HAX.camera = new THREE.PerspectiveCamera( HAX.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
 		HAX.camera.position.set( h.camX, h.camY, h.camZ);
-		h.camera.up.set( h.upX, h.upY, h.upZ );
-		h.camera.rotation.set( h.rotX, h.rotY, h.rotZ );
 		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
 		HAX.controls.minDistance = 5;
 		HAX.controls.maxDistance = 300;
@@ -155,11 +127,11 @@
 		document.body.appendChild( HAX.stats.domElement );
 
 		initText(); // in sidebar.js
-		// document.getElementById( HAX.city ).checked=true;
+		
+		document.getElementById( HAX.city ).checked=true;
 		window.addEventListener( 'resize', onWindowResize, false );
-		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		// document.getElementById('files').addEventListener('change', handleFileSelect, false);		
+		document.getElementById('files').addEventListener('change', handleFileSelect, false);		
 		
 		initObjects();
 	}
@@ -195,9 +167,9 @@
 	
 	var xmlhttp, callbackCount;
 	
-	function loadSF_Day() {
+	function loadSF_Day( fname ) {
 		xmlhttp = new XMLHttpRequest();
-		xmlhttp.open( 'GET', HAX.folder + HAX.fname, true );
+		xmlhttp.open( 'GET', fname, true );
 		xmlhttp.onreadystatechange = callbackCSV;
 		xmlhttp.send( null );
 		callbackCount = 0;
@@ -208,7 +180,7 @@
 		var airport, ap;
 		if ( xmlhttp.readyState == 4  ) {
 			var dataLines = xmlhttp.responseText;
-			selectCity( dataLines );
+			selectCity( 'sanFrancisco', dataLines );
 		} else {
 			callbackCount++;
 console.log('waiting...');
@@ -216,7 +188,7 @@ console.log('waiting...');
 		}
 	}	
 	
-	function selectCity( response ) {
+	function selectCity( city, response ) {
 		dataPlay = false;
 	
 		var dataLines = response;
@@ -224,7 +196,7 @@ console.log('waiting...');
 		dataLines[0] = dataLines[0].replace(/["']/g, "");
 		dataLength = dataLines.length - 2;
 		data = [];
-		var sep = HAX.separator;
+		var sep = HAX[ HAX.city ].separator;
 		for ( var i = 0; i < dataLength; i++ ) {
 			data.push( dataLines[i].split( sep ) );
 		}
@@ -233,9 +205,35 @@ console.log('waiting...');
 	
 	function buildReport() {
 		var fields = data[0];
-		var h = HAX;
+		var h = HAX[ HAX.city ];
 
-		updateSbr( data[0], h);
+		var htm2 =
+			'<h3>Player Manager</h3>' +
+			'<p><button onclick="togglePlay()" >Toggle Play/Pause</button></p>' +
+			'Replay Speed: &nbsp;<input title="number of lines to read per frame" style="width: 180px;" type="range" min="2" max="100" onchange="HAX.speed=this.value; haxisIt();" step="1" value="' + HAX.speed + '" ><br>' +
+			'Field of View: <input title="higher number = wider view. May help you to see inside the matrix." style="width: 180px;" type="range" min="10" max="150" onchange="setFov( this.value ); haxisIt();" step="1" value="' + HAX.camFov + '" ><br>' +
+			'Choose Record: <input title="Set the current data line" style="width: 180px;" type="range" min="0" max="' + dataLength + '" onchange="dataCount=this.value; haxisIt();" step="500" value="' + dataCount + '" ><br>' +
+
+			
+			'<br><scan style="font-weight: 600; color: red;">X-axis:</scan><select onchange="HAX[ HAX.city ].x = this.options.selectedIndex; buildReport(); updateReadOut( \'x\', HAX[ HAX.city ].x); " title="select the X-axis" >' +
+			buildSelect( fields, HAX[ HAX.city ].x ) +
+			'<br><scan style="font-weight: 600; color: green;">Y-axis:</scan><select onchange="HAX[ HAX.city ].y = this.options.selectedIndex; buildReport(); updateReadOut( \'y\', HAX[ HAX.city ].y);" title="select the Y-axis" ><br>' +
+			buildSelect( fields, h.y ) +
+			'<br><scan style="font-weight: 600; color: blue;">Z-axis:</scan><select onchange="HAX[ HAX.city ].z = this.options.selectedIndex; buildReport(); updateReadOut( \'z\', HAX[ HAX.city ].z);" title="select the Z-axis" ><br>' +
+			buildSelect( fields, h.z ) + '<br>' +
+
+			'<br>Colors: <select onchange="HAX[ HAX.city ].color = this.options.selectedIndex; buildReport(); updateReadOut( \'color\', HAX[ HAX.city ].color);" title="select the filed that the colors indicate" ><br>' +
+			buildSelect( fields, h.color ) + '<br>' +
+			'Lines: <select onchange="HAX[ HAX.city ].lineField = this.options.selectedIndex; buildReport(); updateReadOut( \'lineField\', HAX[ HAX.city ].lineField);" title="select the field that lines connect" ><br>' +
+			buildSelect( fields, h.lineField ) + '<br>' +
+			'Disconnect: <select onchange="HAX[ HAX.city ].lineSubSetField = this.options.selectedIndex; buildReport(); updateReadOut( \'lineSubSetField\', HAX[ HAX.city ].lineSubSetField);" title="select the field that causes lines to disconnect" ><br>' +
+			buildSelect( fields, h.lineSubSetField ) + '<br><br>' +
+
+
+			'<p><a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a> &nbsp; <a href="" onclick="resetPermalink" >Reset permalnk</a></p>' +
+			'' ;
+
+		sbrBody.innerHTML = htm2;
 
 		HAX.scene = new THREE.Scene();
 		newSign();
@@ -269,16 +267,32 @@ console.log('waiting...');
 		//var sp = document.getElementById('w' + item );
 		//sp.innerHTML = value;
 // console.log( item, value );		
-		var h = HAX;
+		var h = HAX[ HAX.city ];
 		h[ item ] = value;
 		updateUrlHash();
+	}
+	
+	function buildSelect( fields, selected ) {
+		var htm = '';
+		sel = parseInt(selected);
+		for ( var i = 0, len = fields.length - 1; i < len; i++  ) {
+// console.log( i, fields, selected)		
+			if ( i !== sel) {
+				htm += '<option>' + (i + 1) + ' - ' + fields[i] + '</option>';
+			} else {
+				htm += '<option selected="selected" >' + (i + 1) + ' - ' + fields[i] + '</option>';
+			}
+		}
+		htm +='<\/select>';
+		
+		return htm;
 	}
 
 	function haxisIt() {
 		var color;
-		var h = HAX;
+		var h = HAX[ HAX.city ];
 		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
-		for (var record, mesh, material, pos, line, len = HAX.speed, i = 1; i < len; i++) {
+		for (var record, mesh, material, pos, line, i = 1; i < HAX.speed; i++) {
 			record = data[ dataCount ];
 
 			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.color ] ) ];
@@ -332,7 +346,7 @@ console.log('waiting...');
 			dataCount++;
 		}
 		
-		HAX.updates.innerHTML = 'City: ' + h.title + '<br>' +
+		HAX.updates.innerHTML = 'City: ' + h.city + '<br>' +
 		'Total lines in file: ' + dataLength + ' ~ Current line: ' + dataCount + '<br>' +
 		'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
 		'Replay speed: ' + HAX.speed + ' Camera FOV: ' + HAX.camFov + '<br>' +
@@ -396,7 +410,7 @@ console.log('waiting...');
 
 	function newSign( ) {
 		// if( sign !== undefined ) { HAX.scene.remove( sign ); }
-		var h = HAX;
+		var h = HAX[ HAX.city ];
 		geometry = new THREE.PlaneGeometry( 100, 20, 1, 1 );
 
 		material = canvasText( data[0][h.x] , { color: '#ff0000', fontSize: '48', height: 80,  width: 600 }  );
@@ -417,7 +431,7 @@ console.log('waiting...');
 		sign.position.set( -60, -50, 0);
 		HAX.scene.add( sign );
 
-		sign = new THREE.AxisHelper( 100 );
+		sign = new THREE.AxisHelper( 50 );
 		sign.position.set( -50, -50, -50 );
 		HAX.scene.add( sign );
 	}
@@ -490,16 +504,6 @@ console.log('waiting...');
 		HAX.camera.updateProjectionMatrix();
 		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
 	}
-	
-	function onDocumentMouseUp() {
-		if ( HAX.objects == undefined ) return;
-		var h = HAX;
-		var c = HAX.camera;
-		h.camX = c.position.x; h.camY = c.position.y; h.camZ = c.position.z;
-		h.rotX = c.rotation.x; h.rotY = c.rotation.y; h.rotZ = c.rotation.z;
-		h.upX = c.up.x; h.upY = c.up.y; h.upZ = c.up.z;
-		buildHash();
-	}	
 
 	function onDocumentMouseMove( event ) {
 		if ( data == undefined ) return;
@@ -522,7 +526,7 @@ console.log('waiting...');
 				intersected = intersects[ 0 ].object;
 			}
 			if ( intersects.length > 1 ) {
-// console.log('intersects: ', intersects);
+console.log('intersects: ', intersects);
 				// intersected.material.color.setHex( Math.random() * 0xffffff );
 			}
 			headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
@@ -530,7 +534,7 @@ console.log('waiting...');
 			headsUp.style.display = 'block';
 			// var c =  intersected.material.color;
 			// headsUp.innerHTML =  'red: ' + c.r + '<br>green: ' + c.g + '<br>blue: ' + c.b;
-			var h = HAX;
+			var h = HAX[ HAX.city ];
 			headsUp.innerHTML =  'X: ' + data[0][ h.x] + ' ' + intersected.record[ h.x] + '<br>Y: ' +
 				data[0][ h.y] + ' ' + intersected.record[ h.y] + '<br>Z: ' +
 				data[0][ h.z] + ' ' + intersected.record[ h.z] + '<br>' +
