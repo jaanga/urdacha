@@ -179,7 +179,7 @@
 				HAX.fname = 'sf_day7.csv';
 				HAX.title = 'San Francisco Day 7';
 			} else if (item === 8) {
-				HAX.fname = '_CSVData_sf_realtime_vs_scheduled_day1.csv';
+				HAX.fname = 'sf_realtime_vs_schdeuled_day1.csv';
 				HAX.title = 'San Francisco Day 1 ~ realtime vs scheduled';
 				HAX.date = 2;
 				HAX.time = 15;
