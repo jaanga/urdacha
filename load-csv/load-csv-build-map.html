@@ -24,8 +24,8 @@
 	'Sample Urban Data Challenge - SF Stops: ' +
 	//'<button title="Theo: this file always crashes my broeser" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time.csv\' )" >Geneva schedule-real-time</button> ' +
 	//'<button title="Theo: Reduced data set of the above" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time-200k.csv\' )" >Geneva schedule-real-time-200k</button> ' +
-	'<button title="Theo: smallest file. Loads fastest. Using this file for most of my testing." onclick="loadCSV( \'public-transportation/san-francisco/realtime-arrivals.csv\' )" >San Francisco real-time-arrivals</button> ' +
-	'<button title="" onclick="loadCSV( \'public-transportation/san-francisco/scheduled-arrivals.csv\' )" >San Francisco scheduled-arrivals</button> ' +
+	'<button title="Theo: smallest file. Loads fastest. Using this file for most of my testing." onclick="loadCSV( \'../public-transportation/san-francisco/realtime-arrivals.csv\' )" >San Francisco real-time-arrivals</button> ' +
+	'<button title="" onclick="loadCSV( \'../public-transportation/san-francisco/scheduled-arrivals.csv\' )" >San Francisco scheduled-arrivals</button> ' +
 	//'<button onclick="loadCSV( \'public-transportation/san-francisco/passenger-count.csv\' )" >San Francisco passenger-count.csv</button> ' +
 	//'<button onclick="loadCSV( \'public-transportation/zurich/passenger-counts.csv\' )" >Zurich passenger-counts.csv</button> ' +
 	//'<button onclick="loadCSV( \'weather/weather_zurich_and_geneva.csv\' )" >Weather weather_zurich_and_geneva.csv</button> ' +
@@ -64,7 +64,7 @@
 		
 			var i, separator, len = indexLines.length;
 			
-			if ( fileName == 'public-transportation/zurich/passenger-counts.csv' ) {
+			if ( fileName == '../public-transportation/zurich/passenger-counts.csv' ) {
 				separator = ';';
 			} else {
 				separator = ',';
@@ -213,7 +213,7 @@
 		}
 		
 		material = new THREE.ParticleBasicMaterial( { size: 10, sizeAttenuation: false, map: sprite, transparent: true } );
-		material.color.setHSV( 0.2, 0.2, 0.8 );
+		material.color.setHSL( 0.2, 0.2, 0.8 );
 	
 		particles = new THREE.ParticleSystem( geometry, material );
 		particles.sortParticles = true;
@@ -334,7 +334,7 @@
 	}
 
 	material = new THREE.ParticleBasicMaterial( { size: 3, sizeAttenuation: false, map: sprite, transparent: true } );
-	material.color.setHSV( 0.4, 0.2, 0.8 );
+	material.color.setHSL( 0.4, 0.2, 0.8 );
 
 	particles = new THREE.ParticleSystem( geometry, material );
 	particles.sortParticles = true;

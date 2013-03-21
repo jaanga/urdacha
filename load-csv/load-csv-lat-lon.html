@@ -8,7 +8,7 @@
 	document.body.style.font = 'normal 12pt monospace';
 /*
 	'Sample Urban Data Challenge CSV files: ' +
-	'<button title="Theo: this file always crashes my broeser" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time.csv\' )" >Geneva schedule-real-time</button> ' +
+	'<button title="Theo: this file always crashes my browser" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time.csv\' )" >Geneva schedule-real-time</button> ' +
 	'<button title="Theo: Reduced data set of the above" onclick="loadCSV( \'public-transportation/geneva/schedule-real-time-200k.csv\' )" >Geneva schedule-real-time-200k</button> ' +
 	'<button title="Theo: smallest file. Loads fastest. Using this file for most of my testing." onclick="loadCSV( \'public-transportation/san-francisco/realtime-arrivals.csv\' )" >San Francisco real-time-arrivals</button> ' +
 	'<button title="" onclick="loadCSV( \'public-transportation/san-francisco/scheduled-arrivals.csv\' )" >San Francisco scheduled-arrivals</button> ' +
@@ -55,7 +55,7 @@
 		
 			var i, separator, len = indexLines.length;
 			
-			if ( fileName == 'public-transportation/zurich/passenger-counts.csv' ) {
+			if ( fileName == '../public-transportation/zurich/passenger-counts.csv' ) {
 				separator = ';';
 			} else {
 				separator = ',';
@@ -87,7 +87,7 @@
 	loadPassengerFile();
 	
 	function loadPassengerFile() {
-		loadCSV( 'public-transportation/san-francisco/passenger-count.csv' );
+		loadCSV( '../public-transportation/san-francisco/passenger-count.csv' );
 		
 	}
 	

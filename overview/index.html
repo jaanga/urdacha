@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+<head>
+<title>urdacha</title>
+<meta charset='utf-8'>
+</head>
+<body>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+
+<script>
+	var camera, scene, renderer;
+	var geometry, material, mesh;
+
+	init();
+	animate();
+
+	function init() {
+	
+	    document.body.style.cssText = 'font: 600 12pt monospace; max-width: 900px; margin: 0 auto; text-align: center';
+
+		var info = document.createElement( 'div' );
+		document.body.appendChild( info );
+		info.style.cssText = 'text-align: left;';
+		info.innerHTML = '<h1>urdacha</h1>' +
+		
+		'<p><i>Preparing for the <a href="http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/" target="_blank">Urban Data Challenge</a>...</i></p>' +
+		
+		'<h2>Code, Wiki, links and More...</h2>' +
+		
+		'<p><a href="https://github.com/jaanga/urdacha" target="_blank">github.com/jaanga/urdacha</a></p>' +
+		
+		// '<p>Data from <a href="http://www.urdacha.info/CSVData" target="_blank">www.urdacha.info/CSVData</a></p>' +
+		
+		'<h2>Demo Files</h2>' +
+		
+		
+		'<h3>2013-03-19 ~ <a href="./haxis/r4/index.html">hAxis r4 ~ pre-release</a></h3>' +
+		
+		'<p>Haxis r4 loads files from a server or locally. As of this writing permalinks are nearly there, but not yet there...</p><br>' +
+		
+		'<h3><a href="./haxis/r3/haxis.html">hAxis r3</a></h3>' +
+		
+		'<p>Patterns are starting to emerge!</p>' +
+		
+		'<p>The required data files are available here:</p>' +
+		
+		'<p><a href="https://www.dropbox.com/home/Urdacha" target="_blank">Urdacha files in DropBox</a></p>' +
+		
+		'<p>You can choose any of the files titled: sf_day[1..7].csv and see some good results.</p>' +
+		
+		'<p>Actually, you may load almost any very large .CSV file and see something that might be of interest.</p>' +
+		
+		'<p>R3 adds the ability to open and read a file stored on your computer. ' +
+		'You may have used your File Open dialog box in your browser to select a file to upload to a server, but you most likely have never used File Open to choose a file and process that file locally in your browser. ' +
+		'Now you will have the opportunity. And the benefit? Issues with your browser opening 100 MB files from the cloud is no longer an issue. ' +
+		'In essence, the Urdacha hAxis browser app - with WebGL and local file access - now has as much power as a locally installed app. ' +
+		'Yes, hAxis has as much power as that old school \'computer program\' that you have to download, setup and then keep up to date. Yawn. ' +
+		'</p>' +
+		
+		'<p>R3 also incorporates a prototype of a user interface. The sidebars and status bars can all be toggled to close and open as needed. ' +
+		'This is all built using a simple JavaScript file that can be used in a variety of circumstances. ' +
+		'Perhaps the biggest bug fix of the release was the re-addition of a feature that had been dropped because of performance issues. ' +
+		'And that was the data for the axis coordinates not being sorted. ' +
+		'Adding back the sorting has made a world of difference in pattern recognition possibilities.</p>' +
+		
+		'<p>And R3, perhaps, has the very crude beginnings of something special. This is a data viz app. The underlying data is all about people and what people do. ' +
+		'And what people are and do is beautiful. So the better the app, the more it somehow transmits the beauty of what it is monitoring. ' +
+		'R3 is certainly no thing of beauty but, perhaps, is there a hint here of good things yet to be?</p>' +
+		
+		'<p>Nonetheless, there\'s still a huge amount to be done in terms of technical aspects, user experience and as a tool for exploratory data analysis. ' +
+		'Adding permalinks is the next big technical hurdle. But, after that? Hopefully it starts to be about the data wrangling. ' +
+		'In R3 you will see lots of long straight diagonal lines. Each of those lines is connected to something it is not supposed to be connected to. ' +
+		'We need to fix this...</p>' +
+		
+		'<h3><a href="./haxis/haxis.html">hAxis r2</a></h3>' +
+		
+		'<p>hAxis has a new release. This revision adds animation, choice of cities, more settings and improved feedback.</p>' +
+		
+		'At this stage it is still not easy to observe patterns. A few simple patterns, however, are quite obvious - such as the changes that occur late at night and in the mornings. ' +
+		'It will take a few more revisions before interesting and relevant patterns become discernible. The significance of this demo is that the technical aspects have been covered. ' +
+		'From a coding point of view the project is technically viable and doable. Animated 3D visualizations of a half million lines of data and viewing them in your browser is now a given. </p>' +
+		
+		'<p>The interesting questions now relate to how should you view data in 3D so as to see the data in new ways and what should your experience be like.</p>' +
+		
+		'<p>Some of the issues relating to this release include the following:<p>' +
+		
+		'<p>It may take a minute or so for your browser to download the data. Look for the \'Ajax Responses\' to reach at least 60,000. ' +
+		'If you download the data file and app, the two will load in a few seconds. With Tim\'s help we can most likely get this all working a bit faster.</p>' +
+		
+		'<p>It takes only about five minutes to replay the entire week/500,000+ lines of San Francisco data. ' +
+		'This could be sped up but with likely loss of viewability. ' +
+		
+		'There are many things yet to be done. For example, there should be a way of relating the data points to similar data points ' +
+		'- such as connecting all the points of a single bus running along a route. ' +
+		'A color coding system needs to be added. The San Francisco color system is impractical because several routes use the same color. ' +
+		'A permalink feature is needed so that when you observe an interesting pattern you can save that pattern as a link for others to observe. ' +
+		
+		'Currently there is minimal lighting and shading. While not particularly necessary here, at least a bit more shading would make the \'feel\' a bit better. ' +
+		
+		'As always, a number of bugs were fixed and a lot of lines of code were cleaned, but then new bugs appeared and and so did messiness.' +
+		
+		'<h3><a href="https://github.com/jaanga/urdacha/tree/gh-pages/loadcountdesc" target="_blank" >Tim\'s CSV file</a></h3>' +
+		
+		'<p>Tim has taken the San Francisco data and combined it all into one file. You can access the full or zipped or extract in the above linked folder.</p>' +
+		'</p>A description of the PostgreSQL database Tim is working is available in the Urdacha <a href="https://github.com/jaanga/urdacha/wiki/PostgreSQL-Database" target="_blank">Wiki</a></p>' +
+		
+		'<h3><a href="flatland/flatland02/flatland-services.html">flatland #2</a></h3>' +
+		
+		'<p>2013-02-21 ~ This is Nextbus online and in your face. It\'s every service, every route, every stop, every bus - all in technicolor. ' +
+			'Tomorrow should bring updates every 10 seconds or so as well as a meaningful heads-up readout. ' +
+			'What\'s going to happen after that? Who knows!</p>' +
+			
+			'<p>You will need a WebGL enabled browser such as Google Chrome or Mozilla Firefox in order to view the demo. ' +
+			'Future versions may be more compatible. Don\'t even think about using a phone...</p>' +
+		
+		'<h3><a href="flatland/flatland-xml.html">flatland #1</a></h3>' +
+		
+		'<p>2013-02-20 ~ We are back into flatland. This map loads all San Francisco stops and every current vehicle positions and headings directly off the Nextbus web site. ' +
+		'For the moment the presentation is highly abstracted. There is a semi-transparent surface. Stops are positioned under the surface. ' +
+		'Buses are place above the surface. There is no indication, as yet, as to the direction the bus is heading. Nor is there any built-in updating. ' +
+		'Both these feature will be in by this weekend. Other likely candidate feature likely to make it in by thus weekend include: ' +
+		'<ul>' +
+		'<li>Display stops and buses for any of the 20+ Nexbus agencies</li>' +
+		'<li>Mouse over a bus or stop will display heads-up particulars</li>' +
+		'<li>Replay the day\'s schedule - 24 hours in a minute or two</li>' +
+		'<li>Shadows - to indicate current time of day</li>' +
+		'<li>Performance improvements and bug fixes</li>' +
+		'</ul>' +
+		'</p>' +
+		
+		'<h3><a href="globe-demos/globe04-lookat/globe04-lookat.html">data globe #4</a></h3>' +
+		
+		'<p>2013-02-18 ~ Planes and placards are now positioned tangentially to the face of the globe. Headings are still not there. ' +
+		'There was a big fix to object garbage collection, so it looks like the app can run for extended periods of time without becoming a memory hog. ' +
+		'Do note that once loaded into a session, a plane remains on scene until the end of the session. For the time being, nobody is erased. ' +
+		'Also, just for the time being, the sky-writing feature is turned off.</p>' +
+		
+		'<h3><a href="globe-demos/globe03-planes/globe-black-shaders-stars-planes.html">data globe #3</a></h3>' +
+		
+		'<p>2013-02-16 ~ There were not many comments on data globe #2, so data globe #3 took off. Fasten your seat belts. ' +
+		'Our friend Geoff who lives in Antony outside of Paris writes add-ons for <a href="http://www.flightgear.org/" target="_blank">FlightGear</a> ' +
+		'- a free, open source software flight simulator. A particularly nice utility service he helps provide (along with the flight crew at ' +
+		'<a href="http://www.fgx.ch/" target="_blank">FGX</a>) is real-time notification of who is in the air and where. ' +
+		'So the goal became to take this live text data and show it on our data globe.' +
+		'</p>' +
+		
+		'<p>Development so far has been quick and easy. The first test flight occurred well within the first day of construction. So far there was only one big crash - ' +
+		'where a browser session had to be killed. Airplane positions as well as the text placards are being updated every ten seconds with few issues. ' +
+		'There is still work to be done: For the moment, the rotation angle (or heading) of the plane is a broken kluge. ' +
+		'The fix will involve figuring out the best way to carry out the matrix multiplication. After that it might be nice to display tiny models of the planes being flown. ' +
+		'And after that there\'s still a ton more that could be done - from showing the satellite images of the current cloud cover using data from ' +
+		' <a href="http://www.wunderground.com/" target="_blank">Weather Underground</a> ' +
+		'to adding the ability to communicate with the pilots to making the bland white ribbon currently under the planes look like real sky writing ' +
+		' - and enabling pilots to choose their preferred color. And. of course, there are still resource-hogging issues going on as well. Welcome to the <s>real</s> ' +
+		' rotating world.' +
+		'</p>' +
+		
+		'<p>No matter how much \'eye-candy\' this particular implementation of a data globe may provide, it\'s important to remember that this is only ' +
+		'a small step towards building a useful and informative data globe...</p>' +
+		
+		'<h3><a href="globe-demos/globe02/globe-black-shaders-stars-flags.html">data globe #2</a></h3>' +
+		
+		'<p>2013-02-15 ~ Another globe, this time mostly black - with better stars. ' +
+		'Note the highlighting that occurs near the rim - this was accomplished with the addition of shaders. ' +
+		'City flags have been added to help identify the location more quickly. ' +
+		'The question that still needs answering is can a globe be used to visualize data or is a globe merely a handy navigation tool?</p>' +
+		
+		'<h3><a href="globe-demos/globe01/globe-plus-planes-curved.html" target="_blank">data globe #1</a></h3>' +
+		
+		'<p>2013-02-13 ~ Anything to do with global transportation data kind of must have an image of a globe associated with it. ' +
+		'The benefit is that most everybody knows what a globe is for and where their place is on the globe. ' +
+		'On the other hand, a globe is a tired old theme and certainly not a great tool for displaying multivariate data. ' +
+		'So one idea is to develop some new concepts for what could be termed a \'data globe\'.' +
+		'The above link is the equivalent of a preliminary rough sketch. Most of the proposed effects are not yet coded. ' +
+		'The idea is that as you moved over the map, certain places would bubble out. They would come to you rather than you having to go there. ' +
+		'Think of a magnifying glass or the navigation bar on a Macintosh computer. ' +
+		'One aspect of the \'bubble\' that will be fun to explore is the spreading out of the data as it bubbles out. ' +
+		'This will make it easier for you to tap on an individual data point to find out more about it. ' +
+		'Another possibility that is not yet viewable, is the addition of shadows to help indicate the time of day for particular locations on the globe. ' +
+		'In any case, this is just the start. Who knows where this will end. ' +
+		'Perhaps you will be able to drag and drop cities on top of one another to compare them...' +
+		'</p>' +
+		
+		'<h3><a href="load-csv.html" >load-csv.html</a></h3>' +
+		'<p>2013-02-12 ~ Opens the six <a href="http://urbanprototyping.org/" target="_blank">Urban Data Challenge</a> CSV data files, and allows you to obtain summaries of the content. ' +
+		'The first Geneva file will likely crash your browser. A second smaller version has been added. ' +
+		'Once the second menu appears, be careful about clicking on the times and trip IDs - the volume of items can freeze your browser. '+
+		'When this happens prepared to close the tab and start over. '+
+		'Most testing has been done with the San Francisco real-time-arrivals file. ' +
+		'Open the JavaScript console - Function key 12 - and see more data about the progress. ' +
+		'It will take perhaps nearly 3000 waits before there\'s a display' +
+		'</p>' +
+		
+		'<h3><a href="load-csv-build-map.html" >load-csv-build-map.html</a></h3>' +
+		'<p>2013-02-12 ~ More of a joke than a demo. ' +
+		'First click shows you just 572 stops - no map or other detail. Notice the diagonal line of the stops on Market Street in top right. ' +
+		'Clicking putCubes will do just that - put cubes at the stop IDs of the first 25,000 records in the database of over 500,000. ' +
+		'Use mouse and wheel to rotate, pan and zoom. ' +
+		'It\'s lame, but it\'s a start. More and better in the next few days...' +
+		'</p>';
+		
+		camera = new THREE.PerspectiveCamera( 75, 1, 1, 1000 );
+		camera.position.z = 350;
+
+		scene = new THREE.Scene();
+
+		geometry = new THREE.IcosahedronGeometry( 200, parseInt( Math.random() * 5 ) );
+		material = new THREE.MeshBasicMaterial( { color: 0xffffff * Math.random(), wireframe: true, wireframeLinewidth: parseInt( Math.random() * 8) } );
+
+		mesh = new THREE.Mesh( geometry, material );
+		scene.add( mesh );
+
+		renderer = new THREE.CanvasRenderer();
+		renderer.setSize( 300, 300 );
+		renderer.domElement.style.cssText = 'border: solid red 0px; right: 0; position: absolute; top: 0;';
+
+		document.body.appendChild( renderer.domElement );
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+
+		mesh.rotation.x = Date.now() * 0.00002;
+		mesh.rotation.y = Date.now() * 0.0002;
+
+		renderer.render( scene, camera );
+	}
+</script>
+</body>
+</html>
