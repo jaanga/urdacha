@@ -5,40 +5,58 @@ var list = {
 	'1 Home': {
 		'Overview': [
 			[ 'Home Page', 'overview/index'],
-			[ 'Read Me', 'overview/Read Me'],
-			[ 'Credits', 'overview/Credits'],
+			[ 'Contributors', 'overview/Contributors'],
 			[ 'License', 'overview/License']
 		]
 	},
 	
-	'2 hAxis': {
-		'API Overview': [
-			[ 'Read Me', '2-Algesurf/1-Overview/Read Me'],
-			[ 'Credits', '2-Algesurf/1-Overview/Credits'],
-			[ 'Builder', '2-Algesurf/1-Overview/Builder'],
-			[ 'Player - sequence', '2-Algesurf/1-Overview/Player'],
-			[ 'Player - single', '2-Algesurf/1-Overview/Player','?title=stemkoski&play=10&spin=0'],
-			[ 'Multiple Viewport Demo', '2-Algesurf/1-Overview/Multiple Viewport Demo']
+	'2 Improved CSV': {
+		'overview': [
+			[ 'Read Me', 'improved-csv/Read Me'],
+			[ 'San Francisco', 'improved-csv/sanFrancisco'],
+			[ 'Geneva', 'improved-csv/geneva'],
+			[ 'Zurich', 'improved-csv/zurich'],
+		],
+	},
+
+	'3 Data Wrangle': {
+		'The actual competition entry is here...': [
+			[ 'Read Me', 'data-wrangler/Read Me'],
+			[ 'TA ~ Day #3', 'data-wrangler/theo-03'],
+			[ 'TA ~ Day #2', 'data-wrangler/theo-02'],
+			[ 'TA ~ Day #1', 'data-wrangler/theo-01'],
+		],
+	},	
+	'4 hAxis': {
+		'CSV in 3D app': [
+			[ 'Read Me', 'haxis/Read Me'],
+			[ 'hAxis r4', 'haxis/r4/index'],
+			[ 'hAxis r3', 'haxis/r3/haxis'],
+			[ 'haxis r2', 'haxis/haxis-r2'],
+			[ 'hAxis r1', 'haxis/haxis-r1-static'],
 		],
 	},
 	
-	'3 flatLand': {
-		'Overview': [
-			[ 'Read Me', '3-Urdacha/overview/readme'],
-			[ 'Urdacha', '3-Urdacha/overview/urdacha'],
-			[ 'hAxis r3', '3-Urdacha/overview/haxis-r3'],
+	'5 flatLand': {
+		'a Nextbus app': [
+			[ 'Read Me', 'flatland/Read Me'],
+			[ 'flatLand r2', 'flatland/'],
+			[ 'flatland r1', 'flatland/'],
 		]		
 	},	
 	
-	'4 Globes': {
-		'Overview': [
-			[ 'Read Me', '4-Brain-of-Richard/overview/readme'],
-			[ 'The App', '4-Brain-of-Richard/overview/theapp']
+	'6 Globes': {
+		'a global view': [
+			[ 'Read Me', 'globe-demos/Read Me'],
+			[ 'Globe #1', 'globe-demos/globe01/globe-plus-planes-curved'],
+			[ 'Globe #2', 'globe-demos/globe02/globe-black-shaders-stars-flags'],
+			[ 'Globe #3', 'globe-demos/globe03-planes/globe-black-shaders-stars-planes'],
+			[ 'Globe #4', 'globe-demos/globe04-lookat/globe04-lookat'],
 		]		
 	},
 	
-	'5 load-CSV': {
-		'load-csv': [
+	'7 load-CSV': {
+		'data look/see': [
 			[ 'Read Me', 'load-csv/Read Me'],
 			[ 'load-csv', 'load-csv/load-csv'],
 			[ 'load-csv-api', 'load-csv/load-csv-api'],

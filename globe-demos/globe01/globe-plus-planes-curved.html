@@ -199,7 +199,7 @@
 	}
 
 	material = new THREE.ParticleBasicMaterial( { size: 5, sizeAttenuation: false, map: sprite, transparent: true } );
-	material.color.setHSV( 	1, 1, 1 );
+	material.color.setHSL( 	1, 1, 1 );
 
 	particles = new THREE.ParticleSystem( geometry, material );
 	particles.sortParticles = true;

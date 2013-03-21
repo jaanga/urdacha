@@ -150,7 +150,7 @@
 		HAX.scene.add( light );
 
 		HAX.stats = new Stats();
-		HAX.stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+		HAX.stats.domElement.style.cssText = 'position: absolute; top: 0px; z-index: 100; ';
 		document.body.appendChild( HAX.stats.domElement );
 
 		initText(); // in sidebar.js
@@ -221,7 +221,7 @@
 		} else {
 			callbackCount++;
 console.log('waiting...');
-			HAX.updates.innerHTML = ' Responses from server (need 20,000+): ' + callbackCount;
+			If ( HAX.updates !== undefined) HAX.updates.innerHTML = ' Responses from server (first time may need 20,000+): ' + callbackCount;
 		}
 	}	
 /*	
