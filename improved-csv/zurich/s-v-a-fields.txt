@@ -1,0 +1,50 @@
+eventId serviceDate date
+tripId
+tripStart *
+routeId
+routeNumber
+routeNameShort *
+routeName
+routeVLD
+runNumber *
+direction *
+stopSequenceNr *
+stopId *
+stopNumber
+stopNameShort *
+stopName
+arrivalScheduled *
+departureScheduled *
+arrivalActual *
+departureActual *
+mileage
+vehicleId *
+vehicleTechnicalId
+vehicleNumber
+vehiclePlate
+vehicleVLD
+patternId
+patternNumber
+patternNameShort
+patternName
+patternType
+patternVld
+blockId
+blockNumber
+blockVld
+daytyp_id
+daytyp_number
+daytyp_short
+daytyp_long
+daytyp_vld
+branchId
+branchNumber
+branchNameShort
+branchName
+branchVld
+longitudeScheduled
+latitudeScheduled
+longitudeActual
+latitudeActual
+directionScheduled
+directionActual

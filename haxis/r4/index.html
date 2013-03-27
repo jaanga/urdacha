@@ -21,41 +21,13 @@
 <script>
 	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
 
-	var HAX = HAX || {};
-
 	var xCoords, xKeys, xDelta;
 	var yCoords, yDelta;
 	var zCoords, zDelta;
 	var keys;
 	var data, dataLength, dataCount;
 	var dataPlay = false;
-/*
-	HAX.geneva = { separator: ',', x: 1, y: 9, z: 12, date: 0, time: 12, city: 'Geneva', color: 1,
-		direction: 6, directionString: 'A', lineField: 1, lineEnd: 14 };
-		
-	HAX.zurich = { separator: ';', x: 2, y: 6, z: 5, date: 0, time: 3, city: 'Zurich', color: 2,
-		direction: 4, directionString: "1", lineField: 2, lineEnd: 14 };
-		
-	HAX.sanFrancisco = { separator: ',', x: 10, y: 9, z: 11, date: 8, time: 15, city: "San Francisco", color: 9, 
-		direction: 13, directionString: '0', lineField: 9, lineEnd: 14 };
-*/
 
-	var HAX = {
-		title: 'San Francisco Day 1',
-		x: 10, y: 9, z: 11, 
-		date: 8, time: 15, color: 9, 
-		direction: 13, directionString: '0', 
-		objCount: 300,
-		lineCount: 100, lineField: 14, lineEnd: 14, lineLength: 10,
-		camFov: 40,  speed: 30,
-		camX: -90, camY: 105, camZ: 100, 
-		rotX: 0, rotY: 0, rotZ: 0,
-		upX: 0, upY: 1, upZ: 0,
-		folder: '../../improved-csv/', fname: 'sf_day1.csv',
-		separator: ',',
-		bars: 1
-	}
-	
 	init();
 	animate();
 
@@ -79,23 +51,23 @@
 	}
 
 	function buildHash() {
+		if (HAX.upX === undefined) return;
 		var h = HAX;
 		var link = 
 			'title=' + h.title + 
 			'#x=' + h.x +  '#y=' + h.y + '#z=' + h.z + 
 			'#date=' + h.date + 
 			'#time=' + h.time + 
-			'#color=' + h.color + 
+			'#color=' + h.colorField + 
 			'#direction=' + h.direction + 
-			'#lineField=' + h.lineField + 
+			'#lineStart=' + h.lineStart + 
 			'#lineEnd=' + h.lineEnd +
-			'#camFov=' + h.camFov + '#speed=' + h.speed +
+			'#camType=' + h.camType + '#camFov=' + h.camFov + '#speed=' + h.speed +
 			'#camX=' + h.camX.toFixed(2) + '#camY=' + h.camY.toFixed(2) + '#camZ=' + h.camZ.toFixed(2) +
 			'#rotX=' + h.rotX.toFixed(3) + '#rotY=' + h.rotY.toFixed(3) + '#rotZ=' + h.rotZ.toFixed(3) +
-			'#upX=' + h.upX.toFixed(3) + '#upY=' + h.upY.toFixed(3) + '#upZ=' + h.upZ.toFixed(3) +
+			'#upX=' + parseFloat(h.upX).toFixed(3) + '#upY=' + parseFloat(h.upY).toFixed(3) + '#upZ=' + parseFloat(h.upZ).toFixed(3) +
 			'#folder=' + h.folder + '#fname=' + h.fname + 
-			'#separator=' + h.separator +
-			'#bars=' + h.bars;
+		'';
 		return link;
 	}	
 	
@@ -112,6 +84,7 @@
 	}
 
 	function init() {
+		initCity( 0 )
 		setUrlHash();
 		
 		if ( ! Detector.webgl ) {
@@ -124,18 +97,17 @@
 		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( HAX.renderer.domElement );
 		HAX.scene = new THREE.Scene();
-
+		
 		HAX.camera = new THREE.PerspectiveCamera( h.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
-		// HAX.camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2,1, 1000 );
 		HAX.camera.position.set( h.camX, h.camY, h.camZ);
 		h.camera.up.set( h.upX, h.upY, h.upZ );
 		h.camera.rotation.set( h.rotX, h.rotY, h.rotZ );
 		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
-		HAX.controls.minDistance = 5;
+		HAX.controls.minDistance = 3;
 		HAX.controls.maxDistance = 300;
 		HAX.controls.noPan = true;
 		HAX.controls.zoomSpeed = 0.5;
-		HAX.controls.dynamicDampingFactor = 0.9;
+		HAX.controls.dynamicDampingFactor = 0.9;			
 
 		var light = new THREE.DirectionalLight( 0xffffff, 2 );
 		light.position.set( 1, 1, 1 ).normalize();
@@ -149,16 +121,15 @@
 		light.color.setHSL( 0.1, 0.5, 0.3 );
 		HAX.scene.add( light );
 
-		HAX.stats = new Stats();
-		HAX.stats.domElement.style.cssText = 'position: absolute; top: 0px; z-index: 100; ';
-		document.body.appendChild( HAX.stats.domElement );
-
 		initText(); // in sidebar.js
-		// document.getElementById( HAX.city ).checked=true;
+		
+		HAX.stats = new Stats();
+		HAX.stats.domElement.style.cssText = 'position: absolute;right: 0; top: 0px; z-index: 100; ';
+		info.appendChild( HAX.stats.domElement );		
+		
 		window.addEventListener( 'resize', onWindowResize, false );
 		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-		// document.getElementById('files').addEventListener('change', handleFileSelect, false);		
 		
 		initObjects();
 	}
@@ -197,20 +168,18 @@
 	function loadSF_Day() {
 		dataPlay = false;
 		xmlhttp = new XMLHttpRequest();
-		xmlhttp.open( 'GET', HAX.folder + HAX.fname, true );
+		xmlhttp.open( 'GET', HAX.city.folder + HAX.city.fname, true );
 		xmlhttp.onreadystatechange = callbackCSV;
 		xmlhttp.send( null );
 		callbackCount = 0;
-		
 	}
 	
 	function callbackCSV() {
 		if ( xmlhttp.readyState == 4  ) {
 			var dataLines = xmlhttp.responseText;
-			// selectCity( dataLines );
 			dataLines = dataLines.split(/\r\n|\n/);
 			dataLines[0] = dataLines[0].replace(/["']/g, ""); // delete in files
-			dataLength = dataLines.length - 2;
+			dataLength = dataLines.length - 1;
 			data = [];
 			var sep = HAX.separator;
 			for ( var i = 0; i < dataLength; i++ ) {
@@ -221,30 +190,14 @@
 		} else {
 			callbackCount++;
 console.log('waiting...');
-			If ( HAX.updates !== undefined) HAX.updates.innerHTML = ' Responses from server (first time may need 20,000+): ' + callbackCount;
+			// If ( HAX.updates !== undefined) { HAX.updates.innerHTML = ' Responses from server (first time may need 20,000+): ' + callbackCount; }
 		}
 	}	
-/*	
-	function selectCity( response ) {
-		dataPlay = false;
-		var dataLines = response;
-		dataLines = dataLines.split(/\r\n|\n/);
-		dataLines[0] = dataLines[0].replace(/["']/g, "");
-		dataLength = dataLines.length - 2;
-		data = [];
-		var sep = HAX.separator;
-		for ( var i = 0; i < dataLength; i++ ) {
-			data.push( dataLines[i].split( sep ) );
-		}
-		buildReport();
-	}
-*/
 
 	function buildReport() {
-		var fields = data[0];
 		var h = HAX;
 
-		updateSbr( data[0], h);
+		updateSbr();
 
 		HAX.scene = new THREE.Scene();
 		newSign();
@@ -252,14 +205,38 @@ console.log('waiting...');
 
 		xKeys = findSets( h.x );
 		xDelta = 100 / xKeys.length;
+		var txt = '<h3 style="color: red" >X-Axis - ' + xKeys.length + ' items</h3><table id="rd1" style="width: 100%;" >' +
+			'<tr><td >' + data[0][h.x] + '<br><small><button onclick="sortTable( rd1, 0, 0)">&uArr;</button><button onclick="sortTable( rd1, 0, 1 )">&dArr;</button></small></td>' +
+			'<td><small>tot:' + tots + ' avg:' + avg.toFixed(1) + '<br><button onclick="sortTable( rd1, 1, 0)">&uArr;</button><button onclick="sortTable( rd1, 1, 1 )">&dArr;</button></small></td></tr>';
+		for (var i = 0, len = xKeys.length; i < len; i++) {
+			txt += '<tr><td>' + xKeys[i] + '</td><td>' + sets[ xKeys[i] ].count + '</td></tr>';
+		} 
+		txt += '</table>';
+		readout1.innerHTML = txt;
 
 		yKeys = findSets( h.y );
 		yDelta = 100 / yKeys.length;
+		txt = '<h3 style="color: green" >Y-axis - ' + yKeys.length + ' items</h3><table id="rd2" style="width: 100%;" >' +
+			'<tr><td>' + data[0][h.y] + '<br><small><button onclick="sortTable( rd2, 0, 0)">&uArr;</button><button onclick="sortTable( rd2, 0, 1 )">&dArr;</button></small></td>' +
+			'<td><small>tot:' + tots + ' avg:' + avg.toFixed(1) + '<br><button onclick="sortTable( rd2, 1, 0)">&uArr;</button><button onclick="sortTable( rd2, 1, 1 )">&dArr;</button></small></td></tr>';
+		for (var i = 0, len = yKeys.length; i < len; i++) {
+			txt += '<tr><td>' + yKeys[i] + '</td><td>' + sets[ yKeys[i] ].count + '</td></tr>';
+		} 
+		txt += '</table>';
+		readout2.innerHTML = txt;
 
 		zKeys = findSets( h.z );
 		zDelta = 100 / zKeys.length;
+		txt = '<h3 style="color: blue" >Z-axis - ' + zKeys.length + ' items</h3><table id="rd3" style="width: 100%;" >' +
+			'<tr><td>' + data[0][h.z] + '<br><small><button onclick="sortTable( rd3, 0, 0)">&uArr;</button><button onclick="sortTable( rd3, 0, 1 )">&dArr;</button></small></td>' +
+			'<td><small>tot:' + tots + ' avg:' + avg.toFixed(1) + '<br><button onclick="sortTable( rd3, 1, 0)">&uArr;</button><button onclick="sortTable( rd3, 1, 1 )">&dArr;</button></small></td></tr>';
+		for (var i = 0, len = zKeys.length; i < len; i++) {
+			txt += '<tr><td>' + zKeys[i] + '</td><td>' + sets[ zKeys[i] ].count+ '</td></tr>';
+		} 
+		txt += '</table>';
+		readout3.innerHTML = txt;
 
-		HAX.colorsSet = findSets( h.color );
+		HAX.colorsSet = findSets( HAX.colorField );
 		HAX.colors = colorful(  HAX.colorsSet );
 
 		HAX.lineSets = {};
@@ -273,14 +250,39 @@ console.log('waiting...');
 		dataPlay = true;
 	}
 
+	var sets, tots, avg; 
+	function findSets( fieldId ) {
+		sets = {};
+		sets.element = function() {};
+		for (var record, field, i = 1; i < dataLength; i++) {
+			record = data[i];
+			field = record[ fieldId ];
+			if ( sets[ field ] == undefined ) {
+				sets[ field ] = new sets.element;
+				sets[ field ].count = 1;
+			} else {
+				sets[ field ].count++;
+			}
+		}
+		delete sets['element'];
+		var keys = Object.keys( sets );
+		tots = 0;
+		for (var i = 0, len = keys.length; i < len; i++) {
+			tots += sets[keys[i]].count;
+		} 
+		avg = tots / keys.length;
+		keys.sort( function(a,b){return a-b} )
+		return keys;
+	}
+	
 	function haxisIt() {
-		var color;
+		var color, record, mesh, material, pos, line;
 		var h = HAX;
 		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
-		for (var record, mesh, material, pos, line, len = HAX.speed, i = 1; i < len; i++) {
+		for (var len = HAX.speed, i = 1; i < len; i++) {
 			record = data[ dataCount ];
 
-			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.color ] ) ];
+			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.colorField ] ) ];
 			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
 			material.color.setHSL( color, 0.8, 0.5 );
 
@@ -301,12 +303,12 @@ console.log('waiting...');
 			HAX.objects.push( mesh );
 			HAX.scene.add( mesh );
 
-			var element = record[ h.lineField ];
+			var element = record[ h.trailStart ];
 			if ( HAX.lineSets[element] == undefined ) {
 				HAX.lineSets[element] = new HAX.lineSets.element();
-				HAX.lineSets[element].lineSubSet = record[ h.lineEnd ];
+				HAX.lineSets[element].lineSubSet = record[ h.trailEnd ];
 			}
-			if ( HAX.lineSets[element].lineSubSet != record[ h.lineEnd ] ) {
+			if ( HAX.lineSets[element].lineSubSet != record[ h.trailEnd ] ) {
 				HAX.lineSets[element].points.shift();
 				HAX.lineSets[element].points = [];
 // console.log( dataCount, HAX.lineSets[element].lineSubSet, record[ HAX.lineEnd ] );
@@ -331,7 +333,7 @@ console.log('waiting...');
 			dataCount++;
 		}
 		
-		HAX.updates.innerHTML = 'City: ' + h.title + '<br>' +
+		stats.innerHTML = 'City: ' + h.title + '<br>' +
 			'Total lines in file: ' + dataLength + ' ~ Current line: ' + dataCount + '<br>' +
 			'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
 			'Replay speed: ' + HAX.speed + ' Camera FOV: ' + HAX.camFov + '<br>' +
@@ -341,21 +343,6 @@ console.log('waiting...');
 			dataCount = 1; 
 			HAX.lineSetChanges = 0;
 		}
-	}
-
-	function findSets( fieldId ) {
-		var sets = {};
-		sets.element = function() {};
-		for (var record, field, i = 1; i < dataLength - 2 ; i++) {
-			record = data[i];
-			field = record[ fieldId ];
-			if ( sets[ field ] == undefined ) {
-				sets[ field ] = new sets.element;
-			}
-		}
-		var keys = Object.keys( sets );
-		keys.sort( function(a,b){return a-b} )
-		return keys;
 	}
 
 	function animate() {
@@ -375,13 +362,6 @@ console.log('waiting...');
 		} else {
 			dataPlay = true;
 		}
-	}
-
-	function setFov( camFov) {
-		HAX.camFov = camFov;
-		HAX.camera = new THREE.PerspectiveCamera( camFov, window.innerWidth / window.innerHeight, 1, 1000 );
-		HAX.camera.position.set(-90, 105, 100);
-		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
 	}
 
 	function colorful( arr ) {
@@ -448,45 +428,6 @@ console.log('waiting...');
 		map.needsUpdate = true;
 		return new THREE.MeshBasicMaterial( { map: map,  side: THREE.DoubleSide, transparent: true } );
 	}
-	
-/*
-	function handleFileSelect( evt ) {
-		reader = new FileReader();
-		reader.onerror = errorHandler;
-		reader.onprogress = function(e) {
-			HAX.updates.textContent = 'Loaded: ' + e.loaded + ' out of ' + e.total;
-		}
-		reader.onabort = function(e) {
-			alert('File read cancelled');
-		};
-		reader.onloadstart = function(e) {
-			HAX.updates.textContent = 'loading';
-		};
-		reader.onload = function(e) {
-			if (e.target.readyState == FileReader.DONE) { // DONE == 2
-// console.log( e);
-				selectCity( HAX.city, e.target.result );
-			}
-		}
-		// Read in the image file as a binary string.
-		reader.readAsBinaryString(evt.target.files[0]);
-	}
-
-	function errorHandler(evt) {
-		switch(evt.target.error.code) {
-			case evt.target.error.NOT_FOUND_ERR:
-			alert('File Not Found!');
-			break;
-		case evt.target.error.NOT_READABLE_ERR:
-			alert('File is not readable');
-			break;
-		case evt.target.error.ABORT_ERR:
-			break; // noop
-		default:
-			alert('An error occurred reading this file.');
-		};
-	}
-*/
 
 	function onWindowResize() {
 		windowHalfX = window.innerWidth / 2;
@@ -519,20 +460,25 @@ console.log('waiting...');
 		var intersects = raycaster.intersectObjects( HAX.objects );
 		var intersected;
 		if ( intersects.length > 0 ) {
-	
 			if ( intersected != intersects[ 0 ].object ) { // not same one
 				intersected = intersects[ 0 ].object;
 			}
 			headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
 			headsUp.style.bottom = 10 + 0.5 * window.innerHeight + mouse.y * 0.5 * window.innerHeight+ 'px';
 			headsUp.style.display = '';
-			var h = HAX;
-			headsUp.innerHTML =  'X: ' + data[0][ h.x] + ' ' + intersected.record[ h.x] + '<br>Y: ' +
-				data[0][ h.y] + ' ' + intersected.record[ h.y] + '<br>Z: ' +
-				data[0][ h.z] + ' ' + intersected.record[ h.z] + '<br>' +
-				'Number of identical events: ' + intersects.length + '<br>' +
-				'<br>All the data [for testing]: <br>' +
-				intersected.record;
+			var h = HAX, ir = intersected.record, txt = '';
+			headsUp.innerHTML =  
+				'X: ' + data[0][ h.x] + ' ' + ir[ h.x] + '<br>' +
+				'Y: ' + data[0][ h.y] + ' ' + ir[ h.y] + '<br>' +
+				'Z: ' + data[0][ h.z] + ' ' + ir[ h.z] + '<br>' +
+				'Number of identical events: ' + intersects.length + '<br>';
+				
+			for (var i = 0, len = ir.length; i < len; i++) {
+				txt += data[0][ i] + ':' + ir[i] + '<br>';
+			}
+			headsUp.innerHTML += '<div style="column-count: 2; font-size:small; word-wrap:break-word; ">' + txt + '</div>';
+				//'<br>All the data [for testing]: <br>' +
+				//intersected.record;
 		} else {
 			headsUp.style.display = 'none';
 		}

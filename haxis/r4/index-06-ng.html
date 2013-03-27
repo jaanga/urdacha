@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0'>
+</head>
+<body>
+
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+<!--
+<script src='../../three.js/examples/js/Detector.js'></script>
+<script src='../../three.js/build/three.min.js'></script>
+<script src='../../three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='../../three.js/examples/js/libs/stats.min.js'></script>
+-->
+<script src='sidebars.js'></script>
+<script>
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
+
+	var xCoords, xKeys, xDelta;
+	var yCoords, yDelta;
+	var zCoords, zDelta;
+	var keys;
+	var data, dataLength, dataCount;
+	var dataPlay = false;
+
+	init();
+	animate();
+// 
+	function setUrlHash() {
+// console.log('hash', location.hash);	
+		if ( location.hash == '' ) {
+			// HAX = nohash;
+	// HAX.city = HAX.sanFancisco;
+			
+		} else {
+			readHash( );
+		}
+		loadSF_Day(); 
+	}	
+	
+	function readHash() {
+		var item;
+		var a = location.hash.split('#');
+		for (var i = 1, len = a.length; i < len; i++) {
+			item = a[i].split('=');
+			HAX[item[0]] = item[1];
+		}
+	}
+
+	function buildHash() {
+		if (HAX.upX === undefined) return;
+		var h = HAX;
+		var link = 
+			'title=' + h.title + 
+			'#x=' + h.x +  '#y=' + h.y + '#z=' + h.z + 
+			'#date=' + h.date + 
+			'#time=' + h.time + 
+			'#color=' + h.color + 
+			'#direction=' + h.direction + 
+			'#lineField=' + h.lineField + 
+			'#lineEnd=' + h.lineEnd +
+			'#camType=' + h.camType + '#camFov=' + h.camFov + '#speed=' + h.speed +
+			'#camX=' + h.camX.toFixed(2) + '#camY=' + h.camY.toFixed(2) + '#camZ=' + h.camZ.toFixed(2) +
+			'#rotX=' + h.rotX.toFixed(3) + '#rotY=' + h.rotY.toFixed(3) + '#rotZ=' + h.rotZ.toFixed(3) +
+			'#upX=' + parseFloat(h.upX).toFixed(3) + '#upY=' + parseFloat(h.upY).toFixed(3) + '#upZ=' + parseFloat(h.upZ).toFixed(3) +
+			'#folder=' + h.folder + '#fname=' + h.fname + 
+			'#separator=' + h.separator +
+			'#bars=' + h.bars;
+		return link;
+	}	
+	
+	function updateUrlHash() {
+		HAX.link = buildHash();
+		permalink.href = "#" + HAX.link;
+		window.location.hash = HAX.link;
+	}
+	
+	function resetPermalink() {
+		window.history.pushState( '', '', window.location.pathname);
+		permalink.href = '';
+		setUrlHash();
+	}
+
+	function init() {
+		setUrlHash();
+		
+		if ( ! Detector.webgl ) {
+			HAX.renderer = new THREE.Canvas.renderer( { antialias: true } );
+		} else {
+			HAX.renderer = new THREE.WebGLRenderer( { antialias: true } );
+		}
+
+		var h = HAX;
+		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( HAX.renderer.domElement );
+		HAX.scene = new THREE.Scene();
+		
+		//if (HAX.camType === 1 ) {
+			HAX.camera = new THREE.PerspectiveCamera( h.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
+			HAX.camera.position.set( h.camX, h.camY, h.camZ);
+			h.camera.up.set( h.upX, h.upY, h.upZ );
+			h.camera.rotation.set( h.rotX, h.rotY, h.rotZ );
+			HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
+			HAX.controls.minDistance = 5;
+			HAX.controls.maxDistance = 300;
+			HAX.controls.noPan = true;
+			HAX.controls.zoomSpeed = 0.5;
+			HAX.controls.dynamicDampingFactor = 0.9;			
+/*
+		} else {
+			HAX.camera = new THREE.OrthographicCamera( window.innerWidth / - 2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / - 2, -200, 1000 );
+			HAX.camera.position.set( 50, 50, 50);
+		}
+*/
+		var light = new THREE.DirectionalLight( 0xffffff, 2 );
+		light.position.set( 1, 1, 1 ).normalize();
+		HAX.scene.add( light );
+
+		var light = new THREE.DirectionalLight( 0xffffff, 1.3 );
+		light.position.set( -1, -1, -1 ).normalize();
+		HAX.scene.add( light );
+
+		var light = new THREE.AmbientLight( 0xffffff);
+		light.color.setHSL( 0.1, 0.5, 0.3 );
+		HAX.scene.add( light );
+
+		HAX.stats = new Stats();
+		HAX.stats.domElement.style.cssText = 'position: absolute;right: 0; top: 0px; z-index: 100; ';
+		info.appendChild( HAX.stats.domElement );
+
+		initText(); // in sidebar.js
+		
+		// document.getElementById( HAX.city ).checked=true;
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+		// document.getElementById('files').addEventListener('change', handleFileSelect, false);		
+		
+		initObjects();
+	}
+
+	function initObjects() {
+		var geometry = new THREE.CubeGeometry( 3, 3, 3 );
+		var material = new THREE.MeshPhongMaterial( {color: 0xff0000, ambient: 0xffffff } );
+		HAX.objects = [];
+		var cube;
+		for (var i = 0; i < HAX.objCount; i++) {
+			cube = new THREE.Mesh( geometry, material );
+			HAX.objects.push( cube );
+			cube.position.set(100 * Math.random() - 50, 0, 0 ); // if they are all in the same place, really slows things down...
+			HAX.scene.add( cube );
+		}
+
+		geometry = new THREE.Geometry();
+		material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+		HAX.lines = [];
+		var line;
+		geometry.vertices.push(
+			v( 0, 0, -50),
+			v( 0, 0, 50)
+		);		
+		for (var i = 0; i < HAX.lineCount; i++) {
+			line = new THREE.Line( geometry, material );
+			HAX.lines.push( line );
+			HAX.scene.add( line );
+		}
+	}
+
+	function v( x, y, z) { return new THREE.Vector3( x, y, z ); }
+	
+	var xmlhttp, callbackCount;
+	
+	function loadSF_Day() {
+		dataPlay = false;
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open( 'GET', HAX.city.folder + HAX.city.fname, true );
+		xmlhttp.onreadystatechange = callbackCSV;
+		xmlhttp.send( null );
+		callbackCount = 0;
+// console.log( 'xml', xmlhttp );
+	}
+	
+	function callbackCSV() {
+		if ( xmlhttp.readyState == 4  ) {
+			var dataLines = xmlhttp.responseText;
+			// selectCity( dataLines );
+			dataLines = dataLines.split(/\r\n|\n/);
+			dataLines[0] = dataLines[0].replace(/["']/g, ""); // delete in files
+			dataLength = dataLines.length - 2;
+			data = [];
+			var sep = HAX.separator;
+			for ( var i = 0; i < dataLength; i++ ) {
+				data.push( dataLines[i].split( sep ) );
+			}
+			buildReport();
+			
+		} else {
+			callbackCount++;
+console.log('waiting...');
+			// If ( HAX.updates !== undefined) { HAX.updates.innerHTML = ' Responses from server (first time may need 20,000+): ' + callbackCount; }
+		}
+	}	
+/*	
+	function selectCity( response ) {
+		dataPlay = false;
+		var dataLines = response;
+		dataLines = dataLines.split(/\r\n|\n/);
+		dataLines[0] = dataLines[0].replace(/["']/g, "");
+		dataLength = dataLines.length - 2;
+		data = [];
+		var sep = HAX.separator;
+		for ( var i = 0; i < dataLength; i++ ) {
+			data.push( dataLines[i].split( sep ) );
+		}
+		buildReport();
+	}
+*/
+
+	function buildReport() {
+		var fields = data[0];
+		// var h = HAX;
+
+		updateSbr( data[0], HAX);
+
+		HAX.scene = new THREE.Scene();
+		newSign();
+		dataCount = 1;
+
+		xKeys = findSets( HAX.x );
+		xDelta = 100 / xKeys.length;
+		var txt = '';
+		for (var i = 0, len = xKeys.length; i < len; i++) {
+			txt += xKeys[i] + ' - ' + sets[ xKeys[i] ].count + '<br>';
+		} 
+		readout.innerHTML += txt;
+
+		yKeys = findSets( HAX.y );
+		yDelta = 100 / yKeys.length;
+		txt = '<h2Routes</h2>';
+		for (var i = 0, len = yKeys.length; i < len; i++) {
+			txt += yKeys[i] + ' - ' + sets[ yKeys[i] ].count + '<br>';
+		} 
+		readout.innerHTML += txt;		
+
+		zKeys = findSets( HAX.z );
+		zDelta = 100 / zKeys.length;
+
+		HAX.colorsSet = findSets( HAX.color );
+		HAX.colors = colorful(  HAX.colorsSet );
+
+		HAX.lineSets = {};
+		HAX.lineSets.element = function() {
+			this.points = [];
+			this.subSet = null;
+		}
+		HAX.lineSetChanges = 0;
+
+// Let's roll...
+		dataPlay = true;
+	}
+
+	function haxisIt() {
+		var color;
+		
+		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
+		for (var record, mesh, material, pos, line, len = HAX.speed, i = 1; i < len; i++) {
+			record = data[ dataCount ];
+
+			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.color ] ) ];
+			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
+			material.color.setHSL( color, 0.8, 0.5 );
+
+// direction
+			if ( record[ h.direction ] != h.directionString ) {
+				cyl.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI ) );
+			}
+
+			item = HAX.objects.shift();
+			HAX.scene.remove( item );
+
+			mesh = new THREE.Mesh( cyl, material );
+			// cube.material.color.setHSL( color, 0.8, 0.5 );
+			pos = v( xDelta * xKeys.indexOf( record[ h.x] ) - 50, yDelta * yKeys.indexOf( record[ h.y] ) - 50, zDelta * zKeys.indexOf( record[ h.z] ) - 50 );
+
+			mesh.position = pos ;
+			mesh.record = record;
+			HAX.objects.push( mesh );
+			HAX.scene.add( mesh );
+
+			var element = record[ h.lineField ];
+			if ( HAX.lineSets[element] == undefined ) {
+				HAX.lineSets[element] = new HAX.lineSets.element();
+				HAX.lineSets[element].lineSubSet = record[ h.lineEnd ];
+			}
+			if ( HAX.lineSets[element].lineSubSet != record[ h.lineEnd ] ) {
+				HAX.lineSets[element].points.shift();
+				HAX.lineSets[element].points = [];
+// console.log( dataCount, HAX.lineSets[element].lineSubSet, record[ HAX.lineEnd ] );
+				HAX.lineSetChanges++;
+			} else if( HAX.lineSets[element].points.length > HAX.lineLength ) {
+				HAX.lineSets[element].points.shift();
+			}
+			HAX.lineSets[element].points.push( pos );
+
+			item = HAX.lines.shift();
+			HAX.scene.remove( item );
+
+			geometry = new THREE.Geometry();
+			material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
+			material.color.setHSL( color, 0.8, 0.5 );
+
+			geometry.vertices = HAX.lineSets[element].points;
+			line = new THREE.Line( geometry, material );
+			HAX.lines.push(line );
+			HAX.scene.add( line );
+
+			dataCount++;
+		}
+		var h = HAX.city;
+		HAX.updates.innerHTML = 'City: ' + h.title + '<br>' +
+			'Total lines in file: ' + dataLength + ' ~ Current line: ' + dataCount + '<br>' +
+			'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
+			'Replay speed: ' + HAX.speed + ' Camera FOV: ' + HAX.camFov + '<br>' +
+			'X: ' + data[0][ h.x] + ': ' + xKeys.length + ' Y: ' + data[0][ h.y] + ': ' + yKeys.length + ' Z: ' + data[0][ h.z] + ': ' + zKeys.length + '<br>' +
+			'Lines disconnected: ' + HAX.lineSetChanges;
+		if ( dataCount > dataLength - HAX.speed - 1 ) { 
+			dataCount = 1; 
+			HAX.lineSetChanges = 0;
+		}
+	}
+
+	var sets; 
+	function findSets( fieldId ) {
+		sets = {};
+		sets.element = function() {};
+		for (var record, field, i = 1; i < dataLength - 2 ; i++) {
+			record = data[i];
+			field = record[ fieldId ];
+			if ( sets[ field ] == undefined ) {
+				sets[ field ] = new sets.element;
+				sets[ field ].count = 1;
+			} else {
+				sets[ field ].count++;
+			}
+		}
+		var keys = Object.keys( sets );
+		keys.sort( function(a,b){return a-b} )
+		return keys;
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+		HAX.controls.update();
+		HAX.renderer.render( HAX.scene, HAX.camera );
+		if ( dataPlay === true ) {
+			haxisIt();
+		}
+		HAX.stats.update();
+	}
+
+	function togglePlay() {
+		if (data === undefined) return; 
+		if ( dataPlay === true ) {
+			dataPlay = false ;
+		} else {
+			dataPlay = true;
+		}
+	}
+
+	function setFov( camFov) {
+		HAX.camFov = camFov;
+		HAX.camera = new THREE.PerspectiveCamera( camFov, window.innerWidth / window.innerHeight, 1, 1000 );
+		HAX.camera.position.set(-90, 105, 100);
+		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
+	}
+
+	function colorful( arr ) {
+		var delta = 1.0 / arr.length;
+		var colList = [];
+		for ( var i = 0, len = arr.length; i < len; i++ ) {
+			colList.push( i *  delta );
+		}
+		return colList;
+	}
+
+	function newSign( ) {
+		var h = HAX;
+		geometry = new THREE.PlaneGeometry( 100, 20, 1, 1 );
+
+		material = canvasText( data[0][h.x] , { color: '#ff0000', fontSize: '48', height: 80,  width: 600 }  );
+		var sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( -1.5708, 0, 0);
+		sign.position.set( 0, -50, -60);
+		HAX.scene.add( sign );
+
+		material = canvasText( data[0][h.y] , { color: '#00ff00', fontSize: '48', height: 80, width: 600 }  );
+		sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( 0,0 , -1.5708);
+		sign.position.set( -60, -15, -50);
+		HAX.scene.add( sign );
+
+		material = canvasText( data[0][h.z] , { color: '#0000ff', fontSize: '48', height: 80,  width: 600 }  );
+		sign = new THREE.Mesh( geometry, material );
+		sign.rotation.set( -1.5708,0 , -1.5708);
+		sign.position.set( -60, -50, 0);
+		HAX.scene.add( sign );
+
+		sign = new THREE.AxisHelper( 100 );
+		sign.position.set( -50, -50, -50 );
+		HAX.scene.add( sign );
+		
+		sign = new THREE.AxisHelper( 100 );
+		sign.position.set( 50, 50, 50 );
+		sign.scale.set(-1,-1,-1);
+		HAX.scene.add( sign );
+	}
+
+	function canvasText ( text1, parameters ) {
+		canvas = document.createElement("canvas");
+		var width = ( parameters['width'] ) ? parameters['width'] : 300 ;
+		canvas.width = width;
+		var height = ( parameters['height'] ) ? parameters['height'] : 150 ;
+		canvas.height = height;
+
+		context = canvas.getContext("2d");
+		context.fillStyle =  ( parameters['backgroundColor'] !== undefined ) ? parameters['backgroundColor'] : 'transparent';
+		context.fillRect( 0, 0, width, height );
+		//context.lineWidth = 2;
+		//context.strokeRect(0, 0, width, height);
+		context.fillStyle = ( parameters['color']) ? parameters['color'] : '#ffffff';
+
+		context.font = ( parameters['fontSize'] !== undefined ) ? parameters['fontSize'] + "pt Arial bold" : '16pt Arial bold';
+		context.textAlign = ( parameters['textAlign'] ) ? parameters['textAlign'] : 'left' ;
+		context.textBaseline = "top";
+		context.fillText(text1, 5, 0);
+
+		map = new THREE.Texture( canvas );
+		map.needsUpdate = true;
+		return new THREE.MeshBasicMaterial( { map: map,  side: THREE.DoubleSide, transparent: true } );
+	}
+	
+/*
+	function handleFileSelect( evt ) {
+		reader = new FileReader();
+		reader.onerror = errorHandler;
+		reader.onprogress = function(e) {
+			HAX.updates.textContent = 'Loaded: ' + e.loaded + ' out of ' + e.total;
+		}
+		reader.onabort = function(e) {
+			alert('File read cancelled');
+		};
+		reader.onloadstart = function(e) {
+			HAX.updates.textContent = 'loading';
+		};
+		reader.onload = function(e) {
+			if (e.target.readyState == FileReader.DONE) { // DONE == 2
+// console.log( e);
+				selectCity( HAX.city, e.target.result );
+			}
+		}
+		// Read in the image file as a binary string.
+		reader.readAsBinaryString(evt.target.files[0]);
+	}
+
+	function errorHandler(evt) {
+		switch(evt.target.error.code) {
+			case evt.target.error.NOT_FOUND_ERR:
+			alert('File Not Found!');
+			break;
+		case evt.target.error.NOT_READABLE_ERR:
+			alert('File is not readable');
+			break;
+		case evt.target.error.ABORT_ERR:
+			break; // noop
+		default:
+			alert('An error occurred reading this file.');
+		};
+	}
+*/
+
+	function onWindowResize() {
+		windowHalfX = window.innerWidth / 2;
+		windowHalfY = window.innerHeight / 2;
+		HAX.camera.aspect = window.innerWidth / window.innerHeight;
+		HAX.camera.updateProjectionMatrix();
+		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
+	}
+	
+	function onDocumentMouseUp() {
+		if ( HAX.objects == undefined ) return;
+		var h = HAX;
+		var c = HAX.camera;
+		h.camX = c.position.x; h.camY = c.position.y; h.camZ = c.position.z;
+		h.rotX = c.rotation.x; h.rotY = c.rotation.y; h.rotZ = c.rotation.z;
+		h.upX = c.up.x; h.upY = c.up.y; h.upZ = c.up.z;
+		updateUrlHash();
+	}	
+
+	function onDocumentMouseMove( event ) {
+		if ( data == undefined ) return;
+		// event.preventDefault();
+		var mouse = { x: -1, y: -1 };
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;		
+		var projector = new THREE.Projector();
+		var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+		projector.unprojectVector( vector, HAX.camera );
+		var raycaster = new THREE.Raycaster( HAX.camera.position, vector.sub( HAX.camera.position ).normalize() );
+		var intersects = raycaster.intersectObjects( HAX.objects );
+		var intersected;
+		if ( intersects.length > 0 ) {
+			if ( intersected != intersects[ 0 ].object ) { // not same one
+				intersected = intersects[ 0 ].object;
+			}
+			headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
+			headsUp.style.bottom = 10 + 0.5 * window.innerHeight + mouse.y * 0.5 * window.innerHeight+ 'px';
+			headsUp.style.display = '';
+			var h = HAX;
+			headsUp.innerHTML =  'X: ' + data[0][ h.x] + ' ' + intersected.record[ h.x] + '<br>Y: ' +
+				data[0][ h.y] + ' ' + intersected.record[ h.y] + '<br>Z: ' +
+				data[0][ h.z] + ' ' + intersected.record[ h.z] + '<br>' +
+				'Number of identical events: ' + intersects.length + '<br>' +
+				'<br>All the data [for testing]: <br>' +
+				intersected.record;
+		} else {
+			headsUp.style.display = 'none';
+		}
+	}
+</script>
+</body>
+</html>
