@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='author' content='Theo Armour'>
+</head>
+<body>
+<script>
+
+	document.body.style.cssText = ' font: bold 12pt monospace; ';
+	var info = document.createElement( 'div' );
+	document.body.appendChild( info );
+	info.innerHTML = '<h1>Howdy</h1>';
+
+ requestFile();
+
+	var xmlhttp;
+	function requestFile() {
+		dataPlay = false;
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open( 'GET', 'stops.json', true );
+		xmlhttp.onreadystatechange = callbackFile;
+		xmlhttp.send( null );
+		callbackCount = 0;
+	}
+	var response;
+	function callbackFile() {
+		if ( xmlhttp.readyState == 4  ) {
+			response = JSON.parse(xmlhttp.responseText);		
+		} else {
+console.log('waiting...');
+		}
+	}
+</script>
+</body>
+</html>

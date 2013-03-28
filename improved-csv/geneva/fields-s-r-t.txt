@@ -1,0 +1,32 @@
+date routeCode *
+serviceVehicle
+tripId *
+vehicleId *
+patternId
+tripDirection *
+tripLength
+stopSequenceNr *
+stopCode *
+stopLength
+stopTimeSchedule *
+stopTimeReal *
+passengerCountTripUp *
+passengerCountTripDown *
+passengerCountStopUp *
+passengerCountStopDown *
+passengerLoadStop *
+passengerCountDoor1Up
+passengerCountDoor1Down
+passengerCountDoor2Up
+passengerCountDoor2Down
+passengerCountDoor3Up
+passengerCountDoor3Down
+passengerCountDoor4Up
+passengerCountDoor4Down
+passengerCountDoor5Up
+passengerCountDoor5Down
+passengerCountDoor6Up
+passengerCountDoor6Down
+isRedirection
+isDelocalisation
+isRelocalisation

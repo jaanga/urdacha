@@ -75,7 +75,7 @@
 	HAX.zurich = {};
 	HAX.zurich.app = doCity;
 	HAX.zurich.colorField = 1;
-	HAX.zurich.fields = [ 'zurich-sva-d1-sorted.csv', 'zurich-sva-d1-sorted.csv', 'VBZ_passenger_count_day3.csv', 'VBZ_passenger_count_day4.csv', 'VBZ_passenger_count_day5.csv', 'VBZ_passenger_count_day6.csv', 'VBZ_passenger_count_day7.csv' ]
+	HAX.zurich.fields = [ 'zurich-sva-d1-trim-lat-long-sort-peeps.csv', 'zurich-sva-d1-trim-lat-long-sort-peeps.csv', 'VBZ_passenger_count_day3.csv', 'VBZ_passenger_count_day4.csv', 'VBZ_passenger_count_day5.csv', 'VBZ_passenger_count_day6.csv', 'VBZ_passenger_count_day7.csv' ]
 	HAX.zurich.fieldsId = 0;
 	HAX.zurich.fieldsTitles = [ 'Zurich Day 1', 'Zurich Day 2', 'Zurich Day 3', 'Zurich Day 4', 'Zurich Day 5', 'Zurich Day 6', 'Zurich Day 7' ];
 	HAX.zurich.fname = HAX.zurich.fields[0];

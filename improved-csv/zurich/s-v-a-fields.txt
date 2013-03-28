@@ -1,9 +1,8 @@
-eventId serviceDate date
-tripId
+eventId  tripId
 tripStart *
 routeId
-routeNumber
-routeNameShort *
+routeNumber *
+routeNameShort
 routeName
 routeVLD
 runNumber *
