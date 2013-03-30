@@ -100,20 +100,22 @@ console.log('waiting...');
 	
 	function saveFile() {
 		var blob = new Blob([rightBody.innerHTML], {type: "text/plain;charset=utf-8"});
-		saveAs(blob, 'zurich-d' + day + '-trim-join-sort-latlon.csv');	
+		saveAs(blob, 'zurich-d' + day + '.csv');	
 	}
 	
 	HX.events = function() {
 		this.count;
 		this.data = [];
 	};
-
+		var record, route, keys;
+		var sStop;
+		var p, pd;
 	function processData() {
 		var text;
 		var lines;
 		var data;
-		var record, route, keys;
 		
+
 		text = xmlhttp.responseText;
 		lines = text.split(/\r\n|\n/);
 		data = [];
@@ -125,38 +127,43 @@ console.log('waiting...');
 			if ((i % 10000) === 0 ) { info2.innerText = i; console.log('split', i );}
 		}
 		info1.innerText = data.length;
-		
-		var txt = '';
-		var cnt = 0;
-		var pcs ;
-		for (var i = 0, len = data.length; i < 10000; i++) {
-			record = data[i];
-			if ( HX.keys.indexOf( record[0] ) > 0 ) {
-			
-				txt += record[6] + ' - ' +  HX.events[ record[0] ].data[0][7] ;
-			} else {
-				txt += i
-			}
 
-			
-/*			
-			stopNameShort = record[6];
-			stop = HX.zurichStops[ stopNameShort ];
-			if ( stop !== undefined ) {
-				txt += c + stop.latitude + c + stop.longitude;
-				cnt++
+		var txt = 'tripStart,routeNumber,runNumber,direction,stopSequenceNr,stopId,stopNameShort,' +
+			'arrivalScheduled,departureScheduled,arrivalActual,departureActual,vehicleId,stopName,latitude,longitude' +
+			'passengersBoardingTrip,passengersAlightingTrip,passengersDifferenceTrip,passengersBoardingStop,passengersAlightingStop,passengerLoadStop' +
+		'\n';
+		// var txt = '';
+		var cnt = 0;
+		var hit;
+		for (var i = 0, len = data.length; i < len; i++) {
+			record = data[i];
+			hit = false;
+			if ( HX.pcsKeys.indexOf( record[0] ) > 0 ) {
+				sStop = record[6];
+				p =  HX.pcsKeys[ HX.pcsKeys.indexOf( record[0] ) ];
+				pd = HX.events[p].data;
+				for (var j = 0, jlen = pd.length; j < jlen; j++) {
+					if ( pd[j][7].replace(/["']/g, "") === sStop ) {
+						hit = true;
+						cnt++;
+						// txt += 'hit: ' + i + ' - ' + cnt++ + ' ' + sStop + ' ' + pd[j][7] + ' \n'  + p + ' ' + pd[j][7]  + ' ' + pd[j] +  '\n';  // 
+						txt += data[i] + c + pd[j][12] + c + pd[j][13] + c + pd[j][14] + c + pd[j][15] + c + pd[j][16] + c + pd[j][17] + '\n';
+					}
+				} 
+			} else {
+				txt += i;
+			}
+			if ( hit === true ) {
+
+			} else {
+				txt += data[i] + ',,,,,,\n';
 			}	
-*/			
-			txt += '\n'; 
 			if ((i % 10000) === 0 ) { info2.innerText = i; console.log('parse', i );}
 		}			
-
 		rightBody.innerHTML = txt;
 		info2.innerText += ' - count: ' + cnt + ' - completed day:' + day;
 	}
 	
-var dates, theDate;
-
 	function processPeeps() {
 		text = xmlhttp.responseText;
 		lines = text.split(/\r\n|\n/);
@@ -167,7 +174,8 @@ var dates, theDate;
 			if ((i % 10000) === 0 ) { info2.innerText = i; console.log('split', i );}
 		}
 		
-		dates =['20121001','2012-10-02','2012-10-03','2012-10-04','2012-10-05','2012-10-06','2012-10-07'];
+		var dates, theDate;
+		dates =['20121001','20121002','20121003','20121004','20121005','20121006','20121007'];
 		theDate = dates[ day - 1];
 		
 		for (var i = 1, len = data.length - 1; i < len; i++) {
@@ -185,16 +193,16 @@ var dates, theDate;
 					ev.count++;
 					ev.data.push( record );
 					if ( ev.route !== record[ 1 ].replace(/["']/g, "") ) { 
-	console.log( i, ev.key, ev.route, record[ 1 ].replace(/["']/g, "") );  }
+console.log( i, ev.key, ev.route, record[ 1 ].replace(/["']/g, "") );  }
 				}
 			}
 			if ((i % 10000) === 0 ) { info2.innerText = i; console.log('routes', i );}
 		}
 		
-		HX.keys = Object.keys( HX.events );
-		var id, txt = 'keys: ' + HX.keys.length + '\n';
-		for (var i = 0, len = HX.keys.length; i < len; i++) {
-			id = HX.keys[i];
+		HX.pcsKeys = Object.keys( HX.events );
+		var id, txt = 'keys: ' + HX.pcsKeys.length + '\n';
+		for (var i = 0, len = HX.pcsKeys.length; i < len; i++) {
+			id = HX.pcsKeys[i];
 			txt += i + ' key: ' + id + ' count: ' + HX.events[id].count + ' data: ' + HX.events[id].data.length + '\n';
 		}
 		leftBody.innerHTML = txt;;
