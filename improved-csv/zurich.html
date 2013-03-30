@@ -10,7 +10,49 @@
 <body>
 	<h1>Zurich CSV Data</h1>
 	
-	<p>links to go here...</p>
+	<p>Files sizes for each day range from 16 to 25 megabytes.</p>
+	
+	<p>The fields included in each .CSV include the following fields, in order of appearance:</p>
+	
+	<ul>
+		<li>tripStart</li>
+		<li>routeNumber</li>
+		<li>runNumber</li>
+		<li>direction</li>
+		<li>stopSequenceNr</li>
+		<li>stopId</li>
+		<li>stopNameShort</li>
+		<li>arrivalScheduled</li>
+		<li>departureScheduled</li>
+		<li>arrivalActual</li>
+		<li>departureActual</li>
+		<li>vehicleId</li>
+		<li>stopName</li>
+		<li>latitude</li>
+		<li>longitude</li>
+		<li>passengersBoardingTrip</li>
+		<li>passengersAlightingTrip</li>
+		<li>passengersDifferenceTrip</li>
+		<li>passengersBoardingStop</li>
+		<li>passengersAlightingStop</li>
+		<li>passengerLoadStop</li>
+	</ul>
 
+	<p>The files are sorted according to the 'arrivalActual' field.</p>
+	
+	<p>Sime records are missing scheduled arrivals. This was true in the source file.</p>
+	
+	<p>The JavaScript procedures used to create the files included:</p>
+	
+	<p>Open main file, 50 gigs at a time - the max JavaScript seemed to allow and save into 14 smaller files.</p>
+	
+	<p>Join the two half day files back into one file.</p>
+	
+	<p>Sort each day file in the order of actuall arrival time</p>
+	
+	<p>Open stops.json. Read its name and latitude and longitude data. Add this data to each record in each day file.</p>
+	
+	<p>Open the file with the passenger load data and add that data to each day file. Allow for the the passenger load file having data for perhaps 
+		only twenty percent of the main file records. Also figure out which records belong to each other.</p>
 </body>
 </html>

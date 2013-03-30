@@ -10,7 +10,40 @@
 <body>
 	<h1>Improved CSV Data</h1>
 	
-	<p>Tim has been cleaning up the data, splitting up huge files, sorting the records and much. much more...</p>
+	<iframe src='./zurich/schedule-vs-arrival.excerpt.csv' style='height: 300px;width:80%;'></iframe>
+	<br>
+	<small><i>sample CSV file</i></small>
+
+	<p>The data files provided by the organizers included two very large .CSV files.</p>
+	
+	<p>Extracting and parsing the data from a CSV file with, for example, 526,364,977 bytes (Zurich) 
+		or even 182,578,664 bytes(Geneva's schedule-real-time.csv) took some thinking. 
+		Applications such Open Office and Notepad++ were found to be simply incapable of dealing with files of this saze.</p>
+		
+	<p>Suggestion to organizers: If you ever work again on a project like this with very large data sets, 
+		consider offering a files under 100 megabytes in size along side the very large single data sets.</p>
+		
+	<p>General goals for the generated data are generally described on the Urdacha 
+		<a href='https://github.com/jaanga/urdacha/wiki/Suggested-Data-Reports' target='_blank'>Wiki</a>.</p>	
+	
+	<p>The Urdacha team is pursuing two quite different approaches towards opening and parsing the files.</p>
+	
+	<p>The first approach uses PostgreSQL and a variety of RDBMS tools to parse, extract and reformulate the data.
+		The generated CSV files are available via DropBox here:</p>
+		
+	<p><a href='https://www.dropbox.com/sh/x3dywgtdf052hvu/WfO3ZK2Eck?n=4732486' target='_blank'>Urdacha</a></p>	
+	
+	<p>The link also provides a variety of tools as well as the useful document:'Steps to create SFMTA Files'.</p>
+	
+	<p>The second approach uses JavaScript and the XMLHttpRequest feature to load the large files in smaller portions.
+		Once loaded the files are parsed and saved locally using the new <a href='https://github.com/eligrey/FileSaver.js/' target='_blank'>FileSaver</a></p>		
+	
+	<p>All the files produced using this technique are available on the GitHub Urdache repository 
+		<a href='https://github.com/jaanga/urdacha/tree/gh-pages/improved-csv' target='_blank'>'improved-csv'</a>.
+	    The folders for Geneva and Zurich also include all the JavaScript tools that are being use to manipulate the files.	
+	</p>
+	
+	<p></p>	
 
 </body>
 </html>
