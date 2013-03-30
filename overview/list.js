@@ -5,6 +5,7 @@ var list = {
 	'1 Home': {
 		'Overview': [
 			[ 'Home Page', 'overview/index'],
+			[ 'Progress Reports', 'overview/progress reports'],
 			[ 'Contributors', 'overview/Contributors'],
 			[ 'License', 'overview/License']
 		]
