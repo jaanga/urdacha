@@ -57,7 +57,7 @@
 	HAX.sanFrancisco.fieldsId = 0;
 	HAX.sanFrancisco.fieldsTitles = [ 'San Francisco Day 1', 'San Francisco Day 2', 'San Francisco Day 3', 'San Francisco Day 4', 'San Francisco Day 5', 'San Francisco Day 6', 'San Francisco Day 7' ];
 	HAX.sanFrancisco.fname = HAX.sanFrancisco.fields[0];
-	HAX.sanFrancisco.folder = '../../improved-csv/';
+	HAX.sanFrancisco.folder = '../../improved-csv/sanFrancisco/';
 	HAX.sanFrancisco.date = 8;
 	HAX.sanFrancisco.time = 15;
 	HAX.sanFrancisco.colorField = 9;
