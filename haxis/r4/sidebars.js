@@ -28,26 +28,26 @@
 
 	HAX.geneva = {};
 	HAX.geneva.app = doCity;
-	HAX.geneva.colorField = 2;
+	HAX.geneva.colorField = 1;
 	HAX.geneva.date = 1;
 	HAX.geneva.direction = 7;
 	HAX.geneva.directionString = 'A';
-	HAX.geneva.fields = [ 'TPG_passenger_count_day1.csv', 'TPG_passenger_count_day2.csv', 'TPG_passenger_count_day3.csv', 'TPG_passenger_count_day4.csv', 'TPG_passenger_count_day5.csv', 'TPG_passenger_count_day6.csv', 'TPG_passenger_count_day7.csv' ];
+	HAX.geneva.fields = [ 'geneva-d1.csv', 'geneva-d2.csv', 'geneva-d3.csv', 'geneva-d4.csv', 'geneva-d5.csv', 'geneva-d6.csv', 'geneva-d7.csv' ];
 	HAX.geneva.fieldsId = 0;
 	HAX.geneva.fieldsTitles = [ 'Geneva Day 1', 'Geneva Day 2', 'Geneva Day 3', 'Geneva Day 4', 'Geneva Day 5', 'Geneva Day 6', 'Geneva Day 7' ];
 	HAX.geneva.fname = HAX.geneva.fields[0];
-	HAX.geneva.folder = '../../TPG/';
+	HAX.geneva.folder = '../../improved-csv/geneva/';
 	HAX.geneva.lineCount = 20;
-	HAX.geneva.trailEnd = 5;
-	HAX.geneva.trailStart = 5;
+	HAX.geneva.trailEnd = 9;
+	HAX.geneva.trailStart = 3;
 	HAX.geneva.lineLength = 2;
-	HAX.geneva.objCount = 100;
+	HAX.geneva.objCount = 300;
 	HAX.geneva.speed = 10;
 	HAX.geneva.time = 34;
 	HAX.geneva.title = 'Geneva';
-	HAX.geneva.x = 13;
-	HAX.geneva.y = 3;
-	HAX.geneva.z = 14;
+	HAX.geneva.x = 15;
+	HAX.geneva.y = 1;
+	HAX.geneva.z = 16;
 
 
 	HAX.sanFrancisco = {};
@@ -75,7 +75,7 @@
 	HAX.zurich = {};
 	HAX.zurich.app = doCity;
 	HAX.zurich.colorField = 1;
-	HAX.zurich.fields = [ 'zurich-sva-d1-trim-lat-long-sort-peeps.csv', 'zurich-sva-d1-trim-lat-long-sort-peeps.csv', 'VBZ_passenger_count_day3.csv', 'VBZ_passenger_count_day4.csv', 'VBZ_passenger_count_day5.csv', 'VBZ_passenger_count_day6.csv', 'VBZ_passenger_count_day7.csv' ]
+	HAX.zurich.fields = [ 'zurich-d1.csv', 'zurich-d2.csv', 'zurich-d3.csv', 'zurich-d4.csv', 'zurich-d5.csv', 'zurich-d6.csv', 'zurich-d7.csv' ]
 	HAX.zurich.fieldsId = 0;
 	HAX.zurich.fieldsTitles = [ 'Zurich Day 1', 'Zurich Day 2', 'Zurich Day 3', 'Zurich Day 4', 'Zurich Day 5', 'Zurich Day 6', 'Zurich Day 7' ];
 	HAX.zurich.fname = HAX.zurich.fields[0];
