@@ -52,7 +52,6 @@
 
 	HAX.sanFrancisco = {};
 	HAX.sanFrancisco.app = doCity;
-	HAX.sanFrancisco.title = 'San Francisco';
 	HAX.sanFrancisco.fields = [ 'sf_day1.csv', 'sf_day2.csv', 'sf_day3.csv', 'sf_day4.csv', 'sf_day5.csv', 'sf_day6.csv', 'sf_day7.csv' ];
 	HAX.sanFrancisco.fieldsId = 0;
 	HAX.sanFrancisco.fieldsTitles = [ 'San Francisco Day 1', 'San Francisco Day 2', 'San Francisco Day 3', 'San Francisco Day 4', 'San Francisco Day 5', 'San Francisco Day 6', 'San Francisco Day 7' ];
@@ -64,9 +63,11 @@
 	HAX.sanFrancisco.direction = 13;
 	HAX.sanFrancisco.directionString = '0';
 	HAX.sanFrancisco.lineCount = 100;
+	HAX.geneva.objCount = 300;
 	HAX.sanFrancisco.trailStart = 14;
 	HAX.sanFrancisco.trailEnd = 14;
 	HAX.sanFrancisco.lineLength = 10;
+	HAX.sanFrancisco.title = 'San Francisco';
 	HAX.sanFrancisco.x = 10;
 	HAX.sanFrancisco.y = 9;
 	HAX.sanFrancisco.z = 11;
@@ -88,9 +89,9 @@
 	HAX.zurich.objCount = 100;
 	HAX.zurich.speed = 5;
 	HAX.zurich.time = 6;
-	HAX.zurich.x = 1;
-	HAX.zurich.y = 3;
-	HAX.zurich.z = 2;
+	HAX.zurich.x = 11;
+	HAX.zurich.y = 1;
+	HAX.zurich.z = 12;
 
 	HAX.xAxis = {};
 	// HAX.xAxis.fields = HAX.xAxis.fieldsTitles = [];
