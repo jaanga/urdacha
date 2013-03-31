@@ -10,7 +10,45 @@
 <body>
 	<h1>Theo ~ Data Wrangle Day #1</h1>
 	
-	<p>text...</p>
+	<p>After about 20 years working on this kind of software - apps that visualize large quantities of data using animated 3D display, I going to do something I have almost never done before. I'm going to eat my own dog food. I'm going to put my mouth where my money is. I'm going to practice what I preach. I am going to use the software that I've been working on.</p>
+
+<p>For the next two weeks I will be using hAxis and the other tools I built to look at the data from the Urban Data Challenge. I hope to come up with a few interesting points of view arising from simply looking at the data.</p>
+
+<p>This is from a concept called <a href="http://en.wikipedia.org/wiki/Exploratory_data_analysis">Exploratory Data Analysis</a> (EDA) first described by John Tukey back in the 1950s. BTW, John Tukey is a very interesting man, he probably invented the word 'software' and did invent the word 'bits' as in bits and bytes. He was also the mentor of somebody you might well know f you have been involved with graphic design: Edward Tufte.</p>
+
+<p>The idea of EDA is that the data that you see can stimulate your brain and help you come up with a new paradigm, a new thought, a fresh point of view.</p>
+
+<p>The reason that I'm able to do EDA myself this time is quite interesting in itself as well. Up to now writing the software has been very difficult - especially for somebody with my limited capabilities. I have generally spend the whole time writing the software, building the user interface, fixing bugs and never actually getting a chance to use what I build. Today, with tools like JavaScript, WebGL, and Three.js building a real time 3 D application is far easier than it ever has been before.</p>
+
+<p>So this moment is actually pretty scary. Maybe I won't find anything interesting at all. This would be quite disappointing after working so many years on these ideas. But I am optimistic. I hope to come up with at least one fresh, exciting thought that comes directly out of the data. I will be delighted if we could come up collectively with about 10 or so different view points. And who knows, we have come a couple of weeks and some very smart people. Conceptually we could rule the world.</p>
+
+<p>So the first thing I plan to do is look for data points in strange places. Traditionally I would start by creating a map in 3D and thinking geographically. But here with exploratory data analysis I plan to let the map go, forget the map. As somebody said a while ago, just let the physics rule.</p>
+
+<p>So I think I'm just going to start with something the opposite of geography, which is time and put three different time elements on the three axis and see what happens. My guess is that the data will be in some kind of diagonal line X for is the earliest time, Z which is the other horizontal axis it for the door close time and then the time when the bus leaves something maybe on the vertical or Y axis. Since the series progress is it in time order, the data points should for matches to the single point somewhere in 3 D space. So that's my prediction. let's see how it goes</p>
+
+<h2>Later</h2>
+
+<p>The results were very much as predicted. The data was a cluster of points rising diagonally from the origin up to the opposite corner - and taking the whole day to do so. There was at least one interesting point: that data did not cluster perfectly. It looks like during some periods of the day it takes longer to load the bus than other parts of the day. Think of a caterpillar inching its way up a branch - sometimes longer, sometimes shorter.</p>
+
+<p>This seems obvious. What was interesting was that the time of day when these loading delays seems to occur may not be obvious. </p>
+
+<p>My guess would have been that the morning and evening rush hours would have the greatest delay.</p>
+
+<p>Looking at the data visualization offers a different perspective. Buses seem to run through the early morning and the morning rush hours with the minimum loading times. </p>
+
+<p>The longer loading times during the week days start to occur at around 10:30, rise at 11:30, rise quite a bit more at 15:30. The peak seems to be between 16:30 and 20:30. By 22:00 the buses are running with very few boarding delays.</p>
+
+<p>On the weekends the story seem similar. The differences being the delays continue longer into the evening on Saturday and on Sunday the delays are more evenly spread out.</p>
+
+<p>Thus one can probably surmise that the delays are not caused by commuters but are mostly due due to non-commuters.</p>
+
+<p>As of now I have no numbers to back up my assertions. But what I do have is probably more important: a new theory to test.</p>
+
+<h2>Further thoughts</h2>
+
+<p>Some of the things I see will be obvious to a transportation planner.  But if I see things only a transportation planner would normally see then what amazing things could a transportation planner familiar with the app be able to see?</p>
+
+<p>Somehow I have to show this to you.  In the next day or so I will start to prepare the links that will build the URLs that will reproduce what I was seeing. Hold on tight... </p>
 
 </body>
 </html>
