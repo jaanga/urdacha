@@ -32,9 +32,9 @@
 	HAX.geneva.date = 1;
 	HAX.geneva.direction = 7;
 	HAX.geneva.directionString = 'A';
-	HAX.geneva.fields = [ 'geneva-d1.csv', 'geneva-d2.csv', 'geneva-d3.csv', 'geneva-d4.csv', 'geneva-d5.csv', 'geneva-d6.csv', 'geneva-d7.csv' ];
+	HAX.geneva.fields = [ 'geneva-d1.csv', 'geneva-d1.csv', 'geneva-d2.csv', 'geneva-d3.csv', 'geneva-d4.csv', 'geneva-d5.csv', 'geneva-d6.csv', 'geneva-d7.csv' ];
 	HAX.geneva.fieldsId = 0;
-	HAX.geneva.fieldsTitles = [ 'Geneva Day 1', 'Geneva Day 2', 'Geneva Day 3', 'Geneva Day 4', 'Geneva Day 5', 'Geneva Day 6', 'Geneva Day 7' ];
+	HAX.geneva.fieldsTitles = [ 'Select a day', 'Geneva Day 1', 'Geneva Day 2', 'Geneva Day 3', 'Geneva Day 4', 'Geneva Day 5', 'Geneva Day 6', 'Geneva Day 7' ];
 	HAX.geneva.fname = HAX.geneva.fields[0];
 	HAX.geneva.folder = '../../improved-csv/geneva/';
 	HAX.geneva.lineCount = 20;
@@ -43,7 +43,7 @@
 	HAX.geneva.lineLength = 2;
 	HAX.geneva.objCount = 30;
 	HAX.geneva.speed = 10;
-	HAX.geneva.time = 34;
+	HAX.geneva.time = 8;
 	HAX.geneva.title = 'Geneva';
 	HAX.geneva.x = 15;
 	HAX.geneva.y = 1;
@@ -54,7 +54,7 @@
 	HAX.sanFrancisco.app = doCity;
 	HAX.sanFrancisco.fields = [ 'sf_day1.csv', 'sf_day2.csv', 'sf_day3.csv', 'sf_day4.csv', 'sf_day5.csv', 'sf_day6.csv', 'sf_day7.csv' ];
 	HAX.sanFrancisco.fieldsId = 0;
-	HAX.sanFrancisco.fieldsTitles = [ 'San Francisco Day 1', 'San Francisco Day 2', 'San Francisco Day 3', 'San Francisco Day 4', 'San Francisco Day 5', 'San Francisco Day 6', 'San Francisco Day 7' ];
+	HAX.sanFrancisco.fieldsTitles = [ 'San Francisco 2012-10-01', 'San Francisco D2012-10-02', 'San Francisco 2012-10-03', 'San Francisco 2012-10-04', 'San Francisco 2012-10-05', 'San Francisco 2012-10-06', 'San Francisco 2012-10-07' ];
 	HAX.sanFrancisco.fname = HAX.sanFrancisco.fields[0];
 	HAX.sanFrancisco.folder = '../../improved-csv/sanFrancisco/';
 	HAX.sanFrancisco.date = 8;
@@ -76,9 +76,9 @@
 	HAX.zurich = {};
 	HAX.zurich.app = doCity;
 	HAX.zurich.colorField = 1;
-	HAX.zurich.fields = [ 'zurich-d1.csv', 'zurich-d2.csv', 'zurich-d3.csv', 'zurich-d4.csv', 'zurich-d5.csv', 'zurich-d6.csv', 'zurich-d7.csv' ]
+	HAX.zurich.fields = [ 'zurich-d1.csv', 'zurich-d1.csv', 'zurich-d2.csv', 'zurich-d3.csv', 'zurich-d4.csv', 'zurich-d5.csv', 'zurich-d6.csv', 'zurich-d7.csv' ]
 	HAX.zurich.fieldsId = 0;
-	HAX.zurich.fieldsTitles = [ 'Zurich Day 1', 'Zurich Day 2', 'Zurich Day 3', 'Zurich Day 4', 'Zurich Day 5', 'Zurich Day 6', 'Zurich Day 7' ];
+	HAX.zurich.fieldsTitles = [ 'Select a day', 'Zurich Day 1', 'Zurich Day 2', 'Zurich Day 3', 'Zurich Day 4', 'Zurich Day 5', 'Zurich Day 6', 'Zurich Day 7' ];
 	HAX.zurich.fname = HAX.zurich.fields[0];
 	HAX.zurich.folder = '../../improved-csv/zurich/';
 	HAX.zurich.title = 'Zurich';
@@ -88,7 +88,7 @@
 	HAX.zurich.lineLength = 2;
 	HAX.zurich.objCount = 100;
 	HAX.zurich.speed = 5;
-	HAX.zurich.time = 6;
+	HAX.zurich.time = 8;
 	HAX.zurich.x = 11;
 	HAX.zurich.y = 1;
 	HAX.zurich.z = 12;
@@ -162,7 +162,7 @@ var dataCount, dataLength = 70000;
 
 		stats = document.body.appendChild(document.createElement( 'div' ) );
 		stats.className = 'sidebar';
-		stats.style.cssText = 'display: none; left: 350px; width: 500px;' ;
+		stats.style.cssText = 'display: none; left: 350px; width: 510px;' ;
 
 		var settingsMenu = document.body.appendChild(document.createElement( 'div' ) );
 		settingsMenu.className = 'menu';
@@ -394,8 +394,6 @@ var dataCount, dataLength = 70000;
 		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
 	}
 	
-
-
 	function updatePlayStart( event ) {
 		dataCount = event.srcElement.value;
 		HAX.playStart.max = dataLength - 100;	

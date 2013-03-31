@@ -336,10 +336,12 @@ console.log('waiting...');
 		
 		stats.innerHTML = 'City: ' + h.title + '<br>' +
 			'Total lines in file: ' + dataLength + ' ~ Current line: ' + dataCount + '<br>' +
-			'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
+			// 'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
+			' Time: ' + record[ h.time] + '<br>' +
 			'Replay speed: ' + HAX.speed + ' Camera FOV: ' + HAX.camFov + '<br>' +
 			'X: ' + data[0][ h.x] + ': ' + xKeys.length + ' Y: ' + data[0][ h.y] + ': ' + yKeys.length + ' Z: ' + data[0][ h.z] + ': ' + zKeys.length + '<br>' +
-			'Lines disconnected: ' + HAX.lineSetChanges;
+			// 'Lines disconnected: ' + HAX.lineSetChanges +
+		'';
 		if ( dataCount > dataLength - HAX.speed - 1 ) { 
 			dataCount = 1; 
 			HAX.lineSetChanges = 0;
