@@ -7,13 +7,21 @@
 <script src='../overview/page.js'></script>
 <link type='text/css' rel='stylesheet' href='../overview/page.css' />
 </head>
+
 <body>
-	<h1>Improved CSV Data</h1>
+<h1>Improved CSV Data</h1>
+<script>
+var ifr = document.body.appendChild( document.createElement( 'iframe' ) );
+	ifr.style.cssText = 'font: bold 13pt monospace; height: 300px; width: 80%; ';
+	ifr.src = './zurich/schedule-vs-arrival.excerpt.csv';
+</script>
+
 	
+<!--	
 	<iframe src='./zurich/schedule-vs-arrival.excerpt.csv' style='height: 300px;width:80%;'></iframe>
 	<br>
 	<small><i>sample CSV file</i></small>
-
+-->
 	<p>The data files provided by the organizers included two very large .CSV files.</p>
 	
 	<p>Extracting and parsing the data from a CSV file with, for example, 526,364,977 bytes (Zurich) 
