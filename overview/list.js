@@ -11,7 +11,7 @@ var list = {
 		]
 	},	
 	'2 hAxis': {
-		'This is the competition entry. hAxis 4 is the latest version': [
+		'Urdacha competition entry': [
 			[ 'Read Me', 'haxis/Read Me'],
 			[ 'hAxis r4', 'haxis/r4/index'],
 			[ 'hAxis r3', 'haxis/r3/haxis'],
@@ -31,7 +31,7 @@ var list = {
 	},
 
 	'4 Exploratory Data Analysis': {
-		'An informal review of what hAxis helps us see': [
+		'An informal review of what hAxis can help you see': [
 			[ 'Read Me', 'data-wrangler/Read Me'],
 			[ 'TA ~ Day #3', 'data-wrangler/theo-03'],
 			[ 'TA ~ Day #2', 'data-wrangler/theo-02'],
