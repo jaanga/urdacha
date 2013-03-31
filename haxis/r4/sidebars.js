@@ -45,9 +45,9 @@
 	HAX.geneva.speed = 10;
 	HAX.geneva.time = 8;
 	HAX.geneva.title = 'Geneva';
-	HAX.geneva.x = 15;
+	HAX.geneva.x = 16;
 	HAX.geneva.y = 1;
-	HAX.geneva.z = 16;
+	HAX.geneva.z = 17;
 
 
 	HAX.sanFrancisco = {};
