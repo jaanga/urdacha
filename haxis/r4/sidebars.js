@@ -41,7 +41,7 @@
 	HAX.geneva.trailEnd = 9;
 	HAX.geneva.trailStart = 3;
 	HAX.geneva.lineLength = 2;
-	HAX.geneva.objCount = 300;
+	HAX.geneva.objCount = 30;
 	HAX.geneva.speed = 10;
 	HAX.geneva.time = 34;
 	HAX.geneva.title = 'Geneva';
@@ -63,7 +63,7 @@
 	HAX.sanFrancisco.direction = 13;
 	HAX.sanFrancisco.directionString = '0';
 	HAX.sanFrancisco.lineCount = 100;
-	HAX.geneva.objCount = 300;
+	HAX.sanFrancisco.objCount = 300;
 	HAX.sanFrancisco.trailStart = 14;
 	HAX.sanFrancisco.trailEnd = 14;
 	HAX.sanFrancisco.lineLength = 10;
@@ -120,6 +120,8 @@
 	HAX.fov.step = 1;
 	HAX.fov.value = 40;
 	HAX.fov.onchange = updateFoV;
+
+var dataCount, dataLength = 70000;	
 
 	HAX.playStart = {};
 	HAX.playStart.title = 'record to start playing on';
@@ -392,11 +394,12 @@
 		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
 	}
 	
-var dataCount, dataLength = 70000;
 
-	function updatePlayStart() {
+
+	function updatePlayStart( event ) {
 		dataCount = event.srcElement.value;
-		HAX.playStart.max = dataLength - 100;
+		HAX.playStart.max = dataLength - 100;	
+		event.srcElement.max = HAX.playStart.max;
 	}	
 	
 	function doXaxis( event ) {
