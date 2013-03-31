@@ -1,16 +1,58 @@
 <!doctype html>
 <html lang='en'>
 <head>
-<title>Theo ~ Data Wrangle Day #2</title>
+<title>Theo ~ Exploratory Data Analysis Day #2</title>
 <meta charset='utf-8'>
 <script src='../overview/list.js'></script>
 <script src='../overview/page.js'></script>
 <link type='text/css' rel='stylesheet' href='../overview/page.css' />
 </head>
 <body>
-	<h1>Theo ~ Data Wrangle Day #2</h1>
+	<h1>Theo ~ Exploratory Data Analysis #2</h1>
 	
-	<p>text...</p>
+	<p>This is my second day as an Urdacha 'Data Wrangler'.  Yesterday went so well, that I thought I would continue down the same track: identify three related non-geographic data fields and assign them to X, Y and Z.</p>
+
+<p>After a quick look at the available fields, I picked: passenger_on, passenger_off and passenger_load.</p>
+
+<p>This time I did not stop and try to imagine what the display would look like. I just proceeded with the choice.</p>
+
+<p>I was surprised with the result. Quite different than yesterday's tiny caterpillar crawling up the diagonal.</p>
+
+<p>Today's data looks very much like a wire-frame cube.</p>
+
+<p>Let me explain.</p>
+
+<p>The data is about how many people get on at a stop - which I put on the X-axis, how many people get off the bus at a stop - which I put on the Z--axis and the total passenger load which I put on the vertical Y-axis.</p>
+
+<p>If you ask me: how many people get on or off the bus at any particular stop?</p>
+
+<p>I think my answer - and most everybody else like me would say" "Dunno. Two or three?"</p>
+
+<p>From what I can see - and this is just purely visual impression/no hard numbers - the most likely candidate for the total number of people getting off and on the bus is: zero.</p>
+
+<p>I am just saying what I am seeing. I am probably wrong. Nevertheless there are a great number of stops where nobody gets on or off the bus.</p>
+
+<p>OK, then what is the second most likely number of people getting of and on?</p>
+
+<p>Again: Two or three?</p>
+
+<p>Wrong [maybe]!</p>
+
+<p>The second most likely candidate for people getting on and off the bus is: the entire bus load.</p>
+
+<p>So the cube I see is the vertical Y-axis at ( 0, 0 ) is full of items. This means there is a load but nobody is getting on and off.</p>
+
+<p>The other three corners also have a lot of business: These are where :
+	1. everybody get on the bus but nobody gets off
+	2. everybody gets of the bus but nobody gets on
+	3. everybody gets off the bus *and* everybody gets on the bus </p>
+
+<p>I feel certain that this is the sort data that experienced transportation planners are totally familiar with. And, after all, it is logical that most people get on and off at a main bus station.</p>
+
+<p>Nevertheless seeing the data exposed in this way was a fresh and surprising experience.</p>
+
+<p>So I am pleased that a newb transportation data wrangler can also gain insight...
+</p>
 
 </body>
 </html>
