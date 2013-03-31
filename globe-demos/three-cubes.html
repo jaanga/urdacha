@@ -75,16 +75,17 @@
 		
 
 		light = new THREE.SpotLight( 0xffffff, 1.5 );
-		light.position.set( 200, 400, 200 );
+		light.position.set( 100, 200, 100 );
 		light.castShadow = true;
 		
-		light.shadowMapWidth = 1024;
-		light.shadowMapHeight = 1024;
-		light.shadowCameraNear = 300;
-		light.shadowCameraFar = 600;
-		light.shadowCameraFov = 20;		
+		light.shadowMapWidth = 2048;
+		light.shadowMapHeight = 2048;
+		light.shadowCameraNear = 230;
+		light.shadowCameraFar = 275;
+		light.shadowCameraFov = 15;		
+		light.shadowDarkness = 0.2;
 		scene.add( light );  	
-// light.shadowCameraVisible = true;		
+light.shadowCameraVisible = true;		
 
 
 		var css = document.body.appendChild( document.createElement('style') );
@@ -92,14 +93,15 @@
 			'a { color: #f00; text-decoration: none;}  ' +
 			'button, input[type=range] { -webkit-appearance: none; background-color: silver; height:20px; opacity: 0.5; width: 80px;}' +
 			'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }' ;
-/*
-		material = new THREE.MeshBasicMaterial( {color: Math.random() * 0xffffff, side: THREE.DoubleSide } );
+
+		material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide } );
 		geometry = new THREE.PlaneGeometry( 100, 100, 1, 1 );
 		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
 		plane = new THREE.Mesh( geometry, material );
+		plane.position.y = -12;
 		plane.receiveShadow = true;
 		scene.add( plane );
-*/
+
 
 		
 		scans = new THREE.Object3D();
@@ -107,15 +109,18 @@
 		geometry = new THREE.CubeGeometry( 10, 10, 10 );
 		var texture = THREE.ImageUtils.loadTexture( '../images/us-ca-sf.gif' );
 		material = new THREE.MeshBasicMaterial( { map: texture } );
-				cube.receiveShadow = true;
-			cube.castShadow = true;	
+
 		var cube1 = new THREE.Mesh( geometry, material );
+		cube1.receiveShadow = true;
+		cube1.castShadow = true;			
 		// cube1.rotation.set(5, 5, 5);
 		scans.add( cube1 );
 		
 		texture = THREE.ImageUtils.loadTexture( '../images/ch-ge.gif' );
 		material = new THREE.MeshBasicMaterial( { map: texture } );
 		var cube2 = new THREE.Mesh( geometry, material );
+		cube2.receiveShadow = true;
+		cube2.castShadow = true;		
 		cube2.position.set(5, 5, 5);
 		cube2.rotation.set(-10, -10, 10);
 		scans.add( cube2 );		
@@ -123,6 +128,8 @@
 		var texture = THREE.ImageUtils.loadTexture( '../images/ch-zh.gif' );
 		material = new THREE.MeshBasicMaterial( { map: texture } );
 		var cube3 = new THREE.Mesh( geometry, material );
+		cube3.receiveShadow = true;
+		cube3.castShadow = true;		
 		cube3.position.set(-5, -5, -5);
 		cube3.rotation.set(10, 1, -1);
 		scans.add( cube3 );			
@@ -172,7 +179,7 @@ var theta, radius = 20;
 			scans.children[i].rotation.y +=0.005;
 			scans.children[i].position.x += 5 * Math.sin(tim);
 			
-			scans.rotation.x += 0.004;
+			scans.rotation.x += 0.002;
 		}
 	}
 
