@@ -9,37 +9,38 @@ var list = {
 			[ 'Contributors', 'overview/Contributors'],
 			[ 'License', 'overview/License']
 		]
-	},
-	
-	'2 Improved CSV': {
-		'overview': [
-			[ 'Read Me', 'improved-csv/Read Me'],
-			[ 'San Francisco', 'improved-csv/sanFrancisco'],
-			[ 'Geneva', 'improved-csv/geneva'],
-			[ 'Zurich', 'improved-csv/zurich'],
-		],
-	},
-
-	'3 Data Wrangle': {
-		'The actual competition entry is here...': [
-			[ 'Read Me', 'data-wrangler/Read Me'],
-			[ 'TA ~ Day #3', 'data-wrangler/theo-03'],
-			[ 'TA ~ Day #2', 'data-wrangler/theo-02'],
-			[ 'TA ~ Day #1', 'data-wrangler/theo-01'],
-		],
 	},	
-	'4 hAxis': {
-		'CSV in 3D app': [
+	'2 hAxis': {
+		'This is the competition entry. hAxis 4 is the latest version': [
 			[ 'Read Me', 'haxis/Read Me'],
 			[ 'hAxis r4', 'haxis/r4/index'],
 			[ 'hAxis r3', 'haxis/r3/haxis'],
 			[ 'haxis r2', 'haxis/haxis-r2'],
 			[ 'hAxis r1', 'haxis/haxis-r1-static'],
-		],
+		]
+	},
+	
+	'3 Improved CSV': {
+		'View the actual files hAxis and other apps display': [
+			[ 'Read Me', 'improved-csv/Read Me'],
+			[ 'San Francisco', 'improved-csv/sanFrancisco'],
+			[ 'Geneva', 'improved-csv/geneva'],
+			[ 'Zurich', 'improved-csv/zurich'],
+
+		]
+	},
+
+	'4 Exploratory Data Analysis': {
+		'An informal review of what hAxis helps us see': [
+			[ 'Read Me', 'data-wrangler/Read Me'],
+			[ 'TA ~ Day #3', 'data-wrangler/theo-03'],
+			[ 'TA ~ Day #2', 'data-wrangler/theo-02'],
+			[ 'TA ~ Day #1', 'data-wrangler/theo-01'],
+		]
 	},
 	
 	'5 flatLand': {
-		'a Nextbus app': [
+		'Prelimary Urdacha project using Nextbus data': [
 			[ 'Read Me', 'flatland/Read Me'],
 			[ 'flatLand r2', 'flatland/'],
 			[ 'flatland r1', 'flatland/'],
@@ -47,7 +48,7 @@ var list = {
 	},	
 	
 	'6 Globes': {
-		'a global view': [
+		'A fun side project - another perspective and another mode': [
 			[ 'Read Me', 'globe-demos/Read Me'],
 			[ 'Globe #1', 'globe-demos/globe01/globe-plus-planes-curved'],
 			[ 'Globe #2', 'globe-demos/globe02/globe-black-shaders-stars-flags'],
@@ -56,8 +57,8 @@ var list = {
 		]		
 	},
 	
-	'7 load-CSV': {
-		'data look/see': [
+	'7 CSV tools': {
+		'Early tools for data wrangling': [
 			[ 'Read Me', 'load-csv/Read Me'],
 			[ 'load-csv', 'load-csv/load-csv'],
 			[ 'load-csv-api', 'load-csv/load-csv-api'],
