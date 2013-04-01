@@ -10,7 +10,83 @@
 <body>
 	<h1>Theo ~ Data Wrangle Day #3</h1>
 	
-	<p>text...</p>
+	<p>Today, we are biting the bullet. We will show the data imitating the map.</p>
+
+<p>In principle I am loathe to do this. Placing dots on maps and moving them around is old-school. The Egyptiand did it - and probably still do. The fun thing is <p>for the data to reveal itself in ways that have never been perceived before, to expose new patterns and correlations.</p>
+
+<p>This was the sort of thing we did in previous entries. </p>
+
+<p>But today is the day to say: Nyah. Nyah. hAxis does do maps. In fact hAxis may do maps better than most maps.</p>
+
+<p>Have a look at today's setup. Latittude is set on the Z-axis. Longitude on the X-axis and routes on the Y-axis.</p>
+
+<p>The display is set so that longitude is horizontal, latitude is vertical and routes are coming straight out the screen. So it's kind of like looking straight down at San Francisco.</p>
+
+<p>The most obvious part is the top right hand corner. Here you can see all the traffic on Market Street cutting diagonally through the Northeast part of the city. To this area's left you can see the routes between California and Geary going out to the ocean. Below you can see all the north and south traffic up and down Mission street. After a while you will be able to identify Treasure Island, Bay Point, The Golden Gate Bridge and other areas.</p>
+
+<p>But something is not quite right! The proportions are wrong.</p>
+
+<p>Bingo! This is not a normal map. It skips all the empty bits. hAxis only shows things when and where there is data.</p>
+
+<p>An example: Given the current accuracy of measurements there are billions of  possible latitudes, but hAxis only shows the 1,069 latitudes where there are bus stops. Interestingly there are only 147 longitudes in use. After selecting all the data points the data is squished to fit into a cube that is always a hundred units along each edge.</p>
+
+<p>This fitting has some nice features. it means, for example, that you don't have to worry about data that is somewhere way off the screen or too small to see. If some data is outside of the box, then there is an error and please report it. In turn this means that one day all of this can work happily on a phone or tablet..</p>
+
+<p>The main feature is that you can compare raw data to raw data - with each type of data being a very different thing. And if you then seen any patterns or correlations emerging you know you are on to something.</p>
+
+<p>In the other hand, the data fitting can produce some odd circumstances. Let us say we set up bus direction on one axis, stop IDs on the next and passenger load on the third. Well, on the first axis there would only be two points: in bound and outbound. The the next axis there might be many thousands of points and on the third the numbers would range from zero to sixty or so and then there is a jump to 99 which indicates an unknown number.</p>
+
+<p>Now you know something about hAxis data fitting, let's go back to what you are seeing.</p>
+
+<p>What exactly are those Rapidly Advancing Caterpillars?</p>
+
+<p>Obviously they are bus-like things, but they stretch and shrink in the way buses don't normally do.</p>
+
+<p>Well, hAxis is a work in progress. The goal is for xAxis to read any sort of time-sequenced data and display it in 3D.</p>
+
+<p>Eventually there will be choices as to controlling the data to be displayed, but as of this writing there is only a very simple mechanism in place: show just the three hundred most recent events.</p>
+
+<p>In this instance, it means the latest three hundred lines of data in the file currently being read and parsed. As each new line is read, the object and data from three hundred lines ago is deleted. </p>
+
+<p>This is a very simple method. As work progresses other methods will be added. These might include methods that only show a set number of minutes or seconds at one time as well as methods that delete previous bus objects if a bus object is still on the map and moving.</p>
+
+<p>Nevertheless this simple and crude method nevertheless provides some interesting insights - some of which are not readily apparent.</p>
+
+<p>The buses with the most blips are likely to be the buses moving fastest through the system. The faster they go the more record they have in a given time period. A slow moving bus or a bus that is stopped may not show up at all - because it is not creating new records.</p>
+
+<p>During the day, there are many buses so even fast moving buses have to share the three hundred spaces with dozens of other buses. but at night time a single fast moving bus can generate dozens or records and become a very long caterpillar indeed.</p>
+
+<p>So much time does it take to make a long caterpillar? </p>
+
+<p>[I bet this is not the usual sort of question transportation planners have to deal with.]</p>
+
+<p>Let's see if we can figure this out.</p>
+
+<p>Looking at the seven days of San Francisco data files, the number of records (lines of data) ranges from around 60,000 to 80,000. </p>
+
+<p>In a single day there 24 x 60 x 60 or 86,400 seconds. So on average each record represents a bit under a second per record. Thus the three hundred objects on average represent five minutes of time. Obviously during the day - when a given second may have dozens of records generated - long caterpillars are hard to grow as the entire time period might be down to a minute. At night time, with only a few buses running and with a bit of lick on the stop lights my guess is that a long caterpillar may have had half an hour to grow on.</p>
+
+<p>Here's the interesting question: what length of caterpillar do we prefer?</p>
+
+<p>The long caterpillar is most likely the result of a journey with very few pick-ups and drop-offs and an indication of empty buses zipping down empty streets.</p>
+
+<p>Then again the short caterpillar might also be an empty bus if the route is complicated and hilly .</p>
+
+<p>Nevertheless, planners: beware the long caterpillar.</p>
+
+<p>Are there any other obvious things shown by the hAxis map?</p>
+
+<p>The southeast quadrant of the city and north of California Street may have fewer pick-up and drop-off than other parts of the city.</p>
+
+<p>Live between anywhere between the lengths of California and Geary and anywhere along Mission Street if you want lots of nearby caterpillars.</p>
+
+<p>Caterpillars love to go to Union Square.</p>
+
+<p>And, now, did you want to know about the lines?</p>
+
+<p>Well, when some caterpillars move across a leaf they leave a slime trail. The lines are kind of like that slim trail. </p>
+
+<p>Sometimes caterpillars fall off the leaf - and travel a long distance without leaving a slime trail. Our Rapidly Advancing Caterpillars *always* leave a slime trail especially when on express routes and returning home after work. In this case that's when you see very long straight slime trails.</p>
 
 </body>
 </html>
