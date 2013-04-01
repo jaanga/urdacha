@@ -26,7 +26,6 @@
 	var zCoords, zDelta;
 	var keys;
 	var data; 
-	// dataLength, dataCount;
 	var dataPlay = false;
 
 	init();
@@ -55,19 +54,24 @@
 		if (HAX.upX === undefined) return;
 		var h = HAX;
 		var link = 
-			'title=' + h.title + 
-			'#x=' + h.x +  '#y=' + h.y + '#z=' + h.z + 
-			'#date=' + h.date + 
-			'#time=' + h.time + 
-			'#color=' + h.colorField + 
-			'#direction=' + h.direction + 
-			'#lineStart=' + h.lineStart + 
-			'#lineEnd=' + h.lineEnd +
-			'#camType=' + h.camType + '#camFov=' + h.camFov + '#speed=' + h.speed +
+			'title=' + h.title +
+			'#camType=' + h.camType + '#camFov=' + h.camFov +
 			'#camX=' + h.camX.toFixed(2) + '#camY=' + h.camY.toFixed(2) + '#camZ=' + h.camZ.toFixed(2) +
-			'#rotX=' + h.rotX.toFixed(3) + '#rotY=' + h.rotY.toFixed(3) + '#rotZ=' + h.rotZ.toFixed(3) +
-			'#upX=' + parseFloat(h.upX).toFixed(3) + '#upY=' + parseFloat(h.upY).toFixed(3) + '#upZ=' + parseFloat(h.upZ).toFixed(3) +
+			'#color=' + h.colorField + 
+		// '#date=' + h.date + 
+			'#direction=' + h.direction + 
+			'#directionString=' + h.directionString +
 			'#folder=' + h.folder + '#fname=' + h.fname + 
+			'#rotX=' + h.rotX.toFixed(3) + '#rotY=' + h.rotY.toFixed(3) + '#rotZ=' + h.rotZ.toFixed(3) +
+			'#objCount=' + h.objCount +
+			'#speed=' + h.speed +
+			'#time=' + h.time + 
+			'#trailCount=' + h.trailCount +
+			'#trailLength=' + h.trailLength +
+			'#tralEnd=' + h.trailEnd +	
+			'#trailStart=' + h.trailStart + 
+			'#upX=' + parseFloat(h.upX).toFixed(3) + '#upY=' + parseFloat(h.upY).toFixed(3) + '#upZ=' + parseFloat(h.upZ).toFixed(3) +	 
+			'#x=' + h.x +  '#y=' + h.y + '#z=' + h.z + 		
 		'';
 		return link;
 	}	
@@ -133,6 +137,10 @@
 		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 		
 		initObjects();
+		
+		
+		
+		toggleBar( info )
 	}
 
 	function initObjects() {
@@ -155,7 +163,7 @@
 			v( 0, 0, -50),
 			v( 0, 0, 50)
 		);		
-		for (var i = 0; i < HAX.lineCount; i++) {
+		for (var i = 0; i < HAX.trailCount; i++) {
 			line = new THREE.Line( geometry, material );
 			HAX.lines.push( line );
 			HAX.scene.add( line );
@@ -190,7 +198,7 @@
 			
 		} else {
 			callbackCount++;
-console.log('waiting...');
+if (window.console) { console.log('waiting...'); }
 			// If ( HAX.updates !== undefined) { HAX.updates.innerHTML = ' Responses from server (first time may need 20,000+): ' + callbackCount; }
 		}
 	}	
@@ -312,9 +320,9 @@ console.log('waiting...');
 			if ( HAX.lineSets[element].lineSubSet != record[ h.trailEnd ] ) {
 				HAX.lineSets[element].points.shift();
 				HAX.lineSets[element].points = [];
-// console.log( dataCount, HAX.lineSets[element].lineSubSet, record[ HAX.lineEnd ] );
+// console.log( dataCount, HAX.lineSets[element].lineSubSet, record[ HAX.trailEnd ] );
 				HAX.lineSetChanges++;
-			} else if( HAX.lineSets[element].points.length > HAX.lineLength ) {
+			} else if( HAX.lineSets[element].points.length > HAX.trailLength ) {
 				HAX.lineSets[element].points.shift();
 			}
 			HAX.lineSets[element].points.push( pos );
@@ -335,11 +343,15 @@ console.log('waiting...');
 		}
 		
 		stats.innerHTML = 'City: ' + h.title + '<br>' +
-			'Total lines in file: ' + dataLength + ' ~ Current line: ' + dataCount + '<br>' +
+			'Total lines in file: ' + dataLength + '<br>' +
+			'Current line: ' + dataCount + '<br>' +
 			// 'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
-			' Time: ' + record[ h.time] + '<br>' +
-			'Replay speed: ' + HAX.speed + ' Camera FOV: ' + HAX.camFov + '<br>' +
-			'X: ' + data[0][ h.x] + ': ' + xKeys.length + ' Y: ' + data[0][ h.y] + ': ' + yKeys.length + ' Z: ' + data[0][ h.z] + ': ' + zKeys.length + '<br>' +
+			'Time: ' + record[ h.time] + '<br>' +
+			'Replay speed: ' + HAX.speed + '<br>' +
+			'Camera FOV: ' + HAX.camFov + '<br>' +
+			'X: ' + data[0][ h.x] + ': ' + xKeys.length +  '<br>' +
+			'Y: ' + data[0][ h.y] + ': ' + yKeys.length + '<br>' +
+			'Z: ' + data[0][ h.z] + ': ' + zKeys.length + '<br>' +
 			// 'Lines disconnected: ' + HAX.lineSetChanges +
 		'';
 		if ( dataCount > dataLength - HAX.speed - 1 ) { 

@@ -15,7 +15,7 @@
 
 	HAX = {
 		objCount: 300,
-		camType: 1, camFov: 40, speed: 30,
+		camType: 1, camFov: 40,
 		camX: -90, camY: 105, camZ: 100,
 		rotX: 0, rotY: 0, rotZ: 0,
 		upX: 0, upY: 1, upZ: 0,
@@ -29,7 +29,7 @@
 	HAX.geneva = {};
 	HAX.geneva.app = doCity;
 	HAX.geneva.colorField = 1;
-	HAX.geneva.date = 1;
+	// HAX.geneva.date = 1;
 	HAX.geneva.direction = 7;
 	HAX.geneva.directionString = 'A';
 	HAX.geneva.fields = [ 'geneva-d1.csv', 'geneva-d1.csv', 'geneva-d2.csv', 'geneva-d3.csv', 'geneva-d4.csv', 'geneva-d5.csv', 'geneva-d6.csv', 'geneva-d7.csv' ];
@@ -37,10 +37,10 @@
 	HAX.geneva.fieldsTitles = [ 'Select a day', 'Geneva Day 1', 'Geneva Day 2', 'Geneva Day 3', 'Geneva Day 4', 'Geneva Day 5', 'Geneva Day 6', 'Geneva Day 7' ];
 	HAX.geneva.fname = HAX.geneva.fields[0];
 	HAX.geneva.folder = '../../improved-csv/geneva/';
-	HAX.geneva.lineCount = 20;
+	HAX.geneva.trailCount = 20;
 	HAX.geneva.trailEnd = 9;
 	HAX.geneva.trailStart = 3;
-	HAX.geneva.lineLength = 2;
+	HAX.geneva.trailLength = 2;
 	HAX.geneva.objCount = 30;
 	HAX.geneva.speed = 10;
 	HAX.geneva.time = 8;
@@ -52,21 +52,24 @@
 
 	HAX.sanFrancisco = {};
 	HAX.sanFrancisco.app = doCity;
-	HAX.sanFrancisco.fields = [ 'sf_day1.csv', 'sf_day2.csv', 'sf_day3.csv', 'sf_day4.csv', 'sf_day5.csv', 'sf_day6.csv', 'sf_day7.csv' ];
-	HAX.sanFrancisco.fieldsId = 0;
-	HAX.sanFrancisco.fieldsTitles = [ 'San Francisco 2012-10-01', 'San Francisco D2012-10-02', 'San Francisco 2012-10-03', 'San Francisco 2012-10-04', 'San Francisco 2012-10-05', 'San Francisco 2012-10-06', 'San Francisco 2012-10-07' ];
-	HAX.sanFrancisco.fname = HAX.sanFrancisco.fields[0];
-	HAX.sanFrancisco.folder = '../../improved-csv/sanFrancisco/';
-	HAX.sanFrancisco.date = 8;
-	HAX.sanFrancisco.time = 15;
 	HAX.sanFrancisco.colorField = 9;
 	HAX.sanFrancisco.direction = 13;
-	HAX.sanFrancisco.directionString = '0';
-	HAX.sanFrancisco.lineCount = 100;
+	HAX.sanFrancisco.directionString = '0';	
+	
+	HAX.sanFrancisco.fields = [ 'sf_day1.csv', 'sf_day1.csv', 'sf_day2.csv', 'sf_day3.csv', 'sf_day4.csv', 'sf_day5.csv', 'sf_day6.csv', 'sf_day7.csv' ];
+	HAX.sanFrancisco.fieldsId = 0;
+	HAX.sanFrancisco.fieldsTitles = [ 'Select a day','San Francisco 2012-10-01', 'San Francisco 2012-10-02', 'San Francisco 2012-10-03', 'San Francisco 2012-10-04', 'San Francisco 2012-10-05', 'San Francisco 2012-10-06', 'San Francisco 2012-10-07' ];
+	HAX.sanFrancisco.fname = HAX.sanFrancisco.fields[0];
+	HAX.sanFrancisco.folder = '../../improved-csv/sanFrancisco/';
+	// HAX.sanFrancisco.date = 8;
+	HAX.sanFrancisco.time = 15;
+
 	HAX.sanFrancisco.objCount = 300;
+	HAX.sanFrancisco.speed = 30;
+	HAX.sanFrancisco.trailCount = 100;
 	HAX.sanFrancisco.trailStart = 14;
 	HAX.sanFrancisco.trailEnd = 14;
-	HAX.sanFrancisco.lineLength = 10;
+	HAX.sanFrancisco.trailLength = 10;
 	HAX.sanFrancisco.title = 'San Francisco';
 	HAX.sanFrancisco.x = 10;
 	HAX.sanFrancisco.y = 9;
@@ -76,19 +79,22 @@
 	HAX.zurich = {};
 	HAX.zurich.app = doCity;
 	HAX.zurich.colorField = 1;
+	HAX.zurich.direction = 4;
+	HAX.zurich.directionString = '1';
 	HAX.zurich.fields = [ 'zurich-d1.csv', 'zurich-d1.csv', 'zurich-d2.csv', 'zurich-d3.csv', 'zurich-d4.csv', 'zurich-d5.csv', 'zurich-d6.csv', 'zurich-d7.csv' ]
 	HAX.zurich.fieldsId = 0;
 	HAX.zurich.fieldsTitles = [ 'Select a day', 'Zurich Day 1', 'Zurich Day 2', 'Zurich Day 3', 'Zurich Day 4', 'Zurich Day 5', 'Zurich Day 6', 'Zurich Day 7' ];
 	HAX.zurich.fname = HAX.zurich.fields[0];
 	HAX.zurich.folder = '../../improved-csv/zurich/';
-	HAX.zurich.title = 'Zurich';
-	HAX.zurich.lineCount = 20;
-	HAX.zurich.trailEnd = 5;
-	HAX.zurich.trailStart = 5;
-	HAX.zurich.lineLength = 2;
 	HAX.zurich.objCount = 100;
 	HAX.zurich.speed = 5;
-	HAX.zurich.time = 8;
+	HAX.zurich.time = 15;
+	HAX.zurich.title = 'Zurich';
+	HAX.zurich.trailCount = 20;
+	HAX.zurich.trailEnd = 5;
+	HAX.zurich.trailStart = 5;
+	HAX.zurich.trailLength = 2;
+	
 	HAX.zurich.x = 11;
 	HAX.zurich.y = 1;
 	HAX.zurich.z = 12;
@@ -144,6 +150,30 @@ var dataCount, dataLength = 70000;
 	HAX.trailsEnd.app = updateTrailsEnd;	
 
 	HAX.city = HAX.sanFrancisco;
+	
+	function initCity( id ) {
+		HAX.city.fieldsId = id;
+		// HAX.date = HAX.city.date;
+		HAX.colorField = HAX.city.colorField;
+		HAX.folder = HAX.city.folder;
+		HAX.fname = HAX.city.fields[ id ];		
+		HAX.direction = HAX.city.direction;
+		HAX.directionString = HAX.city.directionString;
+		HAX.objCount = HAX.city.objCount;
+		HAX.speed = HAX.city.speed;
+		HAX.time = HAX.city.time;
+		HAX.trailCount = HAX.city.trailCount;
+		HAX.trailStart = HAX.city.trailStart;
+		HAX.trailEnd = HAX.city.trailEnd;
+		HAX.trailLength = HAX.city.trailLength;
+		
+		HAX.title = HAX.city.fieldsTitles[ id ];
+		HAX.x = HAX.city.x;
+		HAX.y = HAX.city.y;
+		HAX.z = HAX.city.z;		
+		
+		loadSF_Day();
+	}	
 
 	function initText() {
 		var infoMenu = document.body.appendChild(document.createElement( 'div' ) );
@@ -162,7 +192,7 @@ var dataCount, dataLength = 70000;
 
 		stats = document.body.appendChild(document.createElement( 'div' ) );
 		stats.className = 'sidebar';
-		stats.style.cssText = 'display: none; left: 350px; width: 510px;' ;
+		stats.style.cssText = 'display: none; left: 350px; ' ;
 
 		var settingsMenu = document.body.appendChild(document.createElement( 'div' ) );
 		settingsMenu.className = 'menu';
@@ -188,7 +218,7 @@ var dataCount, dataLength = 70000;
 		headsUp.innerHTML = '';
 
 		info.innerHTML =
-			'<p><i>2013-03-19 ~ still pre-release</i></p>' +
+			'<p><i>2013-03-31<br> ~ Here we go!</i></p>' +
 			'<p>Made by the <a href="http://www.urdacha.info" target="_blank">Urdacha</a> team for the:</p>' +
 			'<p><a href="http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/" target="_blank">Urban Data Challenge</a></p>' +
 			'<p>Watch the numeric data come alive as animated objects in 3D.</p>' +
@@ -354,26 +384,7 @@ var dataCount, dataLength = 70000;
 		if ( sidebar.style.display === '' ) { sidebar.style.display = 'none'; } else { sidebar.style.display = ''; }
 	}
 
-	function initCity( id ) {
-		HAX.city.fieldsId = id;
-		HAX.folder = HAX.city.folder;
-		HAX.fname = HAX.city.fields[ id ];
-		HAX.title = HAX.city.fieldsTitles[ id ];
 
-		HAX.x = HAX.city.x;
-		HAX.y = HAX.city.y;
-		HAX.z = HAX.city.z;
-		HAX.date = HAX.city.date;
-		HAX.time = HAX.city.time;
-		HAX.colorField = HAX.city.colorField;
-		HAX.direction = HAX.city.direction;
-		HAX.directionString = HAX.city.directionString;
-		HAX.lineCount = HAX.city.lineCount;
-		HAX.trailStart = HAX.city.trailStart;
-		HAX.trailEnd = HAX.city.trailEnd;
-		HAX.lineLength = HAX.city.lineLength;
-		loadSF_Day();
-	}
 
 	function doCity( event) {
 // console.log('city', event, event.srcElement.selectedIndex, event.srcElement.obj)
