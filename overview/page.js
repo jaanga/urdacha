@@ -1,6 +1,8 @@
+
+var path;
 var onDocumentLoad = function ( event ) {
-	var path;
-	var section; //  = /\/(1-Home|2-Algesurf|3-Urdacha|4-Brain-of-Richard|5-Blode|6-FGx)\//.exec( window.location.pathname )[ 1 ].toString().split( '.html' )[ 0 ];
+	
+	var section; //  = /\/(1-Home|2-hAxis|3-Urdacha|4-Brain-of-Richard|5-Blode|6-FGx)\//.exec( window.location.pathname )[ 1 ].toString().split( '.html' )[ 0 ];
 	var name = /[\-A-z0-9]+\.html/.exec( window.location.pathname ).toString().split( '.html' )[ 0 ];
 
 	if ( section == 'sectionaxxx' ) {
@@ -8,7 +10,7 @@ var onDocumentLoad = function ( event ) {
 		path = window.location.pathname.replace( /\ /g, '-' );	
 		path = /\/sectiona\/[-a-z0-9\/]+/.exec( path ).toString().substr( 10 );
 	} else {
-		path = /\/(1-Home|2-hAxis|3-Improved CSV|4-Exploratory Data Analysis|5-Flatland|6-Globes|7-CSV Tools)\/[A-z0-9\/]+/.exec( window.location.pathname )[0].toString().substr( 1 );
+		path = /\/(1-Home|2-hAxis|3-Improved-CSV|4-Exploratory-Data-Analysis|5-flatLand|6-Globes|7-CSV-tools)\/[A-z0-9\/]+/.exec( window.location.pathname )[0].toString().substr( 1 );
 // console.log('line 32 ', path, ' - ', section, name);
 	}
 
@@ -30,7 +32,7 @@ var onDocumentLoad = function ( event ) {
 	button.textContent = 'Edit this page';
 
 	button.addEventListener( 'click', function ( event ) {
-		window.open( 'https://github.com/jaanga/fff/blob/dev/docs/' + section + '/' + path + '.html' );
+		window.open( 'https://github.com/jaanga/urdacha/blob/dev/docs/' + section + '/' + path + '.html' );
 	}, false );
 
 	document.body.appendChild( button );

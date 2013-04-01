@@ -40,7 +40,7 @@
 		var container = document.body.appendChild( document.createElement( 'div' ) );	
 		container.style.cssText = 'float: right; height: 400px; outline: 0px solid red; top: 0; width: 50%;';
 		
-		renderer.setSize( window.innerWidth * 0.5, 500 );
+		renderer.setSize( window.innerWidth * 0.5, 400 );
 		renderer.shadowMapEnabled = true;
 		container.appendChild( renderer.domElement );
 		scene = new THREE.Scene();
@@ -168,28 +168,30 @@
 	
 </script>
 
-	<h1>Welcome to the Urdacha home page.</h1>
-	
-	<p>In the context of the Urban Data Challenge, the Urdacha team has put together what we hope you will find to be valuable tools in the treatment and mining of big data.</p>
+<h1>Welcome to the Urdacha home page.</h1>
+
+<p>In the context of the Urban Data Challenge, the Urdacha team has put together what we hope you will find to be valuable tools in the treatment and mining of big data.</p>
 
 <p>Our work revolves around three guiding principles:
-<ul><li>To create useful and impactful 3D visualizations</li>
+<ul>
+<li>To create useful and impactful 3D visualizations</li>
 <li>To process and analyse huge amounts of real-time data</li>
 <li>To provide free, open-source tools and knowledge that anyone can use, apply to other cities or datasets and build upon.</li>
-</ul></p>
+</ul>
+</p>
 
 <h2>Why 3D visualizations?</h2>
 
 <p>The Urdacha team worked on the premise that cities are producing increasingly gigantic volumes of data on a daily basis. As we move forward, finding innovative ways to use and learn from this new wealth of information will allow us "unclog the arteries" with cities that are more interactive, that involve citizens in finding solutions to problems, that are more efficient, diverse and appealing.</p>
 
 <p>Before we are able to do so, however, we are facing the challenge of processing these huge amounts of data, of bringing them down to a human scale, in addition to being constricted by the limitations of 2D.</p>
-<p>Like the little girl in this video, we are still struggling with the limitations of 2D.</p>
+<p>Like <a href='http://www.youtube.com/watch?v=aXV-yaFmQNk' target='_blank'>the little girl in this video</a>, we are still struggling with the limitations of 2D.</p>
 
 <p>Through our project, we have been able to not only translate the datasets into meaningful information, but we have been able to create  3D visualization tools that let you double-click into the data. It helps you interact with your data and therefore your city. You can <em>see</em>, visualize, understand more information at the same time in a 3-Dimensional world.</p>
 
 <h2>So, can I see it?</h2>
 
-<p>The featured project today is called <strong>hAxis</strong>. hAxis provides users the opportunity for Exploratory Data Analysis through visualizations of real-time data feeds from three different cities. The possibilities in this 3D field are near limitless, and the only limitation of hAxis is the user (and bugs).</p>
+<p>The featured project today is called <a href='http://jaanga.github.com/urdacha/#2_hAxis/Urdacha_competition_entry/Read_Me' target='_blank'>hAxis</a>. hAxis provides users the opportunity for Exploratory Data Analysis through visualizations of real-time data feeds from three different cities. The possibilities in this 3D field are near limitless, and the only limitation of hAxis is the user (and bugs).</p>
 
 <p>The main idea of hAxis is that it displays a certain number of "events" which you will see as conical symbols. These events can chart as many different metrics as are available in the dataset. hAxis therefore enables you to examine trends, to establish correlations, to identify problems, within a system.</p>
 
@@ -201,13 +203,25 @@
 
 <h2>Demonstration</h2>
 
-<p>Because the interface is still in its young age, here are some ready-for-consumption stills from hAxis that demonstrate the capacity of this tool.<
+<p>Because the interface is still in its young age, here are some ready-for-consumption stills from hAxis that demonstrate the capacity of this tool.</p>
 
-<img src=".images/geneva-d1-seq-lod-vid.png">
-<img src=".images/sanFrancisco-d1-stp-load-vid.png">
-<img src=".images/zurich-d1-stp-lod-vid.png">
-
-<p>The first demonstration we have prepared for you is a look at the same metrics in all three cities.</p>
+<div style="float:left">
+<img src="./images/geneva-d1-seq-lod-vid.png" width="300">
+<br>
+<small>Geneva Day 1 - Passenger Load</small>
+</div>
+<div style="float:left">
+<img src="./images/sanFrancisco-d1-stp-load-vid.png" width="300">
+<br>
+<small>San Francisco Day 1 - Passenger Load</small>
+</div>
+<div style="float:left">
+<img src="./images/zurich-d1-stp-lod-vid.png" width="300">
+<br>
+<small>Zurich Day 1 - Passenger Load</small>
+</div>
+<br>
+<p style="clear:both">The first demonstration we have prepared for you is a look at the same metrics in all three cities.</p>
 
 <p>The metrics chosen are:
 <ul><li>Passenger load</li>
@@ -219,7 +233,13 @@
 
 <p>The second demonstration what sort of information can be found from the Readout section of hAxis.</p>
 
-<p>In this scenario, we looked at the percent of times during the day a bus made a stop with zero passenger load:
+<div style="float:left">
+<img src="./images/sanFrancisco-d1-readout-passenger-load.png" width="300">
+<br>
+<small>portion of the hAxis readout</small>
+</div>
+
+<p style="clear:both" >In this scenario, we looked at the percent of times during the day a bus made a stop with zero passenger load:
 <ul>
 <li>Geneva day 1 - 8%</li>
 <li>San Francisco day 1 - 5%</li>
