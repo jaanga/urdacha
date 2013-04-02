@@ -206,14 +206,12 @@ if (window.console) { console.log('waiting...'); }
 		newSign();
 updateSidebar();
 		xKeys = findSets( h.x );
-		xDelta = 100 
-		
-		/ xKeys.length;
+		xDelta = 100 / xKeys.length;
 		var txt = '<h3 style="color: red" >X-Axis - ' + xKeys.length + ' items</h3><table id="rd1" style="width: 100%;" >' +
 			'<tr><td >' + data[0][h.x] + '<br><small><button onclick="sortTable( rd1, 0, 0)">&uArr;</button><button onclick="sortTable( rd1, 0, 1 )">&dArr;</button></small></td>' +
 			'<td><small>tot:' + tots + ' avg:' + avg.toFixed(1) + '<br><button onclick="sortTable( rd1, 1, 0)">&uArr;</button><button onclick="sortTable( rd1, 1, 1 )">&dArr;</button></small></td></tr>';
 		for (var i = 0, len = xKeys.length; i < len; i++) {
-			txt += '<tr><td>' + xKeys[i] + '</td><td>' + sets[ xKeys[i] ].count + '</td></tr>';
+			txt += '<tr onclick="HAX.highlight=' + xKeys[i] + ';" ><td>' + xKeys[i] + '</td><td>' + sets[ xKeys[i] ].count + '</td></tr>';
 		} 
 		txt += '</table>';
 		readout1.innerHTML = txt;
@@ -224,7 +222,7 @@ updateSidebar();
 			'<tr><td>' + data[0][h.y] + '<br><small><button onclick="sortTable( rd2, 0, 0)">&uArr;</button><button onclick="sortTable( rd2, 0, 1 )">&dArr;</button></small></td>' +
 			'<td><small>tot:' + tots + ' avg:' + avg.toFixed(1) + '<br><button onclick="sortTable( rd2, 1, 0)">&uArr;</button><button onclick="sortTable( rd2, 1, 1 )">&dArr;</button></small></td></tr>';
 		for (var i = 0, len = yKeys.length; i < len; i++) {
-			txt += '<tr><td>' + yKeys[i] + '</td><td>' + sets[ yKeys[i] ].count + '</td></tr>';
+			txt += '<tr onclick="HAX.highlight=' + yKeys[i] + ';"><td>' + yKeys[i] + '</td><td>' + sets[ yKeys[i] ].count + '</td></tr>';
 		} 
 		txt += '</table>';
 		readout2.innerHTML = txt;
@@ -235,7 +233,7 @@ updateSidebar();
 			'<tr><td>' + data[0][h.z] + '<br><small><button onclick="sortTable( rd3, 0, 0)">&uArr;</button><button onclick="sortTable( rd3, 0, 1 )">&dArr;</button></small></td>' +
 			'<td><small>tot:' + tots + ' avg:' + avg.toFixed(1) + '<br><button onclick="sortTable( rd3, 1, 0)">&uArr;</button><button onclick="sortTable( rd3, 1, 1 )">&dArr;</button></small></td></tr>';
 		for (var i = 0, len = zKeys.length; i < len; i++) {
-			txt += '<tr><td>' + zKeys[i] + '</td><td>' + sets[ zKeys[i] ].count+ '</td></tr>';
+			txt += '<tr onclick="HAX.highlight=' + zKeys[i] + ';" ><td>' + zKeys[i] + '</td><td>' + sets[ zKeys[i] ].count+ '</td></tr>';
 		} 
 		txt += '</table>';
 		readout3.innerHTML = txt;
@@ -279,17 +277,23 @@ updateSidebar();
 		keys.sort( function(a,b){return a-b} )
 		return keys;
 	}
-	
+		var color, record, mesh, material, pos, line;	
 	function haxisIt() {
-		var color, record, mesh, material, pos, line;
+
 		var h = HAX;
 		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
 		for (var len = HAX.speed, i = 1; i < len; i++) {
 			record = data[ HAX.dataCount ];
-
 			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.colorField ] ) ];
+			
 			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
-			material.color.setHSL( color, 0.8, 0.5 );
+
+			if (  HAX.highlight == record[ h.x ]  || HAX.highlight == record[ h.y ] || HAX.highlight == record[ h.z ]) {
+// console.log (		HAX.xHighlight );	
+				material.color.setHSL( 0, 0, 0 );
+			} else {	
+				material.color.setHSL( color, 0.8, 0.5 );
+			}
 
 // direction
 			if ( record[ h.direction ] != h.directionString ) {
