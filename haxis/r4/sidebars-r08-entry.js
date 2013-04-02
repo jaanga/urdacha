@@ -6,20 +6,22 @@
 		'body { font: bold 12pt monospace; margin: 0; /* overflow: hidden; */}' +
 		'a { color: #44e;} ' +
 		'h1, h2, h3 { margin: 0; }' +
+		// 'input[type=range] { -webkit-appearance: none; background-color: silver; height: 20px; opacity: 0.5; }' +
+		// 'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }'  +
 		'h1 { margin: 0; height: 40px; min-width: 200px; padding: 0px; }' +
 		'div.menu { background-color: #ddd; cursor: pointer; padding: 0 0 0 10px; position: absolute; top: 0; user-select: none; } ' +
 		'div.sidebar { background-color: #eee;  padding: 5px 10px 20px 10px; position: absolute; top: 40px;;} ' +
 	'';
 
 	HAX = {
+		objCount: 300,
 		camType: 1, camFov: 40,
 		camX: -90, camY: 105, camZ: 100,
-		cityId: 1,
 		rotX: 0, rotY: 0, rotZ: 0,
 		upX: 0, upY: 1, upZ: 0,
-		dataCount: 1, dataLength: 2,
-		separator: ','  // keep here - all cities's data now using commas
-	};
+		separator: ',',
+		lines: [],
+	}
 
 	HAX.city = {};
 	HAX.city.app = doCity;
@@ -28,25 +30,22 @@
 	HAX.geneva.app = doCity;
 	HAX.geneva.cityId = 0;
 	HAX.geneva.colorField = 1;
-	HAX.geneva.direction = 5;
+	// HAX.geneva.date = 1;
+	HAX.geneva.direction = 7;
 	HAX.geneva.directionString = 'A';
 	HAX.geneva.fields = [ 'geneva-d1.csv', 'geneva-d1.csv', 'geneva-d2.csv', 'geneva-d3.csv', 'geneva-d4.csv', 'geneva-d5.csv', 'geneva-d6.csv', 'geneva-d7.csv' ];
 	HAX.geneva.fieldsId = 0;
 	HAX.geneva.fieldsTitles = [ 'Select a day', 'Geneva Day 1', 'Geneva Day 2', 'Geneva Day 3', 'Geneva Day 4', 'Geneva Day 5', 'Geneva Day 6', 'Geneva Day 7' ];
 	HAX.geneva.fname = HAX.geneva.fields[0];
 	HAX.geneva.folder = '../../improved-csv/geneva/';
-	//HAX.geneva.trailCount = 20;
-	//HAX.geneva.trailEnd = 9;
-	//HAX.geneva.trailStart = 3;
-	//HAX.geneva.trailLength = 2;
+	HAX.geneva.trailCount = 20;
+	HAX.geneva.trailEnd = 9;
+	HAX.geneva.trailStart = 3;
+	HAX.geneva.trailLength = 2;
 	HAX.geneva.objCount = 30;
 	HAX.geneva.speed = 10;
 	HAX.geneva.time = 8;
 	HAX.geneva.title = 'Geneva';
-	HAX.geneva.trailCount = 100;
-	HAX.geneva.trailStart = 5;
-	HAX.geneva.trailEnd = 14;
-	HAX.geneva.trailLength = 0;	
 	HAX.geneva.x = 16;
 	HAX.geneva.y = 1;
 	HAX.geneva.z = 17;
@@ -64,15 +63,15 @@
 	HAX.sanFrancisco.fieldsTitles = [ 'Select a day','San Francisco 2012-10-01', 'San Francisco 2012-10-02', 'San Francisco 2012-10-03', 'San Francisco 2012-10-04', 'San Francisco 2012-10-05', 'San Francisco 2012-10-06', 'San Francisco 2012-10-07' ];
 	HAX.sanFrancisco.fname = HAX.sanFrancisco.fields[0];
 	HAX.sanFrancisco.folder = '../../improved-csv/sanFrancisco/';
+	HAX.sanFrancisco.time = 15;
+
 	HAX.sanFrancisco.objCount = 300;
 	HAX.sanFrancisco.speed = 30;
-	HAX.sanFrancisco.time = 15;
-	HAX.sanFrancisco.title = 'San Francisco';
 	HAX.sanFrancisco.trailCount = 100;
 	HAX.sanFrancisco.trailStart = 14;
 	HAX.sanFrancisco.trailEnd = 14;
 	HAX.sanFrancisco.trailLength = 10;
-	
+	HAX.sanFrancisco.title = 'San Francisco';
 	HAX.sanFrancisco.x = 10;
 	HAX.sanFrancisco.y = 9;
 	HAX.sanFrancisco.z = 11;
@@ -84,24 +83,24 @@
 	HAX.zurich.colorField = 1;
 	HAX.zurich.direction = 4;
 	HAX.zurich.directionString = '1';
-	HAX.zurich.fields = [ 'zurich-d1.csv', 'zurich-d1.csv', 'zurich-d2.csv', 'zurich-d3.csv', 'zurich-d4.csv', 'zurich-d5.csv', 'zurich-d6.csv', 'zurich-d7.csv' ];
+	HAX.zurich.fields = [ 'zurich-d1.csv', 'zurich-d1.csv', 'zurich-d2.csv', 'zurich-d3.csv', 'zurich-d4.csv', 'zurich-d5.csv', 'zurich-d6.csv', 'zurich-d7.csv' ]
 	HAX.zurich.fieldsId = 0;
 	HAX.zurich.fieldsTitles = [ 'Select a day', 'Zurich Day 1', 'Zurich Day 2', 'Zurich Day 3', 'Zurich Day 4', 'Zurich Day 5', 'Zurich Day 6', 'Zurich Day 7' ];
 	HAX.zurich.fname = HAX.zurich.fields[0];
 	HAX.zurich.folder = '../../improved-csv/zurich/';
 	HAX.zurich.objCount = 100;
-	HAX.zurich.speed = 25;
-	HAX.zurich.time = 0;
+	HAX.zurich.speed = 5;
+	HAX.zurich.time = 15;
 	HAX.zurich.title = 'Zurich';
 	HAX.zurich.trailCount = 20;
 	HAX.zurich.trailEnd = 5;
 	HAX.zurich.trailStart = 5;
 	HAX.zurich.trailLength = 2;
+	
 	HAX.zurich.x = 11;
 	HAX.zurich.y = 1;
 	HAX.zurich.z = 12;
 
-// Settiings UI elements	
 	HAX.xAxis = {};
 	// HAX.xAxis.fields = HAX.xAxis.fieldsTitles = [];
 	HAX.xAxis.app = doXaxis;
@@ -128,12 +127,14 @@
 	HAX.fov.max = 150;
 	HAX.fov.step = 1;
 	HAX.fov.value = 40;
-	HAX.fov.onchange = updateFoV;	
+	HAX.fov.onchange = updateFoV;
+
+var dataCount, dataLength = 70000;	
 
 	HAX.playStart = {};
 	HAX.playStart.title = 'record to start playing on';
 	HAX.playStart.min = 1;
-	HAX.playStart.max = HAX.dataLength;
+	HAX.playStart.max = dataLength;
 	HAX.playStart.step = 1;
 	HAX.playStart.value = 1;
 	HAX.playStart.onchange = updatePlayStart;
@@ -146,42 +147,36 @@
 
 	HAX.trailsEnd = {};
 	HAX.trailsEnd.app = updateTrailsEnd;	
+
+	// HAX.city = HAX.sanFrancisco;
 	
 	function initCity( c, id ) {
+	
 		var cities = [HAX.geneva, HAX.sanFrancisco, HAX.zurich];
-// console.log( 'initCity', c , HAX.cityId, id,  data );		
-		if ( c !== HAX.cityId  || data === undefined ) {
-			HAX.city = cities[ c ]; 
-			HAX.fieldsId = id;
-			HAX.colorField = HAX.city.colorField;
-			HAX.folder = HAX.city.folder;
-			HAX.fname = HAX.city.fields[ id ];		
-			HAX.direction = HAX.city.direction;
-			HAX.directionString = HAX.city.directionString;
-			HAX.objCount = HAX.city.objCount;
-			HAX.speed = HAX.city.speed;
-			HAX.time = HAX.city.time;
-			HAX.title = HAX.city.fieldsTitles[ id ];
-			HAX.trailCount = HAX.city.trailCount;
-			HAX.trailStart = HAX.city.trailStart;
-			HAX.trailEnd = HAX.city.trailEnd;
-			HAX.trailLength = HAX.city.trailLength;
-		}	
+		HAX.city = cities[ 1 ]; 
+		HAX.cityId = 1;
+		HAX.city.fieldsId = id;
+console.log( 'initCity', c , id, HAX.city );		
+		// HAX.date = HAX.city.date;
+		HAX.colorField = HAX.city.colorField;
+		HAX.folder = HAX.city.folder;
+		HAX.fname = HAX.city.fields[ id ];		
+		HAX.direction = HAX.city.direction;
+		HAX.directionString = HAX.city.directionString;
+		HAX.objCount = HAX.city.objCount;
+		HAX.speed = HAX.city.speed;
+		HAX.time = HAX.city.time;
+		HAX.trailCount = HAX.city.trailCount;
+		HAX.trailStart = HAX.city.trailStart;
+		HAX.trailEnd = HAX.city.trailEnd;
+		HAX.trailLength = HAX.city.trailLength;
 		
-		if ( c !== HAX.cityId || HAX.x === undefined ) {		
-			
-			HAX.x = HAX.city.x;
-			HAX.y = HAX.city.y;
-			HAX.z = HAX.city.z;	
-
-			HAX.colorField = HAX.city.colorField;
-			HAX.trailStart = HAX.city.trailStart;
-			HAX.trailEnd = HAX.city.trailEnd;
-
-		}
-		HAX.cityId = c;
+		HAX.title = HAX.city.fieldsTitles[ id ];
+		HAX.x = HAX.city.x;
+		HAX.y = HAX.city.y;
+		HAX.z = HAX.city.z;		
 		
-		loadCSV();
+		loadSF_Day();
 	}	
 
 	function initText() {
@@ -253,7 +248,7 @@
 				'<h3>Load City Data</h3>' +
 				'<small>Select a day to view. Allow 15/20 seconds for data to appear first time.</small>' +
 				'<hr>' +
-				'<div id="settings2">' +
+				'<div id="settings2">';
 		'';
 
 		readout.innerHTML = '' +
@@ -263,13 +258,11 @@
 		'';
 	}
 
-	function updateSidebar() {
-		// if ( data === [] ) return;
-		
+	function updateSbr() {
 		settings2.innerHTML = '';
 
 		var table = settings2.appendChild( document.createElement( 'table' ) );
-		table.style.cssText = 'width: 100%;';
+		table.style.cssText = 'width: 100%;'
 
 		var tr = table.appendChild( document.createElement( 'tr' ) );
 		var td = tr.appendChild( document.createElement( 'td' ) );
@@ -312,6 +305,7 @@
 		buildRange2( td, HAX.fov );
 
 		// function updatePlayStart() {}
+
 		tr = table.appendChild( document.createElement( 'tr' ) );
 		td = tr.appendChild( document.createElement( 'td' ) );
 		td.innerHTML = 'Start line:';
@@ -387,15 +381,17 @@
 		
 		td.innerHTML = '<a id="permalink" title="Copy this link." href="#" target="_blank">Permalink</a><br>';
 		td = tr.appendChild( document.createElement( 'td' ) );
-		td.innerHTML = '<a href="" onclick="resetHash" >Reset permalink</a>';
+		td.innerHTML = '<a href="" onclick="resetPermalink" >Reset permalink</a>';
 	}
 
 	function toggleBar( sidebar ) {
 		if ( sidebar.style.display === '' ) { sidebar.style.display = 'none'; } else { sidebar.style.display = ''; }
 	}
 
+
+
 	function doCity( event) {
-// console.log('city', event, event.srcElement.selectedIndex, event.srcElement.obj)
+console.log('city', event, event.srcElement.selectedIndex, event.srcElement.obj)
 		HAX.city = event.srcElement.obj;
 		var id = event.srcElement.selectedIndex;
 		initCity( HAX.city.cityId, id );
@@ -414,8 +410,8 @@
 	}
 	
 	function updatePlayStart( event ) {
-		HAX.dataCount = event.srcElement.value;
-		HAX.playStart.max = HAX.dataLength - 100;	
+		dataCount = event.srcElement.value;
+		HAX.playStart.max = dataLength - 100;	
 		event.srcElement.max = HAX.playStart.max;
 	}	
 	
@@ -489,7 +485,7 @@
 				return x[0] - y[0];
 			});
 		}
-		for( i=0, len=store.length; i < len; i++){
+		for(var i=0, len=store.length; i < len; i++){
 			table.appendChild(store[i][1]);
 		}
 		store = null;

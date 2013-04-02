@@ -31,38 +31,41 @@
 	init();
 	animate();
 
-	function readHash() {
+	function setUrlHash() {
+// console.log('hash', location.hash);	
 		if ( location.hash == '' ) {
-			initCity( 1, 1 );
+			// HAX = nohash;
 		} else {
-			var item;
-			var a = location.hash.split('#');
-			for (var i = 1, len = a.length; i < len; i++) {
-				item = a[i].split('=');
-				HAX[item[0]] = item[1];
-			}	
-			initCity( HAX.cityId, HAX.fieldsId );
+			readHash( );
 		}
+		loadSF_Day(); 
 	}	
+	
+	function readHash() {
+		var item;
+		var a = location.hash.split('#');
+		for (var i = 1, len = a.length; i < len; i++) {
+			item = a[i].split('=');
+			HAX[item[0]] = item[1];
+		}
+	}
 
 	function buildHash() {
 		if (HAX.upX === undefined) return;
 		var h = HAX;
 		var link = 
-			'camType=' + h.camType + '#camFov=' + h.camFov +
+			'title=' + h.title +
+			'#camType=' + h.camType + '#camFov=' + h.camFov +
 			'#camX=' + h.camX.toFixed(2) + '#camY=' + h.camY.toFixed(2) + '#camZ=' + h.camZ.toFixed(2) +
-			'#cityId=' + h.cityId +
-			'#colorField=' + h.colorField + 
+			'#color=' + h.colorField + 
 		// '#date=' + h.date + 
 			'#direction=' + h.direction + 
 			'#directionString=' + h.directionString +
-			'#fieldsId=' + h.fieldsId +
 			'#folder=' + h.folder + '#fname=' + h.fname + 
 			'#rotX=' + h.rotX.toFixed(3) + '#rotY=' + h.rotY.toFixed(3) + '#rotZ=' + h.rotZ.toFixed(3) +
 			'#objCount=' + h.objCount +
 			'#speed=' + h.speed +
 			'#time=' + h.time + 
-			'#title=' + h.title +
 			'#trailCount=' + h.trailCount +
 			'#trailLength=' + h.trailLength +
 			'#tralEnd=' + h.trailEnd +	
@@ -73,21 +76,21 @@
 		return link;
 	}	
 	
-	function updateHash() {
+	function updateUrlHash() {
 		HAX.link = buildHash();
 		permalink.href = "#" + HAX.link;
 		window.location.hash = HAX.link;
 	}
 	
-	function resetHash() {
+	function resetPermalink() {
 		window.history.pushState( '', '', window.location.pathname);
 		permalink.href = '';
-		readHash();
+		setUrlHash();
 	}
 
 	function init() {
-		
-		readHash();
+		initCity( 0 )
+		setUrlHash();
 		
 		if ( ! Detector.webgl ) {
 			HAX.renderer = new THREE.Canvas.renderer( { antialias: true } );
@@ -95,14 +98,15 @@
 			HAX.renderer = new THREE.WebGLRenderer( { antialias: true } );
 		}
 
+		var h = HAX;
 		HAX.renderer.setSize( window.innerWidth, window.innerHeight );
 		document.body.appendChild( HAX.renderer.domElement );
 		HAX.scene = new THREE.Scene();
 		
-		HAX.camera = new THREE.PerspectiveCamera( HAX.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
-		HAX.camera.position.set( HAX.camX, HAX.camY, HAX.camZ);
-		HAX.camera.up.set( HAX.upX, HAX.upY, HAX.upZ );
-		HAX.camera.rotation.set( HAX.rotX, HAX.rotY, HAX.rotZ );
+		HAX.camera = new THREE.PerspectiveCamera( h.camFov, window.innerWidth / window.innerHeight, 1, 1000 );
+		HAX.camera.position.set( h.camX, h.camY, h.camZ);
+		h.camera.up.set( h.upX, h.upY, h.upZ );
+		h.camera.rotation.set( h.rotX, h.rotY, h.rotZ );
 		HAX.controls = new THREE.TrackballControls( HAX.camera, HAX.renderer.domElement );
 		HAX.controls.minDistance = 3;
 		HAX.controls.maxDistance = 300;
@@ -121,10 +125,6 @@
 		var light = new THREE.AmbientLight( 0xffffff);
 		light.color.setHSL( 0.1, 0.5, 0.3 );
 		HAX.scene.add( light );
-		
-		window.addEventListener( 'resize', onWindowResize, false );
-		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-		document.addEventListener( 'mousemove', onDocumentMouseMove, false );		
 
 		initText(); // in sidebar.js
 		
@@ -132,7 +132,14 @@
 		HAX.stats.domElement.style.cssText = 'position: absolute;right: 0; top: 0px; z-index: 100; ';
 		info.appendChild( HAX.stats.domElement );		
 		
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'mouseup', onDocumentMouseUp, false );
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+		
 		initObjects();
+		
+		
+		
 		toggleBar( info )
 	}
 
@@ -167,7 +174,7 @@
 	
 	var xmlhttp, callbackCount;
 	
-	function loadCSV() {
+	function loadSF_Day() {
 		dataPlay = false;
 		xmlhttp = new XMLHttpRequest();
 		xmlhttp.open( 'GET', HAX.city.folder + HAX.city.fname, true );
@@ -198,17 +205,15 @@ if (window.console) { console.log('waiting...'); }
 
 	function buildReport() {
 		var h = HAX;
-		h.dataLength = data.length;
-		
-		
 
-		h.scene = new THREE.Scene();
+		updateSbr();
+
+		HAX.scene = new THREE.Scene();
 		newSign();
-updateSidebar();
+		dataCount = 1;
+
 		xKeys = findSets( h.x );
-		xDelta = 100 
-		
-		/ xKeys.length;
+		xDelta = 100 / xKeys.length;
 		var txt = '<h3 style="color: red" >X-Axis - ' + xKeys.length + ' items</h3><table id="rd1" style="width: 100%;" >' +
 			'<tr><td >' + data[0][h.x] + '<br><small><button onclick="sortTable( rd1, 0, 0)">&uArr;</button><button onclick="sortTable( rd1, 0, 1 )">&dArr;</button></small></td>' +
 			'<td><small>tot:' + tots + ' avg:' + avg.toFixed(1) + '<br><button onclick="sortTable( rd1, 1, 0)">&uArr;</button><button onclick="sortTable( rd1, 1, 1 )">&dArr;</button></small></td></tr>';
@@ -254,9 +259,8 @@ updateSidebar();
 		dataPlay = true;
 	}
 
-	var sets, tots, avg;
+	var sets, tots, avg; 
 	function findSets( fieldId ) {
-		 
 		sets = {};
 		sets.element = function() {};
 		for (var record, field, i = 1; i < dataLength; i++) {
@@ -285,7 +289,7 @@ updateSidebar();
 		var h = HAX;
 		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
 		for (var len = HAX.speed, i = 1; i < len; i++) {
-			record = data[ HAX.dataCount ];
+			record = data[ dataCount ];
 
 			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.colorField ] ) ];
 			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
@@ -335,12 +339,12 @@ updateSidebar();
 			HAX.lines.push(line );
 			HAX.scene.add( line );
 
-			HAX.dataCount++;
+			dataCount++;
 		}
 		
 		stats.innerHTML = 'City: ' + h.title + '<br>' +
-			'Total lines in file: ' + HAX.dataLength + '<br>' +
-			'Current line: ' + HAX.dataCount + '<br>' +
+			'Total lines in file: ' + dataLength + '<br>' +
+			'Current line: ' + dataCount + '<br>' +
 			// 'Day: ' + record[ h.date] + ' Time: ' + record[ h.time] + '<br>' +
 			'Time: ' + record[ h.time] + '<br>' +
 			'Replay speed: ' + HAX.speed + '<br>' +
@@ -350,8 +354,8 @@ updateSidebar();
 			'Z: ' + data[0][ h.z] + ': ' + zKeys.length + '<br>' +
 			// 'Lines disconnected: ' + HAX.lineSetChanges +
 		'';
-		if ( HAX.dataCount > HAX.dataLength - HAX.speed - 1 ) { 
-			HAX.dataCount = 1; 
+		if ( dataCount > dataLength - HAX.speed - 1 ) { 
+			dataCount = 1; 
 			HAX.lineSetChanges = 0;
 		}
 	}
@@ -455,8 +459,7 @@ updateSidebar();
 		h.camX = c.position.x; h.camY = c.position.y; h.camZ = c.position.z;
 		h.rotX = c.rotation.x; h.rotY = c.rotation.y; h.rotZ = c.rotation.z;
 		h.upX = c.up.x; h.upY = c.up.y; h.upZ = c.up.z;
-		
-		updateHash();
+		updateUrlHash();
 	}	
 
 	function onDocumentMouseMove( event ) {
