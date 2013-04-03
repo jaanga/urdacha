@@ -38,12 +38,20 @@
 		var light, geometry, material, mesh, info;
 			
 		var container = document.body.appendChild( document.createElement( 'div' ) );	
-		container.style.cssText = 'float: right; height: 400px; outline: 0px solid red; top: 0; width: 50%;';
+		container.style.cssText = 'float: right; height: 500px; outline: 0px solid red;padding : 0 0px 30px 30px; top: 0; width: 50%;';
 		
 		renderer.setSize( window.innerWidth * 0.5, 400 );
 		renderer.shadowMapEnabled = true;
 		container.appendChild( renderer.domElement );
 		scene = new THREE.Scene();
+		
+		var txt = container.appendChild( document.createElement( 'div' ) );	
+		txt.style.cssText = 'float: right; font-size: small;  outline: 1px solid red; text-align: center; top: 410px; width: 100%;';	
+		txt.innerHTML = '<i><b>Geneva, San Francisco and Zurich</b><br>' +
+			'If you cannot see the three rotating cubes just above, ' +
+			'then you will not be able to view most of the apps on this site. Urdacha apps use <a href="http://en.wikipedia.org/wiki/WebGL" target="_blank">WebGL</a> which only runs on recently-made computers. ' +
+			'Tablets and smartphones usually do not work. Furthermore, Urdacha\'s apps are currently only being tested on the Google Chrome browser.' +
+			'Internet Explorer is definitely not supported. Urdacha apps on FireFox and Safari currently have issues but these can mostly likely be fixed.</i>';
 
 		camera = new THREE.PerspectiveCamera( 40, window.innerWidth / window.innerHeight, 1, 1000 );
 		camera.position.set(-30, 30, 30);
@@ -170,22 +178,35 @@
 
 <h1>Welcome to the Urdacha home page.</h1>
 
-<p>In the context of the Urban Data Challenge, the Urdacha team has put together what we hope you will find to be valuable tools in the treatment and mining of big data.</p>
+<p>In the context of the <a href='http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/' target='_blank'>Urban Data Challenge</a>, 
+	the Urdacha team has put together what we hope you will find to be valuable tools in the treatment and mining of big data relating to transporation.</p>
+	
+<p>The goal of the Challenge is as follows:</p>	
 
-<p>Our work revolves around three guiding principles:
+<blockquote>
+The Urban Data Challenge seeks to harvest the innovative and creative power of communities around the world to explore urban data sets through visualization.
+</blockquote>
+<p>Our work revolves around three guiding principles:</p>
 <ul>
 <li>To create useful and impactful 3D visualizations</li>
 <li>To process and analyse huge amounts of real-time data</li>
 <li>To provide free, open-source tools and knowledge that anyone can use, apply to other cities or datasets and build upon.</li>
 </ul>
-</p>
+
+<h2>Source Code</h2>
+<p>Source code, the data files we built and much more information is available in the Urdacha GitHub repository:</p>
+<p><a href='http://github.com/jaanga/urdacha' target='_blank'>github.com/jaanga/urdacha</a> </p>
+
+<h2>Progress Reports</h2>
+<p>Given that we are providing free open source tools available to anybody that needs them, it is essential the tools are complete and are in working order. ' +
+	There is no deadloine or finish line for this type of work. You can track the progress of our ongoing efforts by clicking on 'Progress Reports' in the left menu.</p>
 
 <h2>Why 3D visualizations?</h2>
 
 <p>The Urdacha team worked on the premise that cities are producing increasingly gigantic volumes of data on a daily basis. As we move forward, finding innovative ways to use and learn from this new wealth of information will allow us "unclog the arteries" with cities that are more interactive, that involve citizens in finding solutions to problems, that are more efficient, diverse and appealing.</p>
 
 <p>Before we are able to do so, however, we are facing the challenge of processing these huge amounts of data, of bringing them down to a human scale, in addition to being constricted by the limitations of 2D.</p>
-<p>Like <a href='http://www.youtube.com/watch?v=aXV-yaFmQNk' target='_blank'>the little girl in this video</a>, we are still struggling with the limitations of 2D.</p>
+<p>Like the <a href='http://www.youtube.com/watch?v=aXV-yaFmQNk' target='_blank'> little girl in this video</a>, we are still struggling with the limitations of 2D.</p>
 
 <p>Through our project, we have been able to not only translate the datasets into meaningful information, but we have been able to create  3D visualization tools that let you double-click into the data. It helps you interact with your data and therefore your city. You can <em>see</em>, visualize, understand more information at the same time in a 3-Dimensional world.</p>
 

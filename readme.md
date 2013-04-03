@@ -18,6 +18,13 @@ Repo & file created: 2013-02-10
 
 ### Change Log
 
+2013-04-02 ~ Theo
+* hAxis 4.1 ~ permalinks starting to work
+* hAxis 4.1 ~ highlighting Readout menu starting to work
+
+2013-03-20 - 2013-04-01 ~ All
+* Much coding / too busy to keep track
+
 2013-03-19 ~ Theo
 * hAxis r4 pre-release uploaded
 
