@@ -289,26 +289,23 @@ if (window.console) { console.log('waiting...'); }
 
 		var h = HAX;
 		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
+		
+		
 		for (var len = HAX.speed, i = 1; i < len; i++) {
 			record = data[ HAX.dataCount ];
+			var vehicleId = record[ h.vehNo ];
 			color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.colorField ] ) ];
-			
 			material = new THREE.MeshBasicMaterial( {color: 0xff0000, ambient: 0xffffff, opacity: 0.7, transparent: true } );
-
-			if (  HAX.highlight == record[ h.x ]  || HAX.highlight == record[ h.y ] || HAX.highlight == record[ h.z ]) {
-// console.log (		HAX.xHighlight );	
-				material.color.setHSL( 0, 0, 0 );
-			} else {	
-				material.color.setHSL( color, 0.8, 0.5 );
-			}
-
 // direction
-			if ( record[ h.direction ] != h.directionString ) {
-				cyl.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI ) );
-			}
-			
-			var vehicleId = record[ 14 ];
 			if ( HAX.vehicles[vehicleId] == undefined ) {
+				// color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.colorField ] ) ];
+				
+				if (  HAX.highlight == record[ h.x ]  || HAX.highlight == record[ h.y ] || HAX.highlight == record[ h.z ]) {
+					material.color.setHSL( 0, 0, 0 );
+				} else {	
+					material.color.setHSL( color, 0.8, 0.5 );
+				}			
+				
 				HAX.vehicles[vehicleId] = new HAX.vehicle();
 				HAX.vehicles[vehicleId].id = vehicleId;
 				HAX.vehicles[vehicleId].obj =  new THREE.Mesh( cyl, material );
@@ -316,11 +313,20 @@ if (window.console) { console.log('waiting...'); }
 				HAX.scene.add( HAX.vehicles[vehicleId].obj );
 			}
 			
+
 			
-			pos = v( xDelta * xKeys.indexOf( record[ h.x] ) - 50, yDelta * yKeys.indexOf( record[ h.y] ) - 50, zDelta * zKeys.indexOf( record[ h.z] ) - 50 );
+			pos = v(  xDelta * xKeys.indexOf( record[ h.x] ) - 50, yDelta * yKeys.indexOf( record[ h.y] ) - 50, zDelta * zKeys.indexOf( record[ h.z] ) - 50 );
 			HAX.vehicles[vehicleId].obj.position = pos ;
 			HAX.vehicles[vehicleId].obj.record = record;
 			HAX.vehicles[vehicleId].trailPoints.push( pos );
+			if ( record[ h.direction ] === h.directionString ) {
+// console.log( record[ h.direction ],		h.directionString );
+				HAX.vehicles[vehicleId].obj.rotation.z = 0;
+			} else {
+				HAX.vehicles[vehicleId].obj.rotation.z = Math.PI;
+			}			
+			
+			
 			if ( HAX.vehicles[vehicleId].trailPoints.length > 20 ) HAX.vehicles[vehicleId].trailPoints.shift(); 
 			geometry = new THREE.Geometry();
 			material = new THREE.LineBasicMaterial( { color: 0xff0000 } );

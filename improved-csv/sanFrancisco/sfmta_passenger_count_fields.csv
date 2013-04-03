@@ -1,0 +1,20 @@
+ 0 stop_seq
+ 1 stop_name
+ 2 passenger_on
+ 3 passenger_off
+ 4 passenger_load
+ 5 seconds
+ 6 route
+ 7 latitude
+ 8 longitude
+ 9 trip_id
+10 dir
+11 vehno
+12 timestop
+13 timedoorclose
+14 timepullout
+15 doordwell
+16 waitdwell
+17 sincemidnight
+18 hms
+

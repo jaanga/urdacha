@@ -47,6 +47,7 @@
 	HAX.geneva.trailStart = 5;
 	HAX.geneva.trailEnd = 14;
 	HAX.geneva.trailLength = 0;	
+	HAX.geneva.vehNo = 3;
 	HAX.geneva.x = 16;
 	HAX.geneva.y = 1;
 	HAX.geneva.z = 17;
@@ -55,27 +56,30 @@
 	HAX.sanFrancisco = {};
 	HAX.sanFrancisco.app = doCity;
 	HAX.sanFrancisco.cityId = 1;
-	HAX.sanFrancisco.colorField = 9;
-	HAX.sanFrancisco.direction = 13;
+	HAX.sanFrancisco.colorField = 6;
+	HAX.sanFrancisco.direction = 10;
 	HAX.sanFrancisco.directionString = '0';	
 	
-	HAX.sanFrancisco.fields = [ 'sf_day1.csv', 'sf_day1.csv', 'sf_day2.csv', 'sf_day3.csv', 'sf_day4.csv', 'sf_day5.csv', 'sf_day6.csv', 'sf_day7.csv' ];
-	HAX.sanFrancisco.fieldsId = 0;
+	// HAX.sanFrancisco.fields = [ 'sf_day1.csv', 'sf_day1.csv', 'sf_day2.csv', 'sf_day3.csv', 'sf_day4.csv', 'sf_day5.csv', 'sf_day6.csv', 'sf_day7.csv' ];
+	HAX.sanFrancisco.fields = [ 'sfmta_passenger_count_day1.csv', 'sfmta_passenger_count_day2.csv', 'sfmta_passenger_count_day3.csv', 
+		'sfmta_passenger_count_day4.csv', 'sfmta_passenger_count_day5.csv', 'sf_day6.csv', 'sfmta_passenger_count_day6.csv', 'sfmta_passenger_count_day7.csv' ];
+	
+	HAX.sanFrancisco.fieldsId = 1;
 	HAX.sanFrancisco.fieldsTitles = [ 'Select a day','San Francisco 2012-10-01', 'San Francisco 2012-10-02', 'San Francisco 2012-10-03', 'San Francisco 2012-10-04', 'San Francisco 2012-10-05', 'San Francisco 2012-10-06', 'San Francisco 2012-10-07' ];
 	HAX.sanFrancisco.fname = HAX.sanFrancisco.fields[0];
 	HAX.sanFrancisco.folder = '../../improved-csv/sanFrancisco/';
 	HAX.sanFrancisco.objCount = 300;
 	HAX.sanFrancisco.speed = 30;
-	HAX.sanFrancisco.time = 15;
+	HAX.sanFrancisco.time = 18;
 	HAX.sanFrancisco.title = 'San Francisco';
 	HAX.sanFrancisco.trailCount = 100;
 	HAX.sanFrancisco.trailStart = 14;
 	HAX.sanFrancisco.trailEnd = 14;
 	HAX.sanFrancisco.trailLength = 10;
-	
-	HAX.sanFrancisco.x = 10;
-	HAX.sanFrancisco.y = 9;
-	HAX.sanFrancisco.z = 11;
+	HAX.sanFrancisco.vehNo = 11;
+	HAX.sanFrancisco.x = 7;
+	HAX.sanFrancisco.y = 6;
+	HAX.sanFrancisco.z = 8;
 
 
 	HAX.zurich = {};
@@ -97,6 +101,7 @@
 	HAX.zurich.trailEnd = 5;
 	HAX.zurich.trailStart = 5;
 	HAX.zurich.trailLength = 2;
+	HAX.zurich.vehNo = 20;
 	HAX.zurich.x = 11;
 	HAX.zurich.y = 1;
 	HAX.zurich.z = 12;
@@ -166,6 +171,7 @@
 			HAX.trailStart = HAX.city.trailStart;
 			HAX.trailEnd = HAX.city.trailEnd;
 			HAX.trailLength = HAX.city.trailLength;
+			HAX.vehNo = HAX.city.vehNo;
 		}	
 		
 		if ( c !== HAX.cityId || HAX.x === undefined ) {		
