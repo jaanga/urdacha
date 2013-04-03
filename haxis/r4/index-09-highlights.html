@@ -53,6 +53,7 @@
 			'#camX=' + h.camX.toFixed(2) + '#camY=' + h.camY.toFixed(2) + '#camZ=' + h.camZ.toFixed(2) +
 			'#cityId=' + h.cityId +
 			'#colorField=' + h.colorField + 
+		// '#date=' + h.date + 
 			'#direction=' + h.direction + 
 			'#directionString=' + h.directionString +
 			'#fieldsId=' + h.fieldsId +
@@ -199,10 +200,11 @@ if (window.console) { console.log('waiting...'); }
 		var h = HAX;
 		h.dataLength = data.length;
 		
-		h.scene = new THREE.Scene();
-		updateAxis();
-		updateSidebar();
 		
+
+		h.scene = new THREE.Scene();
+		newSign();
+updateSidebar();
 		xKeys = findSets( h.x );
 		xDelta = 100 / xKeys.length;
 		var txt = '<h3 style="color: red" >X-Axis - ' + xKeys.length + ' items</h3><table id="rd1" style="width: 100%;" >' +
@@ -236,15 +238,6 @@ if (window.console) { console.log('waiting...'); }
 		txt += '</table>';
 		readout3.innerHTML = txt;
 
-		HAX.vehicles = {}
-		HAX.vehicle = function() {
-			this.id = null;
-			this.obj = null;
-			this.trail = null;
-			this.trailPoints  = [];
-			this.route = null;
-		}
-		
 		HAX.colorsSet = findSets( HAX.colorField );
 		HAX.colors = colorful(  HAX.colorsSet );
 
@@ -261,6 +254,7 @@ if (window.console) { console.log('waiting...'); }
 
 	var sets, tots, avg;
 	function findSets( fieldId ) {
+		 
 		sets = {};
 		sets.element = function() {};
 		for (var record, field, i = 1; i < dataLength; i++) {
@@ -284,7 +278,6 @@ if (window.console) { console.log('waiting...'); }
 		return keys;
 	}
 		var color, record, mesh, material, pos, line;	
-		
 	function haxisIt() {
 
 		var h = HAX;
@@ -306,32 +299,7 @@ if (window.console) { console.log('waiting...'); }
 			if ( record[ h.direction ] != h.directionString ) {
 				cyl.applyMatrix( new THREE.Matrix4().makeRotationX( Math.PI ) );
 			}
-			
-			var vehicleId = record[ 14 ];
-			if ( HAX.vehicles[vehicleId] == undefined ) {
-				HAX.vehicles[vehicleId] = new HAX.vehicle();
-				HAX.vehicles[vehicleId].id = vehicleId;
-				HAX.vehicles[vehicleId].obj =  new THREE.Mesh( cyl, material );
-				HAX.objects.push( HAX.vehicles[vehicleId].obj );
-				HAX.scene.add( HAX.vehicles[vehicleId].obj );
-			}
-			
-			
-			pos = v( xDelta * xKeys.indexOf( record[ h.x] ) - 50, yDelta * yKeys.indexOf( record[ h.y] ) - 50, zDelta * zKeys.indexOf( record[ h.z] ) - 50 );
-			HAX.vehicles[vehicleId].obj.position = pos ;
-			HAX.vehicles[vehicleId].obj.record = record;
-			HAX.vehicles[vehicleId].trailPoints.push( pos );
-			if ( HAX.vehicles[vehicleId].trailPoints.length > 20 ) HAX.vehicles[vehicleId].trailPoints.shift(); 
-			geometry = new THREE.Geometry();
-			material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
-			material.color.setHSL( color, 0.8, 0.5 );
 
-			geometry.vertices = HAX.vehicles[vehicleId].trailPoints;
-			HAX.scene.remove( HAX.vehicles[vehicleId].trail );
-			HAX.vehicles[vehicleId].trail = new THREE.Line( geometry, material );
-			HAX.scene.add( HAX.vehicles[vehicleId].trail );
-			
-/*
 			item = HAX.objects.shift();
 			HAX.scene.remove( item );
 
@@ -360,7 +328,6 @@ if (window.console) { console.log('waiting...'); }
 			HAX.lineSets[element].points.push( pos );
 
 			item = HAX.lines.shift();
-			
 			HAX.scene.remove( item );
 
 			geometry = new THREE.Geometry();
@@ -371,7 +338,7 @@ if (window.console) { console.log('waiting...'); }
 			line = new THREE.Line( geometry, material );
 			HAX.lines.push(line );
 			HAX.scene.add( line );
-*/
+
 			HAX.dataCount++;
 		}
 		
@@ -387,16 +354,9 @@ if (window.console) { console.log('waiting...'); }
 			'Z: ' + data[0][ h.z] + ': ' + zKeys.length + '<br>' +
 			// 'Lines disconnected: ' + HAX.lineSetChanges +
 		'';
-		
 		if ( HAX.dataCount > HAX.dataLength - HAX.speed - 1 ) { 
 			HAX.dataCount = 1; 
 			HAX.lineSetChanges = 0;
-			for ( var veh in HAX.vehicles ) {
-// console.log (veh );			
-				HAX.vehicles[veh].obj.position.set( -50, -50,-50 );
-				HAX.scene.remove( HAX.vehicles[veh].trail );
-				HAX.vehicles[veh].trailPoints = [];
-			}
 		}
 	}
 
@@ -428,7 +388,7 @@ if (window.console) { console.log('waiting...'); }
 		return colList;
 	}
 
-	function updateAxis( ) {
+	function newSign( ) {
 		var h = HAX;
 		geometry = new THREE.PlaneGeometry( 100, 20, 1, 1 );
 
@@ -502,7 +462,7 @@ if (window.console) { console.log('waiting...'); }
 		
 		updateHash();
 	}	
-		var intersected;
+
 	function onDocumentMouseMove( event ) {
 		if ( data == undefined ) return;
 		// event.preventDefault();
@@ -514,7 +474,7 @@ if (window.console) { console.log('waiting...'); }
 		projector.unprojectVector( vector, HAX.camera );
 		var raycaster = new THREE.Raycaster( HAX.camera.position, vector.sub( HAX.camera.position ).normalize() );
 		var intersects = raycaster.intersectObjects( HAX.objects );
-
+		var intersected;
 		if ( intersects.length > 0 ) {
 			if ( intersected != intersects[ 0 ].object ) { // not same one
 				intersected = intersects[ 0 ].object;
