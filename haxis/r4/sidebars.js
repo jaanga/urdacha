@@ -228,7 +228,7 @@
 
 		info.innerHTML =
 			'<p><i>2013-03-31<br> ~ Here we go!</i></p>' +
-			'<p>Made by the <a href="http://www.urdacha.info" target="_blank">Urdacha</a> team for the:</p>' +
+			'<p>Made by the <a href="http://jaanga.github.com/urdacha" target="_blank">Urdacha</a> team for the:</p>' +
 			'<p><a href="http://urbanprototyping.org/prototype/challenges/urban-data-challenge-zurich-sf-geneva/" target="_blank">Urban Data Challenge</a></p>' +
 			'<p>Watch the numeric data come alive as animated objects in 3D.</p>' +
 			'<p>Use your pointing device to update the view.</p>' +
