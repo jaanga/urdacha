@@ -40,13 +40,13 @@
 	//HAX.geneva.trailStart = 3;
 	//HAX.geneva.trailLength = 2;
 	HAX.geneva.objCount = 30;
-	HAX.geneva.speed = 10;
+	HAX.geneva.speed = 20;
 	HAX.geneva.time = 8;
 	HAX.geneva.title = 'Geneva';
-	HAX.geneva.trailCount = 100;
-	HAX.geneva.trailStart = 5;
-	HAX.geneva.trailEnd = 14;
-	HAX.geneva.trailLength = 0;	
+	//HAX.geneva.trailCount = 100;
+	//HAX.geneva.trailStart = 5;
+	//HAX.geneva.trailEnd = 14;
+	HAX.geneva.trailLength = 10;	
 	HAX.geneva.vehNo = 3;
 	HAX.geneva.x = 16;
 	HAX.geneva.y = 1;
@@ -63,7 +63,6 @@
 	// HAX.sanFrancisco.fields = [ 'sf_day1.csv', 'sf_day1.csv', 'sf_day2.csv', 'sf_day3.csv', 'sf_day4.csv', 'sf_day5.csv', 'sf_day6.csv', 'sf_day7.csv' ];
 	HAX.sanFrancisco.fields = [ 'sfmta_passenger_count_day1.csv', 'sfmta_passenger_count_day2.csv', 'sfmta_passenger_count_day3.csv', 
 		'sfmta_passenger_count_day4.csv', 'sfmta_passenger_count_day5.csv', 'sf_day6.csv', 'sfmta_passenger_count_day6.csv', 'sfmta_passenger_count_day7.csv' ];
-	
 	HAX.sanFrancisco.fieldsId = 1;
 	HAX.sanFrancisco.fieldsTitles = [ 'Select a day','San Francisco 2012-10-01', 'San Francisco 2012-10-02', 'San Francisco 2012-10-03', 'San Francisco 2012-10-04', 'San Francisco 2012-10-05', 'San Francisco 2012-10-06', 'San Francisco 2012-10-07' ];
 	HAX.sanFrancisco.fname = HAX.sanFrancisco.fields[0];
@@ -72,9 +71,9 @@
 	HAX.sanFrancisco.speed = 30;
 	HAX.sanFrancisco.time = 18;
 	HAX.sanFrancisco.title = 'San Francisco';
-	HAX.sanFrancisco.trailCount = 100;
-	HAX.sanFrancisco.trailStart = 14;
-	HAX.sanFrancisco.trailEnd = 14;
+	//HAX.sanFrancisco.trailCount = 100;
+	//HAX.sanFrancisco.trailStart = 14;
+	//HAX.sanFrancisco.trailEnd = 14;
 	HAX.sanFrancisco.trailLength = 10;
 	HAX.sanFrancisco.vehNo = 11;
 	HAX.sanFrancisco.x = 7;
@@ -86,7 +85,7 @@
 	HAX.zurich.app = doCity;
 	HAX.zurich.cityId = 2;
 	HAX.zurich.colorField = 1;
-	HAX.zurich.direction = 4;
+	HAX.zurich.direction = 2;
 	HAX.zurich.directionString = '1';
 	HAX.zurich.fields = [ 'zurich-d1.csv', 'zurich-d1.csv', 'zurich-d2.csv', 'zurich-d3.csv', 'zurich-d4.csv', 'zurich-d5.csv', 'zurich-d6.csv', 'zurich-d7.csv' ];
 	HAX.zurich.fieldsId = 0;
@@ -95,16 +94,16 @@
 	HAX.zurich.folder = '../../improved-csv/zurich/';
 	HAX.zurich.objCount = 100;
 	HAX.zurich.speed = 25;
-	HAX.zurich.time = 0;
+	HAX.zurich.time = 9;
 	HAX.zurich.title = 'Zurich';
-	HAX.zurich.trailCount = 20;
-	HAX.zurich.trailEnd = 5;
-	HAX.zurich.trailStart = 5;
-	HAX.zurich.trailLength = 2;
-	HAX.zurich.vehNo = 20;
-	HAX.zurich.x = 11;
+	//HAX.zurich.trailCount = 1;
+	//HAX.zurich.trailEnd = 5;
+	//HAX.zurich.trailStart = 5;
+	HAX.zurich.trailLength = 5;
+	HAX.zurich.vehNo = 11;
+	HAX.zurich.x = 12;
 	HAX.zurich.y = 1;
-	HAX.zurich.z = 12;
+	HAX.zurich.z = 13;
 
 // Settiings UI elements	
 	HAX.xAxis = {};
@@ -167,9 +166,9 @@
 			HAX.speed = HAX.city.speed;
 			HAX.time = HAX.city.time;
 			HAX.title = HAX.city.fieldsTitles[ id ];
-			HAX.trailCount = HAX.city.trailCount;
-			HAX.trailStart = HAX.city.trailStart;
-			HAX.trailEnd = HAX.city.trailEnd;
+			//HAX.trailCount = HAX.city.trailCount;
+			//HAX.trailStart = HAX.city.trailStart;
+			//HAX.trailEnd = HAX.city.trailEnd;
 			HAX.trailLength = HAX.city.trailLength;
 			HAX.vehNo = HAX.city.vehNo;
 		}	
@@ -367,7 +366,7 @@
 		td.innerHTML = 'Colors:';
 		td = tr.appendChild( document.createElement( 'td' ) );
 		buildSelect2( HAX.colorsBits, HAX.colorField, td );
-
+/*
 		HAX.trailsStart.fields =  HAX.trailsStart.fieldsTitles = data[ 0 ];
 
 		tr = table.appendChild( document.createElement( 'tr' ) );
@@ -383,7 +382,7 @@
 		td.innerHTML = 'Trail end:';
 		td = tr.appendChild( document.createElement( 'td' ) );
 		buildSelect2( HAX.trailsEnd, HAX.trailEnd, td );
-
+*/
 		tr = table.appendChild( document.createElement( 'tr' ) );
 		td = tr.appendChild( document.createElement( 'td' ) );
 		td.innerHTML = '&nbsp;';

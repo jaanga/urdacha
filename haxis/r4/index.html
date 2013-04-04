@@ -131,7 +131,7 @@
 		HAX.stats.domElement.style.cssText = 'position: absolute;right: 0; top: 0px; z-index: 100; ';
 		info.appendChild( HAX.stats.domElement );		
 		
-		initObjects();
+		// initObjects();
 		toggleBar( info )
 	}
 
@@ -247,13 +247,15 @@ if (window.console) { console.log('waiting...'); }
 		
 		HAX.colorsSet = findSets( HAX.colorField );
 		HAX.colors = colorful(  HAX.colorsSet );
-
+/*
 		HAX.lineSets = {};
 		HAX.lineSets.element = function() {
 			this.points = [];
 			this.subSet = null;
 		}
 		HAX.lineSetChanges = 0;
+*/		
+		HAX.objects = [];
 
 // Let's roll...
 		dataPlay = true;
@@ -313,8 +315,6 @@ if (window.console) { console.log('waiting...'); }
 				HAX.scene.add( HAX.vehicles[vehicleId].obj );
 			}
 			
-
-			
 			pos = v(  xDelta * xKeys.indexOf( record[ h.x] ) - 50, yDelta * yKeys.indexOf( record[ h.y] ) - 50, zDelta * zKeys.indexOf( record[ h.z] ) - 50 );
 			HAX.vehicles[vehicleId].obj.position = pos ;
 			HAX.vehicles[vehicleId].obj.record = record;
@@ -327,7 +327,7 @@ if (window.console) { console.log('waiting...'); }
 			}			
 			
 			
-			if ( HAX.vehicles[vehicleId].trailPoints.length > 20 ) HAX.vehicles[vehicleId].trailPoints.shift(); 
+			if ( HAX.vehicles[vehicleId].trailPoints.length > HAX.trailLength ) HAX.vehicles[vehicleId].trailPoints.shift(); 
 			geometry = new THREE.Geometry();
 			material = new THREE.LineBasicMaterial( { color: 0xff0000 } );
 			material.color.setHSL( color, 0.8, 0.5 );

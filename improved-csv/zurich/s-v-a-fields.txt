@@ -1,24 +1,27 @@
-eventId  tripId
-tripStart *
-routeId
-routeNumber *
-routeNameShort
-routeName
-routeVLD
-runNumber *
-direction *
-stopSequenceNr *
-stopId *
-stopNumber
-stopNameShort *
-stopName
-arrivalScheduled *
-departureScheduled *
-arrivalActual *
-departureActual *
-mileage
-vehicleId *
-vehicleTechnicalId
+ 0 eventId  
+ 1 serviceDate
+ 2 date
+ 3 tripId
+ 4 tripStart *
+ 5 routeId *
+ 6 routeNumber *
+ 7 routeNameShort
+ 8 routeName *
+ 9 routeVLD
+10 runNumber *
+11 direction *
+12 stopSequenceNr *
+13 stopId *
+14 stopNumber
+15 stopNameShort *
+16 stopName *
+17 arrivalScheduled *
+18 departureScheduled *
+19 arrivalActual *
+20 departureActual *
+21 mileage
+22 vehicleId *
+23 vehicleTechnicalId
 vehicleNumber
 vehiclePlate
 vehicleVLD

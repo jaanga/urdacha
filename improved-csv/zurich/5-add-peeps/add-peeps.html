@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='author' content='Theo Armour'>
+</head>
+<body>
+<script src="FileSaver.min.js"></script>
+<script>
+
+	document.body.style.cssText = 'font: bold 12pt monospace; margin: 0 5px; overflow: hidden;';
+
+	var input = document.body.appendChild( document.createElement( 'input' ) );
+	input.style.cssText = 'position: absolute; top: 5px;';
+	input.type = 'file';
+	
+	var leftHeader = document.body.appendChild( document.createElement( 'div' ) );
+	leftHeader.style.cssText = 'left: 220px; position: absolute; top: 5px;';
+
+	var info = leftHeader.appendChild( document.createElement( 'scan' ) );
+	info.innerHTML =
+		'<button onclick="readFile();" >readFile</button> ' +
+		
+		'<button onclick="saveTextLeft();" >sav</button> ' +
+		'<scan id="info1"> ~ status</scan>' +
+	'';
+
+	var leftBody = document.body.appendChild( document.createElement( 'textarea' ) );
+	leftBody.style.cssText = 'border: 1px solid black; height: 90%; overflow-x: hidden; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 60px; width: 48%;';
+
+//
+	var rightHeader = document.body.appendChild( document.createElement( 'div' ) );
+	rightHeader.style.cssText = 'left: 50%; position: absolute; top: 5px;';
+	rightHeader.innerHTML = 
+		'<button onclick="copyToRight()" >copyToRight</button> ' +
+		'<button onclick="saveFile()" >Save the Data</button>' +
+		
+		' ~ <button onclick="processPcs()" >processPcs</button> ~ ' +
+		' ~ <button onclick="processTestSva()" >processTestSva</button> ~ ' +
+		' ~ <button onclick="processFileSva()" >processFileSva</button> ~ ' +
+
+		'<scan id="info2"> ~ status</scans>' +
+	'';
+
+	var rightBody = document.body.appendChild( document.createElement( 'textarea' ) );
+	rightBody.style.cssText = 'border: 1px solid black; height: 93%; left: 50%; overflow-x: scroll; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 45px; width: 48%;';
+	
+	requestFile('zurich-p-cs-d1.csv', callbackPcs);		
+	
+/////////////
+
+// left side
+
+	var xmlhttp;
+	function requestFile( fname, callback ) {
+		dataPlay = false;
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open( 'GET', fname, true );
+		xmlhttp.onreadystatechange = callback;
+		xmlhttp.send( null );
+		callbackCount = 0;
+	}
+	
+	var HX = {};
+	
+	function callbackPcs() {
+		if ( xmlhttp.readyState == 4  ) {
+			HX.pcs = xmlhttp.responseText;
+			requestFile('zurich-sva-d1-trim-lat-long-sort.csv', callbackSva);	
+		} else {
+console.log('Pcs waiting...');
+		}
+	}
+	
+	function callbackSva() {
+		if ( xmlhttp.readyState == 4  ) {
+			leftBody.textContent = xmlhttp.responseText;		
+		} else {
+console.log('Sva waiting...');
+		}
+	}
+
+	function readFile() {
+		var files = input.files;
+		if (!files.length) {
+			alert('Please select a file!');
+			return;
+		}
+
+		var file = files[0];
+		var start = 0;
+		var stop = file.size - 1;
+		var reader = new FileReader();
+		reader.onloadend = function( evt ) {
+			if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+				info1.textContent = 'Bytes: ' + (start + 1) + '-' + (stop + 1) + ' of ' + file.size + '' ;
+				leftBody.textContent = evt.target.result;
+			}
+		};
+		var blob = file.slice(start, stop + 1);
+		reader.readAsBinaryString(blob);
+	}
+
+	function saveTextLeft() {
+		var blob = new Blob([leftBody.innerHTML], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, 'file.txt');	
+	}
+	
+// right side
+	function copyToRight() {
+		var text = leftBody.innerHTML;
+		rightBody.innerHTML = text;
+	}
+	function saveFile() {
+		var blob = new Blob([rightBody.innerHTML], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, 'file.txt');	
+	}
+	
+	var tim = new Date();
+	var record, route, keys;
+	
+	HX.peeps = function() {
+		this.count;
+		this.data = [];
+		this.key;
+		this.route;
+		this.stop = [];
+	};
+
+	function processPcs() {
+		var text = HX.pcs;
+		var lines = text.split(/\r\n|\n/);
+		HX.pcsData = [];
+		var c = ';';
+		for (var i = 0, len = lines.length; i < len; i++) {
+			HX.pcsData.push( lines[i].split( c ) );
+			if ((i % 5000) === 0 ) { info2.innerText = i; console.log('split', i );}
+		}
+		
+		for (var i = 1, len = HX.pcsData.length - 1; i < len; i++) {
+			record = HX.pcsData[i];
+			key = record[ 3 ] ;
+			if ( HX.peeps[ key ] == undefined ) {
+				HX.peeps[ key ] = new HX.peeps;
+				var ev = HX.peeps[ key ];
+				ev.count = 1;
+				ev.data.push(record );
+				ev.key = key;
+				// ev.route = record[ 1 ];
+				ev.stop.push( record[ 7].replace(/["']/g, "") );
+			} else {
+				var ev = HX.peeps[ key ];
+				ev.count++;
+				ev.data.push(record );
+				ev.stop.push( record[ 7].replace(/["']/g, "") );
+			}
+
+			if ((i % 5000) === 0 ) { info2.innerText = i; console.log('routes', i );}
+		}
+		
+		HX.pcsKeys = Object.keys( HX.peeps );
+		var id, txt = 'keys: ' + HX.pcsKeys.length + '\n';
+	
+		for (var i = 0, len = HX.pcsKeys.length; i < len; i++) {
+			id = HX.pcsKeys[i];
+			// txt += i + ' key: ' + id + ' count: ' + HX.events[id].count + ' data: ' + HX.events[id].data.length + '\n';
+			txt += HX.peeps[id].data +  '\n';  // 
+			
+		}
+		rightBody.innerHTML = txt;
+	}
+	
+	HX.events = function() {
+		this.count;
+		this.data = [];
+		this.key;
+		this.line;
+		this.route = [];
+	};
+	
+	function processTestSva() {
+		var text = xmlhttp.responseText;
+		var lines = text.split(/\r\n|\n/);
+		HX.svaData = [];
+		var c = ',';
+		for (var i = 0, len = lines.length; i < len; i++) {
+			HX.svaData.push( lines[i].split( c ) );
+			if ((i % 5000) === 0 ) { info2.innerText = i; console.log('split', i );}
+		}
+		
+		for (var i = 1, len = HX.svaData.length - 1; i < len; i++) {
+			record = HX.svaData[i];
+			key = record[ 0 ] ;
+			if ( HX.events[ key ] == undefined ) {
+				HX.events[ key ] = new HX.events;
+				var ev = HX.events[ key ];
+				ev.count = 1;
+				ev.data.push( record );
+				ev.key = key;
+				ev.line = i;
+				ev.route.push( record[ 1 ] );
+
+			} else {
+			
+				var ev = HX.events[ key ];
+				ev.count++;
+				ev.data.push( data[i] );
+				ev.route.push( record[ 1 ] );
+				if ( ev.route !== record[ 1 ] ) { 
+// console.log( i, ev.key, ev.route, record[ 1 ] );  }
+				}
+			}	
+			if ((i % 5000) === 0 ) { info2.innerText = i; console.log('routes', i );}
+			
+		}
+		
+		HX.svaKeys = Object.keys( HX.events );
+		var id, txt = 'keys: ' + HX.svaKeys.length + '\n';
+		var cnt = 0;
+		for (var i = 0, len = HX.svaData.length - 2; i < len; i++) {
+			record = HX.svaData[i];
+			if ( HX.pcsKeys.indexOf( record[0] ) > 0 ) {
+				var s = HX.svaKeys[i];
+				var sStop = record[6];
+				
+				var p =  HX.pcsKeys[ HX.pcsKeys.indexOf( record[0] ) ];
+				if ( HX.peeps[p] !== undefined ) {
+					var pd = HX.peeps[p].data;
+					if ( pd.join('').indexOf(sStop) > 0 ) {
+						for (var j = 0, jlen = pd.length; j < jlen; j++) {
+							if ( pd[j][7].replace(/["']/g, "") === sStop ) {
+								txt += 'hit: ' + i + ' - ' + cnt++ + ' ' + sStop + ' \n'  + p + ' ' + pd[j][7]  + ' ' + pd[j] +  '\n';  // 
+							}
+						}
+					}
+				}
+				
+				txt += i + ' - ' + record[0] + ' ' + record[6] + '\n';
+			} else {
+				txt += i + ' '  + HX.svaData[i] +  '\n';  // 
+			}
+			
+		}
+		rightBody.innerHTML = txt;
+	}	
+	
+	function processFileSva() {
+		var text = xmlhttp.responseText;
+		var lines = text.split(/\r\n|\n/);
+		HX.svaData = [];
+		var c = ',';
+		for (var i = 0, len = lines.length; i < len; i++) {
+			HX.svaData.push( lines[i].split( c ) );
+			if ((i % 5000) === 0 ) { info2.innerText = i; console.log('split', i );}
+		}
+		
+		for (var i = 1, len = HX.svaData.length - 1; i < len; i++) {
+			record = HX.svaData[i];
+			key = record[ 0 ] ;
+			if ( HX.events[ key ] == undefined ) {
+				HX.events[ key ] = new HX.events;
+				var ev = HX.events[ key ];
+				ev.count = 1;
+				ev.data.push( record );
+				ev.key = key;
+				ev.line = i;
+				ev.route.push( record[ 1 ] );
+
+			} else {
+			
+				var ev = HX.events[ key ];
+				ev.count++;
+				ev.data.push( record );
+				ev.route.push( record[ 1 ] );
+				if ( ev.route !== record[ 1 ] ) { 
+// console.log( i, ev.key, ev.route, record[ 1 ] );  }
+				}
+			}	
+			if ((i % 5000) === 0 ) { info2.innerText = i; console.log('routes', i );}
+			
+		}
+		
+		HX.svaKeys = Object.keys( HX.events );
+		var id;
+		txt = HX.svaData[0] + ',latitude,longitude,passengersBoardingTrip,passengersAlightingTrip,passengersDifferenceTrip,passengersBoardingStop,passengersAlightingStop,passengerLoadStop\n';
+		var cnt = 0;
+		for (var i = 1, len = HX.svaData.length - 2; i < len; i++) {
+			record = HX.svaData[i];
+			if ( HX.pcsKeys.indexOf( record[0] ) > 0 ) {
+				var s = HX.svaKeys[i];
+				var sStop = record[6];
+				var c = ',';
+				var p =  HX.pcsKeys[ HX.pcsKeys.indexOf( record[0] ) ];
+				if ( HX.peeps[p] !== undefined ) {
+					var pd = HX.peeps[p].data;
+					if ( pd.join('').indexOf(sStop) > 0 ) {
+						for (var j = 0, jlen = pd.length; j < jlen; j++) {
+							if ( pd[j][7].replace(/["']/g, "") === sStop ) {
+								cnt++;
+								txt += HX.svaData[i] + c + pd[j][12] + c + pd[j][13] + c + pd[j][14] + c + pd[j][15] + c + pd[j][16] + c + pd[j][17] +  '\n';  // 
+							}
+						}
+					}
+				} else {
+					txt += HX.svaData[i] +  '0,0,0,0,0,0\n'; 
+				}
+				
+				txt +=  HX.svaData[i] +  '0,0,0,0,0,0\n';  
+			} else {
+				txt += HX.svaData[i] +  '0,0,0,0,0,0\n';  // 
+			}
+			
+		}
+		rightBody.innerHTML = txt;
+console.log(cnt);		
+	}		
+</script>
+</body>
+</html>

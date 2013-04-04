@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+</head>
+<body>
+<script src="FileSaver.min.js">// https://github.com/eligrey/FileSaver.js/ </script>
+<script>
+	document.body.style.cssText = 'font: bold 12pt monospace; margin: 0 5px; overflow: hidden;';
+
+	var input = document.body.appendChild( document.createElement( 'input' ) );
+	input.style.cssText = 'position: absolute; top: 5px;';
+	input.type = 'file';
+	
+	var leftHeader = document.body.appendChild( document.createElement( 'div' ) );
+	leftHeader.style.cssText = 'left: 220px; position: absolute; top: 5px;';
+
+	var info = leftHeader.appendChild( document.createElement( 'scan' ) );
+	info.innerHTML =
+		'<button onclick="parseFile( 0, 50000000);" >open big csv</button> ' +
+		
+		'<button onclick="saveTextLeft();" >sav</button> ' +
+		 '<scan id="info1">status</scan>' +
+	'';
+
+	var leftBody = document.body.appendChild( document.createElement( 'textarea' ) );
+	leftBody.style.cssText = 'border: 1px solid black; height: 90%; overflow-x: hidden; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 60px; width: 48%;';
+
+//
+	var rightHeader = document.body.appendChild( document.createElement( 'div' ) );
+	rightHeader.style.cssText = 'left: 50%; position: absolute; top: 5px;';
+	rightHeader.innerHTML='splitScreenEditRight ' +
+		'<button onclick="copyToRight()" >copyToRight</button> ~ ' +
+		
+		'<button onclick="sortArray()" >sortArray</button> ~ ' +
+		
+		'<button onclick="saveText()" >Save the Data</button>' +
+		'<scan id="stats2"></scans>' +
+	'';
+
+	var rightBody = document.body.appendChild( document.createElement( 'textarea' ) );
+	rightBody.style.cssText = 'border: 1px solid black; height: 93%; left: 50%; overflow-x: scroll; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 45px; width: 48%;';
+	
+	// document.getElementById('files').addEventListener('change', handleFileSelect, false);	
+		
+	var allText;
+	var allTextLines;
+	var data;
+	var tim = new Date();
+	var rec;
+	var record, field, keys, sets;
+	
+	function copyToRight() {
+		allText = leftBody.innerHTML;
+		rightBody.innerHTML = allText;
+	}
+
+	function sortArray() {
+		allText = leftBody.innerHTML;
+		allTextLines = allText.split(/\r\n|\n/);
+		var sep = ','
+		data = [];
+		var txt = 'routeNumber,runNumber,stopSequenceNr,stopId,stopNumber,stopNameShort,arrivalScheduled,arrivalActual,departureActual,mileage,vehicleId,vehicleNumber,latitude,longitude\n';
+				
+		for (var i = 0, len = allTextLines.length; i < len; i++) {
+			data.push( allTextLines[i].split( sep ) );
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('split', i );}
+		}
+		
+		var c = ',';
+		sets = {};
+		sets.element = function() {};
+		
+		for (var i = 1, len = data.length - 1; i < len; i++) {
+			record = data[i];
+			field = record[ 0 ];
+			if ( sets[ field ] == undefined ) {
+				sets[ field ] = new sets.element;
+				sets[ field ].count = 1;
+				sets[ field ].data = record;
+			} else {
+				sets[ field ].count++;
+				
+			}
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('sets', i );}
+		}
+		delete sets['element'];
+		var keys = Object.keys( sets );
+		keys.sort( function(a,b){return a-b} )
+console.log(keys);
+		for (var i = 0, len = keys.length; i < len; i++) {
+			txt += sets[ keys[i] ].data + '\n';
+		}
+		
+		
+		rightBody.innerHTML = txt;
+	}	
+	
+	function addLatLong() {
+		allText = leftBody.innerHTML;
+		allTextLines = allText.split(/\r\n|\n/);
+		var txt = 'routeNumber,runNumber,stopSequenceNr,stopId,stopNumber,stopNameShort,arrivalScheduled,arrivalActual,departureActual,mileage,vehicleId,vehicleNumber,latitude,longitude\n';
+		var sep = ','
+		data = [];
+		for (var i = 0, len = allTextLines.length; i < len; i++) {
+			data.push( allTextLines[i].split( sep ) );
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('split', i );}
+		}
+		// var rec;
+		var c = ',';
+		var stop;
+		for (var i = 0, len = data.length - 1; i < len; i++) {
+			rec = data[i];
+			stop = stops[ rec[5] ];
+			if ( stop !== undefined ) {
+				txt +=  rec + c + stop.latitude + c + stop.longitude + '\n' ;
+			} else {
+console.log( 'stops', i , rec );	
+			}
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('parse', i );}
+		}
+		rightBody.innerHTML = txt;
+	}	
+	
+	function parseCsv() {
+		allText = leftBody.innerHTML;
+		allTextLines = allText.split(/\r\n|\n/);
+		var txt = 'var stops = stops || {}; \n';
+		var sep = ','
+		data = [];
+		for (var i = 0, len = allTextLines.length; i < len; i++) {
+			data.push( allTextLines[i].split( sep ) );
+			// txt +=  i + '. ' + data[i] + '\n';
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('split', i );}
+		}
+		var rec;
+		var c = ',';
+		for (var i = 0, len = data.length - 1; i < data.length; i++) {
+			rec = data[i];
+			txt +=  'stops.' + rec[0].replace(/["']/g, "") + ' = { short: ' + rec[0] + ', long: ' + rec[1] + ', latitude: ' + rec[2] + ', longitude: ' + rec[3] + ' }; \n' ;
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('parse', i );}
+		}
+		rightBody.innerHTML = txt;
+	}
+	
+	function parseSva() {
+		allText = leftBody.innerHTML;
+		allTextLines = allText.split(/\r\n|\n/);
+		var txt = '';
+		var sep = ';'
+		data = [];
+		for (var i = 0, len = allTextLines.length; i < len; i++) {
+			data.push( allTextLines[i].split( sep ) );
+			// txt +=  i + '. ' + data[i] + '\n';
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('split', i );}
+		}
+		var rec;
+		var c = ',';
+		for (var i = 0, len = data.length - 1; i < data.length; i++) {
+			rec = data[i];
+			txt +=  rec[4] + c + rec[8] + c + rec[10] + 
+			 c + rec[11] + c + rec[12] + c + rec[13] + c + rec[15] + c + rec[16] + c + rec[17] + c + rec[18] + c + rec[21] + c + rec[22] +'\n';
+			if ((i % 10) === 0 ) { stats2.innerText = i; console.log('parse', i );}
+		}
+		rightBody.innerHTML = txt;
+	}
+
+	function parseFile( start, stop ) {
+console.log( 'parsefile', start, stop);	
+		var files = input.files;
+		if (!files.length) {
+			alert('Please select a file!');
+			return;
+		}
+
+		var file = files[0];
+		//var delta = file.size / 10;
+		//var start = cnt * delta;
+		
+		// var stop = start + delta || file.size - 1;
+
+		//for (var i = 0; i < 10; i++) {
+			var reader = new FileReader();
+			reader.onloadend = function( evt ) {
+				if (evt.target.readyState == FileReader.DONE) { // DONE == 2
+					info1.textContent = 'Bytes: ' + (start + 1) + '-' + (stop + 1) + ' of ' + file.size + '' ;
+					leftBody.textContent = evt.target.result;
+				}
+			};
+			var blob = file.slice(start, stop + 1);
+			reader.readAsBinaryString(blob);
+			//start = stop
+			//stop += delta;
+		// }
+	}
+
+	function saveTextLeft() {
+		var blob = new Blob([leftBody.innerHTML], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, 'file.txt');	
+	}
+	
+	function saveText() {
+		var blob = new Blob([rightBody.innerHTML], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, 'file.txt');	
+	}
+	
+</script>
+</body>
+</html>
