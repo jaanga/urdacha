@@ -292,7 +292,6 @@ if (window.console) { console.log('waiting...'); }
 		var h = HAX;
 		var cyl = new THREE.CylinderGeometry( 2, 0, 4, 5 );
 		
-		
 		for (var len = HAX.speed, i = 1; i < len; i++) {
 			record = data[ HAX.dataCount ];
 			var vehicleId = record[ h.vehNo ];
@@ -319,13 +318,13 @@ if (window.console) { console.log('waiting...'); }
 			HAX.vehicles[vehicleId].obj.position = pos ;
 			HAX.vehicles[vehicleId].obj.record = record;
 			HAX.vehicles[vehicleId].trailPoints.push( pos );
+			
 			if ( record[ h.direction ] === h.directionString ) {
 // console.log( record[ h.direction ],		h.directionString );
 				HAX.vehicles[vehicleId].obj.rotation.z = 0;
 			} else {
 				HAX.vehicles[vehicleId].obj.rotation.z = Math.PI;
 			}			
-			
 			
 			if ( HAX.vehicles[vehicleId].trailPoints.length > HAX.trailLength ) HAX.vehicles[vehicleId].trailPoints.shift(); 
 			geometry = new THREE.Geometry();

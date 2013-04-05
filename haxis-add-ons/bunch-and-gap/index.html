@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+</head>
+<body>
+<script src="FileSaver.min.js">// https://github.com/eligrey/FileSaver.js/ </script>
+<script>
+
+	var BG = BG || {};
+			
+	document.body.style.cssText = 'font: bold 12pt monospace; margin: 0 5px; overflow: hidden;';
+	
+	var leftHeader = document.body.appendChild( document.createElement( 'div' ) );
+	leftHeader.style.cssText = 'left: 5px; position: absolute; top: 5px;';
+
+	var info = leftHeader.appendChild( document.createElement( 'scan' ) );
+		info.innerHTML =
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_1000.csv\');" >Test</button> ' +
+		
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_day1.csv\');" >S1</button> ' +
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_day2.csv\');" >S2</button> ' +
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_day3.csv\');" >S3</button> ' +
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_day4.csv\');" >S4</button> ' +
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_day5.csv\');" >S5</button> ' +
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_day6.csv\');" >S6</button> ' +
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../improved-csv/sanFrancisco/sfmta_passenger_count_day7.csv\');" >S7</button> - ' +
+		
+		'<button onclick="BG.city=15; BG.time=0; requestFile(\'../../improved-csv/geneva/geneva-d1.csv\');" >G1</button> ' +
+		'<button onclick="BG.city=7; BG.time=0; requestFile(\'../../improved-csv/geneva/geneva-d2.csv\');" >G2</button> ' +
+		'<button onclick="BG.city=7; BG.time=0; requestFile(\'../../improved-csv/geneva/geneva-d3.csv\');" >G3</button> ' +
+		'<button onclick="BG.city=7; BG.time=0; requestFile(\'../../improved-csv/geneva/geneva-d4.csv\');" >G4</button> ' +	
+		'<button onclick="BG.city=7; BG.time=0; requestFile(\'../../improved-csv/geneva/geneva-d5.csv\');" >G5</button> ' +	
+		'<button onclick="BG.city=7; BG.time=0; requestFile(\'../../improved-csv/geneva/geneva-d6.csv\');" >G6</button> ' +
+		'<button onclick="BG.city=7; BG.time=0; requestFile(\'../../improved-csv/geneva/geneva-d7.csv\');" >G7</button><br>' +		
+		
+		'<button onclick="BG.city=6; BG.time=9; requestFile(\'../../improved-csv/zurich/zurich-d1.csv\');" >Z1</button> ' +
+		'<button onclick="BG.city=6; BG.time=9; requestFile(\'../../improved-csv/zurich/zurich-d2.csv\');" >Z2</button> ' +
+		
+		'<scan id="info1">status</scan>' +
+	'';
+
+	var leftBody = document.body.appendChild( document.createElement( 'textarea' ) );
+	leftBody.style.cssText = 'border: 1px solid black; height: 90%; overflow-x: scroll; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 60px; width: 48%;';
+
+	var rightHeader = document.body.appendChild( document.createElement( 'div' ) );
+	rightHeader.style.cssText = 'left: 50%; position: absolute; top: 5px;';
+	rightHeader.innerHTML = 
+		'<button onclick="saveText()" >Save the Data</button> ' +
+	
+		'<scan id="info2"></scans>' +
+	'';
+
+	var rightBody = document.body.appendChild( document.createElement( 'div' ) );
+	rightBody.style.cssText = 'border: 1px solid black; height: 93%; left: 50%; overflow-x: scroll; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 45px; width: 48%;';	
+
+// left
+
+	function requestFile( fname ) {
+		BG.request = new XMLHttpRequest();
+		BG.request.open( 'GET', fname, true );
+		BG.request.onreadystatechange = callbackFile;
+		BG.request.send( null );
+	}
+	
+	function callbackFile() {
+		if ( BG.request.readyState == 4  ) {
+			leftBody.textContent = BG.request.responseText;	
+			info1.innerText = 'loaded:' + leftBody.textLength;
+			
+			parseData();
+		} else {
+console.log('waiting...');
+		}
+	}
+
+// right
+
+	function saveText() {
+		var blob = new Blob([rightBody.innerHTML], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, 'bunch-gap-d' + day + '.csv');	
+	}
+	
+	function parseData( ) {
+		BG.data = [];
+		var lines = BG.request.responseText.split(/\r\n|\n/);
+		var sep = ','
+		
+		for (var i = 0, len = lines.length; i < len; i++) {
+			BG.data.push( lines[i].split( sep ) );
+			if ( (i % 30000) === 0 ) { info2.innerText = i; console.log('split', i );}
+		}
+		info1.innerText = ' Loaded: ' + BG.request.responseText.length + ' Lines: ' + BG.data.length;
+
+		BG.stops = {};
+		BG.stop = function() {
+			this.bunches = 0;
+			this.eventTimes = [];
+			this.gaps = 0;
+			this.name = null;
+		}
+
+		var line, field;
+		var txt = '';
+		for (var i = 0, len = BG.data.length - 1; i < len; i++) {
+			line = BG.data[i];
+			field = line[ BG.city ];	
+			if ( BG.stops[ field ] == undefined ) {
+				BG.stops[ field ] = new BG.stop();
+			}
+			BG.stops[ field ].eventTimes.push( line[ BG.time ] );
+			
+			if ((i % 30000) === 0 ) { info2.innerText = i; console.log('parse', i );}
+		}
+		info2.innerText = i;
+		
+		var keys = Object.keys( BG.stops );
+
+		txt = '<h3 style="color: green" >Stops - ' + keys.length + ' items</h3><table id="stops" style="width: 100%;" >' +
+			'<tr><td>' + BG.data[0][ BG.city ] + '<br>' +
+			'<small><button onclick="sortTable( stops, 0, 0)">&uArr;</button><button onclick="sortTable( stops, 0, 1 )">&dArr;</button></small></td>' +
+			'<td><small>tot:' + keys.length  + '<br><button onclick="sortTable( stops, 1, 0)">&uArr;</button>' +
+			'<button onclick="sortTable( stops, 1, 1 )">&dArr;</button></small></td></tr>' +
+		'';	
+		
+		var cnt = 0;
+		var smalls = 0;
+		var bunches = 0;
+		var gaps = 0;
+		var tim, timDiff, movAvg;
+		for (var i = 1, len = keys.length; i < len; i++) {	
+			var stop = BG.stops[ keys[ i ] ];
+			var times = stop.eventTimes;			
+			
+			for (var j = 1, jlen = times.length; j < jlen; j++) {
+				cnt++;
+				tim = 0;
+				var start = j, finish = start + 5;
+				
+				for (var k = 1; k < times.length; k++) {
+					tim += times[k] - times[k - 1];
+				}				
+				stop.average = (tim / (60 * times.length)).toFixed(1);
+				
+				if ( times.length < 5 ) { 
+					smalls++;
+					break; 
+				} else if ( start > times.length - 5 ) { 
+					break;
+				}
+				timDiff = times[finish] - times[finish-1];
+				
+				
+				tim = 0;
+				for (var k = start; k < finish; k++) {
+					tim += times[k] - times[k - 1];
+				}	
+				movAvg = tim / 5;	
+				score = ( movAvg + timDiff ) / movAvg;
+				if ( score > 2.5 && score > 4 )  {
+					stop.gaps++;
+					gaps++;
+					// console.log( score );
+					// console.log( 'bunch', i, keys[ i ], movAvg, tim, times[ times.length - 1 ], times[ times.length - 2], (movAvg - tim) / movAvg, times, times[ times.length - 1 ] / 3600 );
+				} else if ( score < 1.5 ) {
+					stop.bunches++;
+					bunches++;
+				}
+			}	
+			txt += '<tr onclick=""><td>' + i + '. ' + keys[ i ]  + ' - Avg minutes: ' + stop.average + ' Bunches: ' + stop.bunches + ' Gaps: ' + stop.gaps  + '</td><td>' + BG.stops[ keys[ i ] ].eventTimes.length + '</td></tr>';		
+		} 		
+		txt += '</table>';		
+		
+		rightBody.innerHTML = txt;
+		info2.innerText +=  ' - Stops: ' + keys.length + ' Count: ' + cnt + ' Bunches: ' + bunches + ' Gaps: ' + gaps + ' Smalls: ' + smalls;
+	}
+
+	function sortTable( table, column, sort ){
+		var store = [];
+		for ( var i = 1, len = table.rows.length; i < len; i++ ){
+			var row = table.rows[i];
+			var sortnr = parseFloat(row.cells[ column ].textContent || row.cells[ column ].innerText);
+			if(!isNaN(sortnr)) store.push([sortnr, row]);
+		}
+		if (sort === 0) {
+			store.sort(function(x,y){
+				return y[0] - x[0] ;
+			});
+		} else {
+			store.sort(function(x,y){
+				return x[0] - y[0];
+			});
+		}
+		for( i=0, len=store.length; i < len; i++){
+			table.appendChild(store[i][1]);
+		}
+		store = null;
+	}
+</script>
+</body>
+</html>
