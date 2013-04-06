@@ -18,6 +18,12 @@ Repo & file created: 2013-02-10
 
 ### Change Log
 
+2013-04-05 ~ Theo
+* hAxis r5: basic bunch and gap - rev -0.1
+
+2013-04-04 ~ Theo
+* hAxis Add-On: Bunch and Gap: demo version
+
 2013-04-02 ~ Theo
 * hAxis 4.1 ~ permalinks starting to work
 * hAxis 4.1 ~ highlighting Readout menu starting to work

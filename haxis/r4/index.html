@@ -301,11 +301,7 @@ if (window.console) { console.log('waiting...'); }
 			if ( HAX.vehicles[vehicleId] == undefined ) {
 				// color = HAX.colors[ HAX.colorsSet.indexOf( record[ h.colorField ] ) ];
 				
-				if (  HAX.highlight == record[ h.x ]  || HAX.highlight == record[ h.y ] || HAX.highlight == record[ h.z ]) {
-					material.color.setHSL( 0, 0, 0 );
-				} else {	
-					material.color.setHSL( color, 0.8, 0.5 );
-				}			
+		
 				
 				HAX.vehicles[vehicleId] = new HAX.vehicle();
 				HAX.vehicles[vehicleId].id = vehicleId;
@@ -313,6 +309,12 @@ if (window.console) { console.log('waiting...'); }
 				HAX.objects.push( HAX.vehicles[vehicleId].obj );
 				HAX.scene.add( HAX.vehicles[vehicleId].obj );
 			}
+			
+			if (  HAX.highlight == record[ h.x ]  || HAX.highlight == record[ h.y ] || HAX.highlight == record[ h.z ]) {
+				HAX.vehicles[vehicleId].obj.material.color.setHSL( 0, 0, 0 );
+			} else {	
+				HAX.vehicles[vehicleId].obj.material.color.setHSL( color, 0.8, 0.5 );
+			}				
 			
 			pos = v(  xDelta * xKeys.indexOf( record[ h.x] ) - 50, yDelta * yKeys.indexOf( record[ h.y] ) - 50, zDelta * zKeys.indexOf( record[ h.z] ) - 50 );
 			HAX.vehicles[vehicleId].obj.position = pos ;
