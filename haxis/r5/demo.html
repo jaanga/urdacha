@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title>hAxis r4 iframe permalink demo</title>
+<meta charset='utf-8'>
+<meta name='author' content='Theo Armour'>
+</head>
+<body>
+<script>
+
+	document.body.style.cssText = ' font: bold 12pt monospace; margin: 0 100px;';
+	var info = document.body.appendChild( document.createElement( 'div' ) );
+	info.innerHTML = 
+		'<h1>hAxis r4 iframe permalink demo</h1>' +
+		'<p>What you see below is hAxis r4 embedded in an HTML iframe using a \'permalink\'.</p>' +
+		'<p>The permalink allows control over a variety of parameters. These include which fields are displayed on the X,Y, and Z axis, ' +
+			'which fields are to be used to set the colors, the title of the demo and a number of other factors. Also contollable are presentation aspects such as the view point and ' +
+			'the visibility of the sidebars. Now that the significant technical aspects have been dealt with, it should be fairly straightforward ' +
+			'to add even more features and capabilities.</p>' +
+			'<p>Please note that you can use your pointing device to zoom, pan and rotate the display. You can display the side bars ' +
+			'and view heads-up display items.</p>' +
+	'';
+
+	var ifr = document.createElement( 'iframe' );
+	document.body.appendChild( ifr );
+	ifr.style.cssText = 'height: 500px; width: 90%;';
+	ifr.src = 'index.html#title=San Francisco#x=3#y=5#z=4#date=8#time=15#color=5#direction=13#lineField=5#lineSubSetField=14#camX=-90#camY=105#camZ=100#rotX=-0.8097835822464166#rotY=-0.5554937603500807#rotZ=-0.5057031957416841#upX=0#upY=1#upZ=0#folder=../../improved-csv/#fname=sf_day1.csv#separator=,#bars=0';
+	var info2 = document.body.appendChild( document.createElement( 'div' ) );
+	info2.innerHTML = 	
+	'<p><i>Wireframe Cube</i></p>' +
+	'<p>The email post for 2013-03-18 discussed a setup that resembles a wireframe cube. This is a view of that setup. ' +
+		'It may take about twenty seconds to load the display the first time.</p>' +
+	'';
+	
+</script>
+</body>
+</html>
