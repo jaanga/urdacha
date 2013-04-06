@@ -20,6 +20,8 @@ Repo & file created: 2013-02-10
 
 2013-04-05 ~ Theo
 * hAxis r5: basic bunch and gap - rev -0.1
+* hAxis r4: readout issue fixed
+* Zurich CSV: new data files uploaded
 
 2013-04-04 ~ Theo
 * hAxis Add-On: Bunch and Gap: demo version

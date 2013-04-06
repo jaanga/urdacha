@@ -248,7 +248,7 @@
 		var infoMenu = document.body.appendChild(document.createElement( 'div' ) );
 		infoMenu.className = 'menu';
 		infoMenu.style.cssText =  'left: 20px; ';
-		infoMenu.innerHTML = '<h1 onclick="toggleBar( info )" >hAxis 4.1</h1>';
+		infoMenu.innerHTML = '<h1 onclick="toggleBar( info )" >hAxis r5</h1>';
 
 		info = document.body.appendChild(document.createElement( 'div' ) );
 		info.className = 'sidebar';
