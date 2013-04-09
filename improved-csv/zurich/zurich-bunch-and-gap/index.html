@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+</head>
+<body>
+<script src="FileSaver.min.js">// https://github.com/eligrey/FileSaver.js/ </script>
+<script>
+
+	var BG = BG || {};
+			
+	document.body.style.cssText = 'font: bold 12pt monospace; margin: 0 5px; overflow: hidden;';
+	
+	var leftHeader = document.body.appendChild( document.createElement( 'div' ) );
+	leftHeader.style.cssText = 'left: 5px; position: absolute; top: 5px;';
+
+	var info = leftHeader.appendChild( document.createElement( 'scan' ) );
+		info.innerHTML =
+		'<button onclick="BG.city=1; BG.time=17; requestFile(\'../../sanFrancisco/sfmta_passenger_count_1000.csv\');" >Test</button> ' +
+		
+		'<button onclick="BG.city=15; BG.time=0; BG.loadId=14; BG.veh=3; BG.dir=5; BG.str=\'A\'; requestFile(\'../../geneva/geneva-d1.csv\');" >g1</button>' +
+		'<button onclick="BG.city=15; BG.time=0; BG.loadId=14; BG.veh=3; BG.dir=5; BG.str=\'A\'; requestFile(\'../../geneva/geneva-d2.csv\');" >g2</button>' +
+		'<button onclick="BG.city=15; BG.time=0; BG.loadId=14; BG.veh=3; BG.dir=5; BG.str=\'A\'; requestFile(\'../../geneva/geneva-d3.csv\');" >g3</button>' +
+		'<button onclick="BG.city=15; BG.time=0; BG.loadId=14; BG.veh=3; BG.dir=5; BG.str=\'A\'; requestFile(\'../../geneva/geneva-d4.csv\');" >g4</button>' +	
+		'<button onclick="BG.city=15; BG.time=0; BG.loadId=14; BG.veh=3; BG.dir=5; BG.str=\'A\'; requestFile(\'../../geneva/geneva-d5.csv\');" >g5</button>' +	
+		'<button onclick="BG.city=15; BG.time=0; BG.loadId=14; BG.veh=3; BG.dir=5; BG.str=\'A\'; requestFile(\'../../geneva/geneva-d6.csv\');" >g6</button>' +
+		'<button onclick="BG.city=17; BG.time=0; BG.loadId=14; BG.veh=3; BG.dir=5; BG.str=\'A\'; requestFile(\'../../geneva/geneva-d7.csv\');" >g7</button> - ' +		
+		
+		'<button onclick="BG.city=1; BG.time=17; BG.loadId=4; BG.veh=11; BG.dir=10; BG.str=\'0\'; requestFile(\'../../sanFrancisco/sfmta_passenger_count_day1.csv\');" >s1</button>' +
+		'<button onclick="BG.city=1; BG.time=17; BG.loadId=4; BG.veh=11; BG.dir=10; BG.str=\'0\'; requestFile(\'../../sanFrancisco/sfmta_passenger_count_day2.csv\');" >s2</button>' +
+		'<button onclick="BG.city=1; BG.time=17; BG.loadId=4; BG.veh=11; BG.dir=10; BG.str=\'0\'; requestFile(\'../../sanFrancisco/sfmta_passenger_count_day3.csv\');" >s3</button>' +
+		'<button onclick="BG.city=1; BG.time=17; BG.loadId=4; BG.veh=11; BG.dir=10; BG.str=\'0\'; requestFile(\'../../sanFrancisco/sfmta_passenger_count_day4.csv\');" >s4</button>' +
+		'<button onclick="BG.city=1; BG.time=17; BG.loadId=4; BG.veh=11; BG.dir=10; BG.str=\'0\'; requestFile(\'../../sanFrancisco/sfmta_passenger_count_day5.csv\');" >s5</button>' +
+		'<button onclick="BG.city=1; BG.time=17; BG.loadId=4; BG.veh=11; BG.dir=10; BG.str=\'0\'; requestFile(\'../../sanFrancisco/sfmta_passenger_count_day6.csv\');" >s6</button>' +
+		'<button onclick="BG.city=1; BG.time=17; BG.loadId=4; BG.veh=11; BG.dir=10; BG.str=\'0\'; requestFile(\'../../sanFrancisco/sfmta_passenger_count_day7.csv\');" >s7</button> - ' +			
+		
+		'<button onclick="BG.city=6; BG.time=9; BG.loadId=19; BG.veh=11; BG.dir=2; BG.str=\'1\'; requestFile(\'../zurich-d1.csv\');" >z1</button>' +
+		'<button onclick="BG.city=6; BG.time=9; BG.loadId=19; BG.veh=11; BG.dir=2; BG.str=\'1\'; requestFile(\'../zurich-d2.csv\');" >z2</button>' +
+		'<button onclick="BG.city=6; BG.time=9; BG.loadId=19; BG.veh=11; BG.dir=2; BG.str=\'1\'; requestFile(\'../zurich-d3.csv\');" >z3</button>' +
+		'<button onclick="BG.city=6; BG.time=9; BG.loadId=19; BG.veh=11; BG.dir=2; BG.str=\'1\'; requestFile(\'../zurich-d4.csv\');" >z4</button>' +
+		'<button onclick="BG.city=6; BG.time=9; BG.loadId=19; BG.veh=11; BG.dir=2; BG.str=\'1\'; requestFile(\'../zurich-d5.csv\');" >z5</button>' +
+		'<button onclick="BG.city=6; BG.time=9; BG.loadId=19; BG.veh=11; BG.dir=2; BG.str=\'1\'; requestFile(\'../zurich-d6.csv\');" >z6</button>' +
+		'<button onclick="BG.city=6; BG.time=9; BG.loadId=19; BG.veh=11; BG.dir=2; BG.str=\'1\'; requestFile(\'../zurich-d7.csv\');" >z7</button> ' +
+		'<a href="readme.html" target="_blank">?</a><br>' +
+		
+		'<scan id="info1">status</scan>' +
+	'';
+
+	var leftBody = document.body.appendChild( document.createElement( 'textarea' ) );
+	leftBody.style.cssText = 'border: 1px solid black; height: 90%; overflow-x: scroll; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 60px; width: 48%;';
+
+	var rightHeader = document.body.appendChild( document.createElement( 'div' ) );
+	rightHeader.style.cssText = 'left: 50%; position: absolute; top: 5px;';
+	rightHeader.innerHTML = 
+		'<button onclick="saveText()" >Save the Data</button> ' +
+	
+		'<scan id="info2"></scans>' +
+	'';
+
+	var rightBody = document.body.appendChild( document.createElement( 'div' ) );
+	rightBody.style.cssText = 'border: 1px solid black; height: 93%; left: 50%; overflow-x: scroll; overflow-y: auto; ' +
+		'padding: 5px; position: absolute; top: 45px; width: 48%;';	
+
+// left
+
+	function requestFile( fname ) {
+		BG.request = new XMLHttpRequest();
+		BG.request.open( 'GET', fname, true );
+		BG.request.onreadystatechange = callbackFile;
+		BG.request.send( null );
+	}
+	
+	function callbackFile() {
+		if ( BG.request.readyState == 4  ) {
+			leftBody.textContent = 'Display of source text turned off in order to speed things up. Un-comment line 83 of this HTML file in order to display the source text.'; 
+			// leftBody.textContent = BG.request.responseText;	
+			info1.innerText = 'Bytes loaded:' + leftBody.textLength;
+			
+			parseData();
+		} else {
+console.log('waiting...');
+		}
+	}
+
+// right
+
+	function saveText() {
+		var blob = new Blob([rightBody.innerHTML], {type: "text/plain;charset=utf-8"});
+		saveAs(blob, 'bunch-gap-d' + day + '.csv');	
+	}
+	
+	var record, field, keys; passLoad = 0;
+	var stopsId, stop, stopTimes, timeDiff, tim, movAvg, score, pass;	
+	function parseData( ) {
+		BG.data = [];
+		var lines = BG.request.responseText.split(/\r\n|\n/);
+		var sep = ','
+		
+		for (var i = 0, len = lines.length; i < len; i++) {
+			BG.data.push( lines[i].split( sep ) );
+			if ( (i % 30000) === 0 ) { info2.innerText = i; console.log('split', i );}
+		}
+		info1.innerText = ' Loaded: ' + BG.request.responseText.length + ' Lines: ' + BG.data.length;
+
+		BG.vehicles = {};
+		BG.vehicle = function() {
+			this.id = null;
+			this.direction = null;
+		};
+		
+		BG.stops = {};
+		BG.stop = function() {
+			this.bunches = 0;
+			this.eventTimes = [];
+			this.gaps = 0;
+			this.load = [];
+			this.name = null;
+		}
+
+
+		var txt = '';
+		for (var i = 0, len = BG.data.length - 1; i < len; i++) {
+			record = BG.data[i];
+			
+			var vehicleId = record[ BG.veh ];
+			if ( BG.vehicles[ vehicleId] === undefined ) {
+				BG.vehicles[vehicleId] = new BG.vehicle();
+				BG.vehicles[vehicleId].id = vehicleId;
+				// BG.vehicles[vehicleId].direction = line[ BG.dir];
+			}
+			BG.vehicles[vehicleId].direction = record[ BG.dir];
+			
+			secs = parseInt( record[ BG.time ] );
+			stopId = record[ BG.city ];
+			
+			if ( BG.stops[stopId] === undefined ) {
+				BG.stops[stopId] = new BG.stop();
+				stop = BG.stops[stopId];
+				stop.eventTimes = [ secs, secs, secs, secs, secs ];
+				stop.name = stopId;
+				stop.prevVeh = vehicleId;
+			}				
+			stop = BG.stops[stopId];
+			
+			
+			if ( record[ BG.dir] === BG.str) {
+				if ( stop.prevVeh !== record[ BG.veh ] ) {
+					stop.eventTimes.push( secs );
+					if ( record[ BG.loadId ] !== '' )  {
+						stop.load.push( record[ BG.loadId ] );
+						passLoad++;
+					}
+				} else {
+					// console.log( 'same veh', record[ BG.veh]);
+				}
+			} else {
+				// console.log( 'dir chg', record[ BG.dir]);
+			} 
+			
+			stop.prevVeh = record[ BG.veh ];
+			if ((i % 30000) === 0 ) { info2.innerText = i; console.log('parse', i );}
+		}
+		info2.innerText = i;
+		
+		keys = Object.keys( BG.stops );
+
+		txt = '<h3 style="color: green" >Stops - ' + keys.length + ' items</h3><table id="stops" style="width: 100%;" >' +
+			'<tr>' +
+			'<td><small>' + BG.data[0][ BG.city ] + '<br>' +
+			'<button onclick="sortTable( stops, 0, 0)">&uArr;</button><button onclick="sortTable( stops, 0, 1 )">&dArr;</button></small></td>' +
+
+			'<td><small>' + 'Avg minutes' + '<br>' +
+			'<button onclick="sortTable( stops, 1, 0)">&uArr;</button><button onclick="sortTable( stops, 1, 1 )">&dArr;</button></small></td>' +			
+
+			'<td><small>' + 'Bunches' + '<br>' +
+			'<button onclick="sortTable( stops, 2, 0)">&uArr;</button><button onclick="sortTable( stops, 2, 1 )">&dArr;</button></small></td>' +	
+			
+			'<td><small>' + 'Gaps' + '<br>' +
+			'<button onclick="sortTable( stops, 3, 0)">&uArr;</button><button onclick="sortTable( stops, 3, 1 )">&dArr;</button></small></td>' +				
+			
+			'<td><small>Stops'  + '<br>' +
+			'<button onclick="sortTable( stops, 4 0)">&uArr;</button><button onclick="sortTable( stops, 4, 1 )">&dArr;</button></small></td></tr>' +
+		'';	
+		
+		var cnt = 0;
+		var smalls = 0;
+		var bunches = 0;
+		var gaps = 0;
+		var tim, timDiff, movAvg;
+		
+		for (var i = 1, len = keys.length; i < len; i++) {	
+			var stop = BG.stops[ keys[ i ] ];
+			var times = stop.eventTimes;	
+
+			pass = 0;
+			if ( stop.load.length > 0 ) {
+				for (var k = 0, klen = stop.load.length; k < klen; k++) {
+					pass += parseInt(stop.load[k]);
+				}
+				stop.averagePass = ( pass / stop.load.length).toFixed(1);
+			} else {
+				stop.averagePass = 'N/A';
+			}			
+			tim = 0;
+			for ( var k = 1; k < times.length; k++) {
+				tim += times[k] - times[k - 1];
+			}				
+			stop.average = (tim / (60 * times.length)).toFixed(1);
+
+			for (var j = 1, jlen = times.length; j < jlen; j++) {
+			cnt++;
+				var start = j, finish = start + 5;
+				if ( times.length < 5 ) { 
+					smalls++;
+					break; 
+				} else if ( start > times.length - 5 ) {
+					smalls++;
+					break;
+				}
+				
+								
+				timDiff = times[finish] - times[finish - 1];
+								
+				tim = 0;
+				for (var k = start; k < finish; k++) {
+					tim += times[k] - times[k - 1];
+				}	
+				movAvg = tim / 5;	
+				score = ( movAvg + timDiff ) / movAvg;
+				if ( score > 2.5 && score > 4 )  {
+					stop.gaps++;
+					gaps++;
+				} else if ( score < 1.5 ) {
+					stop.bunches++;
+					bunches++;
+				}
+			}	
+			
+			txt += '<tr onclick=""><td>' + i + '. ' + keys[ i ]  + ' - load:' + stop.averagePass +  '</td>' +
+			'<td>' + stop.average + '</td>' +
+			'<td>' + stop.bunches + '</td>' +
+			'<td>' + stop.gaps  + '</td>' +
+			'<td>' + BG.stops[ keys[ i ] ].eventTimes.length + '</td></tr>';		
+		} 		
+		txt += '</table>';		
+		
+		rightBody.innerHTML = txt;
+		info2.innerText +=  ' - Stops: ' + keys.length + ' Count: ' + cnt + ' Bunches: ' + bunches + ' Gaps: ' + gaps + ' Smalls: ' + smalls;
+	}
+
+	function sortTable( table, column, sort ){
+		var store = [];
+		for ( var i = 1, len = table.rows.length; i < len; i++ ){
+			var row = table.rows[i];
+			var sortnr = parseFloat(row.cells[ column ].textContent || row.cells[ column ].innerText);
+			if(!isNaN(sortnr)) store.push([sortnr, row]);
+		}
+		if (sort === 0) {
+			store.sort(function(x,y){
+				return y[0] - x[0] ;
+			});
+		} else {
+			store.sort(function(x,y){
+				return x[0] - y[0];
+			});
+		}
+		for( i=0, len=store.length; i < len; i++){
+			table.appendChild(store[i][1]);
+		}
+		store = null;
+	}
+</script>
+</body>
+</html>
