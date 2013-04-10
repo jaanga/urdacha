@@ -6,6 +6,7 @@ var list = {
 		'Overview': [
 			[ 'Home Page', 'overview/index'],
 			[ 'Progress Reports', 'overview/progress reports'],
+			[ 'Notes Regarding VBZ Data Set', 'overview/notes regarding vbz data set'],
 			[ 'Contributors', 'overview/Contributors'],
 			[ 'License', 'overview/License']
 		]
