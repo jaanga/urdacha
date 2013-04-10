@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang='en'>
 <head>
-<title></title>
+<title>Find Data Imperfections</title>
 <meta charset='utf-8'>
 </head>
 <body>
@@ -18,10 +18,10 @@
 
 	var info = leftHeader.appendChild( document.createElement( 'scan' ) );
 		info.innerHTML =
-		'<button onclick="start=0; stop=1000000; openDay( 1 );" >test</button> ' +
+		'<button title="Loads 1MB of data. Provides a quick overview of the app" onclick="start=0; stop=1000000; openDay( 1 );" >test</button> ' +
 		
-		'<button onclick="start=0; stop=50000000; openDay( 1 );" >1a</button>' +
-		'<button onclick="start=50000000; stop=85000000; openDay( 1 );" >1b</button> ' +
+		'<button title="Zurich: Day 1: first half" onclick="start=0; stop=50000000; openDay( 1 );" >1a</button>' +
+		'<button title="Zurich: Day 1: second half" onclick="start=50000000; stop=85000000; openDay( 1 );" >1b</button> ' +
 		
 		'<button onclick="start=82000000; stop=130000000; openDay( 2 );" >2a</button>' +
 		'<button onclick="start=130000000; stop=165000000; openDay( 2 );" >2b</button> ' +
@@ -40,7 +40,10 @@
 		
 		// '<button onclick="start=165000000; stop=180000000; openDay( 7 );" >7a</button>' +
 		'<button onclick="start=471000000; stop=530000000; openDay( 7 );" >7b</button> ' +
-		'<a href="readme.html" target="_blank">?</a><br>' +
+		
+		//'<a href="readme.html" target="_blank">?</a><br>' +
+		
+		'<input id="checkbox" type="checkbox"> Display source<br>' +
 		
 		 '<scan id="info1">status</scan>' +
 	'';
@@ -48,13 +51,25 @@
 	var leftBody = document.body.appendChild( document.createElement( 'textarea' ) );
 	leftBody.style.cssText = 'border: 1px solid black; height: 90%; overflow-x: scroll; overflow-y: auto; ' +
 		'padding: 5px; position: absolute; top: 60px; width: 48%;';
+	leftBody.innerHTML = 
+		'This app loads data from \'schedule-vs-arrival.csv\' and searches for occurences of imperfections in the data.\n\n' +
+		'The file is a duplicate of this file: https://github.com/swissnexSF/Urban-Data-Challenge/blob/master/public-transportation/zurich/schedule-vs-arrival.csv ' +
+		'which has been placed in a publicly accessible folder also on GitHub.\n\n' +
+		'The following strings are searched for: \'NULL\', \'-1;\' and \';;\'.\n\n' +
+		'The counts and lines where the occurences are found will be displayed to the right.\n\n' +
+		'The counts will be displayed as \'Nulls\', \'Minuses\' and \'Empties\'.\n\n' +
+		'After the data has loaded, it may take a minute or more for the data to be processed and displayed.\n\n' +
+		'Click \'Test\' for a quick view of what the app displays.\n\n' +
+		'Display of source text turned off in order to speed things up. Click \'Display Source\' in order to display the source text in this text box.\n\n' +
+		'Important: reload this app between each run. Not all data is cleaned up in between runs.'+
+	'';
 
 	var rightHeader = document.body.appendChild( document.createElement( 'div' ) );
 	rightHeader.style.cssText = 'left: 50%; position: absolute; top: 5px;';
 	rightHeader.innerHTML = 
 		'<button onclick="saveText()" >Save the Data</button> ' +
 	
-		'<scan id="info2"></scans>' +
+		'<scan id="info2">Output will appear on this side...</scans>' +
 	'';
 
 	var rightBody = document.body.appendChild( document.createElement( 'textarea' ) );
@@ -78,15 +93,17 @@
 		callbackCount = 0;
 	}
 	
+	var cnt = 0;
 	function callbackFile() {
 		if ( xmlhttp.readyState == 4  ) {
-			leftBody.textContent = 'Display of source text turned off in order to speed things up. Un-comment line 83 of this HTML file in order to display the source text.'; 
-			// leftBody.textContent = xmlhttp.responseText;	
-			info1.innerText = '\nSource data - start: ' + start + ' stop: ' + stop + ' length: ' + xmlhttp.responseText.length;
+			if ( checkbox.checked ) {
+				leftBody.textContent = xmlhttp.responseText;
+			}
+			info1.innerText = 'Source data - start: ' + start + ' stop: ' + stop + ' length: ' + xmlhttp.responseText.length;
 			
 			parseData();
 		} else {
-console.log('waiting...');
+			info1.innerText = 'Load data request: ' + cnt++;
 		}
 	}
 
@@ -122,15 +139,17 @@ console.log('waiting...');
 				txt += lines[i] + '\n';
 			}
 			if ( lines[i].indexOf( ';;' ) > 0 ) { 
-				empty++; 
+				empties++; 
 				txt += lines[i] + '\n';
 			}			
-			if ( (i % 30000) === 0 ) { info2.innerText = i; console.log('split', i );}
+			if ( (i % 30000) === 0 ) { 
+				info2.innerText = 'Parsing data line: ' + i; 
+				if (window.console) { console.log('split', i ); }
+			}
 		}
 		rightBody.innerHTML = txt;	
-		info2.innerText = 'Lines of data:' + lines.length + ' // \'Nulls\':' + nulls + ' - ' + (100 * nulls / lines.length).toFixed(1) + 
-			'% // Minuses: ' + minuses + ' - ' + (100 * minuses / lines.length).toFixed(1) +  '%' + ' // empties:' + empty ;
-		
+		info2.innerHTML = 'Lines of data:' + lines.length + ' // \'Nulls\':' + nulls + ' - ' + (100 * nulls / lines.length).toFixed(1) + 
+			'% // Minuses: ' + minuses + ' - ' + (100 * minuses / lines.length).toFixed(1) +  '%' + ' // Empties:' + empties ;
 	}
 </script>
 </body>
