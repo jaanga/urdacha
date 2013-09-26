@@ -43,8 +43,8 @@ var list = {
 	'5 flatLand': {
 		'Prelimary Urdacha project using Nextbus data': [
 			[ 'Read Me', 'flatland/Read Me'],
-			[ 'flatLand r2', 'flatland/'],
-			[ 'flatland r1', 'flatland/'],
+			[ 'flatLand r2', 'flatland/flatland02/flatland-services'],
+			[ 'flatland r1', 'flatland/flatland-touch'],
 		]		
 	},	
 	
