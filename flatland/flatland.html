@@ -1,0 +1,485 @@
+﻿<!doctype html>
+<html lang='en'>
+<head>
+<title></title>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0'>
+</head>
+<body>
+<!--
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+-->
+<script src='../../../three.js/examples/js/Detector.js'></script>
+<!--
+<script src='../../../three.js/build/three.min.js'></script>
+-->
+<script src="three.min.js"></script>
+<script src='../../../three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='../../../three.js/examples/js/libs/stats.min.js'></script>
+
+<script>
+	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
+
+	var renderer, scene, camera, controls, light, stats;
+	var geometry, material, mesh;
+	var clock = new THREE.Clock();
+	
+	var startTime;
+	var lastTime;
+	var info, info2;
+	
+	var headsUp;
+	var mouse = { x: -1, y: -1 };
+	projector = new THREE.Projector();	
+	
+	var count = 0;
+	
+	var agencies, agencyId;
+	var selectedAgency = 'San Francisco Muni';
+	// var selectedAgency = 'City of Oxford';
+
+	var latlon = [];
+	latlon[0] = [37.705, -122.2];
+	latlon[1] = [40.05633935,-79.8925631];
+	latlon[2] = [34.23166825,-119.0191889];
+	latlon[3] = [35.92707485,-79.05460070000001];
+	latlon[4] = [42.36479315,-71.08484805];
+	latlon[5] = [39.28630875,-76.616848];
+	latlon[6] = [40.8214314,-73.94785005];
+	latlon[7] = [34.3644332,-89.5228856]; // city of oxford
+	latlon[8] = [39.35866945,-76.6082639];
+	latlon[9] = [42.031619899999995,-93.646055];	
+	latlon[10] = [38.9073149,-77.03824];
+	latlon[11] = [40.7099886,-74.01092495];
+	latlon[12] = [37.5098099,-122.0950615];
+	latlon[13] = [37.8405257,-122.2788958];
+	latlon[14] = [38.79541705,-77.4142108];
+	latlon[15] = [33.07967385,-83.24371110000001];
+	latlon[16] = [34.144037,-118.257575];
+	latlon[17] = [34.17129075,-119.18825995];
+	latlon[18] = [42.34247485,-71.24034495000001];	
+	latlon[19] = [34.05, -118.2]; // lametro
+	latlon[20] = [39.34852435,-76.6175385];
+	latlon[21] = [42.354489900000004,-71.094614 ];  //mbta
+	latlon[22] = [42.354489900000004,-71.094614 ];  // mit
+	latlon[23] = [34.28235995,-118.86821965];
+	latlon[24] = [40.846264950000005,-73.90750495]; // bronx
+	latlon[25] = [40.6521549,-74.008335]; //brooklyn
+	latlon[26] = [40.6369999,-74.12947495];  // staten island
+	latlon[27] = [33.1,-117.27485];  //nctd
+	latlon[28] = [34.1, -117.3]; // omnitrans
+	latlon[29] = [30.33, -87.12864189999999]; // sria
+	latlon[30] = [45.51269995,-122.68471645];
+	latlon[31] = [39.000080800000006,-76.88696185];
+	latlon[32] = [39.500539950000004,-119.79740495];
+	latlon[33] = [37.1393621,-80.5475285];
+	latlon[34] = [40.76115435,-73.950826];
+	latlon[35] = [40.74237185,-74.18019615];
+	latlon[36] = [40.513650049999995,-74.45721];
+	latlon[37] = [37.77, -122.45]; // San Francisco
+	latlon[38] = [47.62062365,-122.3349102];
+	latlon[39] = [34.277194800000004,-118.73733345];	
+	latlon[40] = [45.56316995,-73.695045];
+	latlon[41] = [39.98093955,-75.15493545000001];
+	latlon[42] = [34.1770555,-118.93447875000001];
+	latlon[44] = [38.5489549,-121.721885];
+	latlon[45] = [39.28713985,-76.62549684999999];
+	latlon[46] = [44.97474905,-93.2243267];
+	latlon[47] = [34.2255161,-119.0756888];
+	latlon[48] = [36.9867246,-86.45472825];
+	latlon[49] = [39.94646725,-76.7339533];	
+	
+	var lat, lon;
+	var routes, routeNames=[];
+	
+	var stops, color, group;
+	var cube, ribbon, vehicles;
+	var sign;
+	
+	init();
+	animate();
+
+	function init() {
+		if ( ! Detector.webgl ) {
+			renderer = new THREE.CanvasRenderer( { antialias: true } );
+		} else {
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+		}
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+		scene = new THREE.Scene();
+
+		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000);
+		camera.position.set( -700, 1000, 80);
+		controls = new THREE.TrackballControls( camera, renderer.domElement );
+
+		stats = new Stats();
+		stats.domElement.style.cssText = 'position: absolute; top: 0px; zIndex: 100; ';
+		document.body.appendChild( stats.domElement );    
+
+		window.addEventListener( 'resize', onWindowResize, false );
+		document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+	//  User stuff
+
+		var css = document.createElement('style')
+		css.innerHTML = 'body {background-color: transparent; font: 600 12pt monospace; margin: 0; overflow: hidden; text-align: center; }' +
+			'a { color: #f00; text-decoration: none;}  ' +
+			'input[type=range] { -webkit-appearance: none; background-color: silver; height:20px; opacity: 0.5; width: 80px;}' +
+			'input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none; background-color: #666; opacity: 0.5; width: 10px; height: 26px; }' ;
+		document.body.appendChild( css ); 
+		
+		material = new THREE.MeshBasicMaterial( {color: 0xeeeeee, opacity: 0.5, side: THREE.DoubleSide, transparent: true } );
+		geometry = new THREE.PlaneGeometry( 1500, 2000, 1, 1 );
+		geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
+		mesh = new THREE.Mesh( geometry, material );
+		scene.add( mesh );
+		
+		info = document.createElement( 'div' );
+		document.body.appendChild( info );
+		info.style.cssText = 'top: 0px; color: ; position: absolute; width: 100%; ';
+		info.innerHTML = '<p>nextbus ~ every service ~ every route ~ every stop ~ every bus</p>';   
+		
+		info2 = document.createElement( 'div' );
+		document.body.appendChild( info2 );
+		info2.style.cssText = 'top: 80px; color: ; position: absolute; width: 100%; ';
+		info2.innerHTML = '';
+		
+		headsUp = document.createElement( 'div' );
+		document.body.appendChild( headsUp );
+		headsUp.style.cssText = 'background-color: #ddd; border-radius: 8px; display: none; left: 50px; opacity: 0.85; padding: 5px 5px 10px 5px; ' +
+			'position: absolute; text-align: left;';	
+		headsUp.innerHTML = '<h1>Stuff</h1>';		
+		
+		cube = new THREE.CubeGeometry( 2, 800, 2 );
+		
+		loadAgencies();
+	}
+
+	function animate() {
+		requestAnimationFrame( animate );
+		controls.update();
+		renderer.render( scene, camera );
+		stats.update();
+	}
+
+	function onWindowResize() {
+		windowHalfX = window.innerWidth / 2;
+		windowHalfY = window.innerHeight / 2;
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+	}	
+
+	function loadAgencies() {
+		// fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList' ;
+		fname = '../../nextbus-routes/nextbus-services.xml';
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, false);
+		xmlhttp.send(null);	
+		var xmlDoc = xmlhttp.responseXML;
+	
+		agencies = xmlDoc.getElementsByTagName("agency");
+		
+		var htm = '<select onchange="selectAgency(this.value);" title="select a different agency" >' ;
+		for ( var i = 0, len = agencies.length - 1; i < len; i++  ) {
+			var a = agencies[i].attributes.title.value;
+			if ( a !== selectedAgency ) {
+				htm += '<option>' + a +'</option>';					
+			} else {
+				htm += '<option selected="selected" >' + selectedAgency +'</option>';				
+			}
+		}
+		htm +='<\/select>';
+		info.innerHTML += htm;
+		// getLatLon();
+		selectAgency( selectedAgency );	
+// console.log(agencies);		
+	}
+	
+	function getLatLon() {
+		var a;
+		var i = 7;
+		htm = '';
+		for (var i = 39, l = agencies.length - 1; i < 50; i++) {
+			a = agencies[i].attributes;
+			fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=' +  a.tag.value;
+			var xmlhttp = new XMLHttpRequest();
+			xmlhttp.open('GET', fname, false);
+			xmlhttp.send(null);	
+			var xmldoc = xmlhttp.responseXML;		
+			var route = xmldoc.getElementsByTagName("route");
+			if ( route[0] ) {
+				var atts = route[0].attributes;
+				var lat = parseFloat(atts.latMin.value) + 0.5 * (parseFloat(atts.latMax.value) - parseFloat(atts.latMin.value));
+				var lon = parseFloat(atts.lonMin.value) + 0.5 * (parseFloat(atts.lonMax.value) - parseFloat(atts.lonMin.value));
+				htm += 'latlon[' + i + '] = [' + lat + ',' + lon +  '];<br>' ;
+			} else {
+			
+console.log( i, xmldoc )	
+			}
+		}
+		info2.innerHTML = htm;
+	}
+	
+	function selectAgency( agency ) {
+// console.log(agency);
+		startTime = new Date();
+		if ( agency == 'San Francisco Muni' ) {
+			agencyId = 'sf-muni';
+			fname = '../../nextbus-routes/sfmuni-routelist.xml';
+			lat = latlon[37][0];
+			lon = latlon[37][1];
+console.log( 37, 'sf-muni');			
+		} else {
+			for (var i = 0, l = agencies.length - 1; i < l; i++) {
+				a = agencies[i].attributes;
+				if ( a.title.value == agency ) {
+					agencyId = a.tag.value;
+					fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeList&a=' +  a.tag.value;
+					lat = latlon[i][0];
+					lon = latlon[i][1];
+console.log(i, a.tag.value, a.color);
+					break;
+				}	
+			}
+		}
+		
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, false);
+		xmlhttp.send(null);	
+		var xmldoc = xmlhttp.responseXML;		
+		routes = xmldoc.getElementsByTagName("route");
+		
+		routeNames = [];
+		for (var i = 0, l = routes.length - 1; i < l; i++) {
+			routeNames.push(routes[i].attributes.tag.value);
+		}
+		scene.remove( group );
+		group = new THREE.Object3D();
+		loadStops(); 
+		
+		newSign( agency );
+		newId();
+	}	
+	
+	function newSign( agency ) {
+		if( sign !== undefined ) { scene.remove( sign ); }
+		material = new THREE.MeshBasicMaterial( {color: 0xeeeeee, opacity: 0.5, side: THREE.DoubleSide, transparent: true } );
+		material = canvasText( agency, 'Routes: ' + routes.length, { color: '#000000', fontSize: '100', height: 200,  width: 1000 }); 
+		
+		geometry = new THREE.PlaneGeometry( 1000, 200, 1, 1 );
+		// geometry.applyMatrix( new THREE.Matrix4().makeRotationY( - Math.PI / 2 ) );
+		sign = new THREE.Mesh( geometry, material );
+		sign.position.set(800, 0, -1200);
+		sign.scale.set(3,3,3);
+		scene.add( sign );		
+		
+	}
+	
+	function newId( ) {
+		// if( sign !== undefined ) { scene.remove( sign ); }
+		material = new THREE.MeshBasicMaterial( {color: 0xee00ee, opacity: 0.5, side: THREE.DoubleSide, transparent: true } );
+		material = canvasText( 'Urban Data Challange', 'GAFFTA/Swissnex', { color: '#ff00ff', fontSize: '100', height: 200,  width: 1500 }); 
+		
+		geometry = new THREE.PlaneGeometry( 1500, 200, 1, 1 );
+		geometry.applyMatrix( new THREE.Matrix4().makeRotationY( - Math.PI ) );
+		geometry.applyMatrix( new THREE.Matrix4().makeRotationZ( - 0.7 ) );
+		mesh = new THREE.Mesh( geometry, material );
+		mesh.position.set(1200, -400, 1200);
+		mesh.scale.set(3,3,3);
+		scene.add( mesh );		
+		
+	}	
+	
+	var xmlhttp;
+	
+	function loadStops() {
+		fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=' + agencyId + '&r=' + routeNames[count];
+// console.log( count, agencyId);		
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, true);
+		xmlhttp.onreadystatechange = callbackXML;
+		xmlhttp.send(null);	
+	}
+	
+	function callbackXML( obj) {
+		var special = 350;
+		if ( xmlhttp.readyState == 4) {
+			var xmldoc = xmlhttp.responseXML;
+// console.log(xmldoc);			
+			route = xmldoc.getElementsByTagName("route");
+			if ( route[0] !== undefined ) {
+				color = parseInt('0x' + route[0].attributes.color.value );
+var txt = '"' + route[0].attributes.tag.value + '": "0x' + route[0].attributes.color.value + '",';
+console.log( txt );				
+				if ( route[0].attributes.tag.value.indexOf('X') > 0 ) {
+
+					special = 200;
+				} else if ( route[0].attributes.title.value.indexOf('Owl') > 0 ) {
+					special = 0;
+				}
+			} else {
+// 
+			}
+			stops = xmldoc.getElementsByTagName("stop");
+			addStops( special );
+		} else { 
+			// console.log('waiting...');
+		}		
+	}
+	
+	
+	function addStops( special ) {
+		material = new THREE.MeshBasicMaterial( { color: color } );
+		ribbonMat = new THREE.MeshBasicMaterial( { color: color, side: THREE.DoubleSide, transparent: true  } );
+		var ribbonGeo = new THREE.Geometry();
+		for (var i = 0, l = stops.length - 1; i < l; i++) {
+			if ( stops[i].attributes.lat !== undefined) {
+				var atts = stops[i].attributes;
+				var x = 10000 * (parseFloat(atts.lat.value) - lat );
+				var z = 10000 * ( - lon + parseFloat(atts.lon.value))
+				mesh = new THREE.Mesh( cube, material );
+				mesh.position.set( x, 0, z );
+				mesh.type = 'stop';
+				group.add( mesh );
+			
+				vector = new THREE.Vector3( x, 1 + special, z);
+				ribbonGeo.vertices.push( vector );
+				vector = new THREE.Vector3( x, 50 + special, z );
+				ribbonGeo.vertices.push( vector );
+			}
+		} 
+		
+		ribbon = new THREE.Ribbon(ribbonGeo, material);
+		ribbon.type = 'route';
+		group.add ( ribbon );
+		scene.add( group); 
+		count++
+		if (count < routeNames.length ) {
+			loadStops( count );
+			info2.innerHTML = 'Routes loaded: ' + count + ' out of ' + (routes.length - 2);
+		} else {
+			console.log('time: ', new Date() - startTime ); 
+			count = 0;
+			loadBusesXML( count )
+		}
+	}	
+	
+	function loadBusesXML( count ) {
+		// fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=routeConfig&a=sf-muni&r=' + stopNames[ count ];
+		fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=vehicleLocations&a=' + agencyId + '&r=' + routeNames[ count ];
+		xmlhttp = new XMLHttpRequest();
+		xmlhttp.open('GET', fname, true);
+		
+		xmlhttp.onreadystatechange = callbackBusesXML;
+		xmlhttp.send(null);	
+	}				
+	
+	function callbackBusesXML() {
+		if (xmlhttp.readyState == 4) {
+			xmlDoc = xmlhttp.responseXML;
+// console.log(xmlDoc);			
+			vehicles = xmlDoc.getElementsByTagName("vehicle");
+// console.log( vehicles[0] );
+			addBuses();
+		} else { 
+			// console.log('waiting...');
+		}		
+	}	
+
+	function addBuses() {
+		geometry = new THREE.CubeGeometry( 3, 200, 30 );
+		// geometry = new THREE.CubeGeometry( 0.0002, 0.005, 0.0002 );
+		material = new THREE.MeshNormalMaterial( );
+		var d2r = Math.PI / 180;
+		for (var i = 0, l = vehicles.length - 1; i < l; i++) {
+			
+			if ( vehicles[i].attributes.lat !== undefined) {
+				mesh = new THREE.Mesh( geometry, material );
+				var atts = vehicles[i].attributes;
+				mesh.position.set( 10000 * (parseFloat(atts.lat.value) - lat ) , 505 , 10000 * ( - lon + parseFloat(atts.lon.value)) );
+				mesh.rotation.y = atts.heading.value * d2r;
+				mesh.type = 'bus';
+				group.add( mesh );
+			}
+		} 
+		count++
+		if (count < routeNames.length ) {
+			loadBusesXML(count );
+		} else {
+			console.log('time: ', new Date() - startTime ); 
+			lastTime = clock.getElapsedTime();
+		}
+	}	
+	
+	var interescts, intersected;
+	
+	function onDocumentMouseMove( event ) {
+		// event.preventDefault();
+		mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+		
+		var vector = new THREE.Vector3( mouse.x, mouse.y, 0.5 );
+		projector.unprojectVector( vector, camera );
+		var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+		intersects = raycaster.intersectObjects( group.children );
+
+		if ( intersects.length > 0 ) {
+	
+			if ( intersected != intersects[ 0 ].object ) { // not same one
+			
+				intersected = intersects[ 0 ].object;	
+console.log('intersected: ', intersected);					
+				// intersected.material.color.setHex( Math.random() * 0xffffff );
+			
+				headsUp.style.left = 10 + 0.5 * window.innerWidth + mouse.x * 0.5 * window.innerWidth + 'px';
+				headsUp.style.bottom = 10 + 0.5 * window.innerHeight + mouse.y * 0.5 * window.innerHeight+ 'px';
+				headsUp.style.display = 'block';
+				var c =  intersected;
+				if ( c.type == 'stop' ) {
+					headsUp.innerHTML =  'This is a ' + intersected.type + '<br>Useful data could be here on Friday...<br>id: ' + intersected.id + '<br>red: ' + c.r + '<br>green: ' + c.g + '<br>blue: ' + c.b;;
+				} else {
+					headsUp.innerHTML =  'This is a ' + intersected.type + '<br>Useful data could be here on Friday...<br>';
+				}
+			}
+		} else {
+			headsUp.style.display = 'none';
+		}
+	}	
+	
+	function canvasText ( text1, text2, parameters ) {
+// console.log(parameters, text1, text2);
+		canvas = document.createElement("canvas");
+		
+		var width = ( parameters['width'] ) ? parameters['width'] : 300 ;
+		canvas.width = width;
+		var height = ( parameters['height'] ) ? parameters['height'] : 150 ;
+		canvas.height = height; 
+		
+		context = canvas.getContext("2d");
+		// context.globalAlpha = 0.8;
+		context.fillStyle =  ( parameters['backgroundColor'] !== undefined ) ? parameters['backgroundColor'] : '#ffffff';
+		context.fillRect( 0, 0, width, height );
+		// context.lineWidth = 2;
+		//context.strokeRect(0, 0, width, height);	
+		context.fillStyle = ( parameters['color']) ? parameters['color'] : '#ffffff';
+		
+		context.font = ( parameters['fontSize'] !== undefined ) ? parameters['fontSize'] + "pt Arial bold" : '16pt Arial bold';
+		context.textAlign = "left";
+		context.fillText(text1, 5, 100);
+		context.fillText(text2, 5, 200);
+		//context.fillText(text3, 5, 60);
+		//context.fillText(text4, 5, 80);
+		//context.fillText(text5, 5, 100);
+		
+		map = new THREE.Texture( canvas );
+		map.needsUpdate = true;
+		return new THREE.MeshBasicMaterial( { map: map, opacity: 0.8,  side: THREE.DoubleSide, transparent: true } );
+	}	
+</script>
+</body>
+</html>
