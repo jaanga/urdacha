@@ -6,20 +6,28 @@
 <meta name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0'>
 </head>
 <body>
+
+<script src="three.min.js"></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
+<script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
+
+
+
 <!--
 <script src='http://mrdoob.github.com/three.js/examples/js/Detector.js'></script>
 <script src='http://mrdoob.github.com/three.js/build/three.min.js'></script>
 <script src='http://mrdoob.github.com/three.js/examples/js/controls/TrackballControls.js'></script>
 <script src='http://mrdoob.github.com/three.js/examples/js/libs/stats.min.js'></script>
--->
+
 <script src='../../../three.js/examples/js/Detector.js'></script>
-<!--
+
 <script src='../../../three.js/build/three.min.js'></script>
--->
+
 <script src="three.min.js"></script>
 <script src='../../../three.js/examples/js/controls/TrackballControls.js'></script>
 <script src='../../../three.js/examples/js/libs/stats.min.js'></script>
-
+-->
 <script>
 	if ( ! Detector.webgl ) { Detector.addGetWebGLMessage(); }
 
@@ -176,7 +184,7 @@
 
 	function loadAgencies() {
 		// fname = 'http://webservices.nextbus.com/service/publicXMLFeed?command=agencyList' ;
-		fname = '../../nextbus-routes/nextbus-services.xml';
+		fname = '../nextbus-routes/nextbus-services.xml';
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.open('GET', fname, false);
 		xmlhttp.send(null);	
@@ -230,7 +238,7 @@ console.log( i, xmldoc )
 		startTime = new Date();
 		if ( agency == 'San Francisco Muni' ) {
 			agencyId = 'sf-muni';
-			fname = '../../nextbus-routes/sfmuni-routelist.xml';
+			fname = '../nextbus-routes/sfmuni-routelist.xml';
 			lat = latlon[37][0];
 			lon = latlon[37][1];
 console.log( 37, 'sf-muni');			
