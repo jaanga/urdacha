@@ -1,8 +1,8 @@
 urdacha ~ Potential Urban Data Challenge Entry
 ==============================================
 
-See public facing page here: http://jaanga.github.com/urdacha/
-
+See public facing GitHub Page here: <http://jaanga.github.com/urdacha/>
+GitHub source: <https://github.com/jaanga/urdacha/>
 
 Internal facing stuff here: https://github.com/jaanga/urdacha/wiki
 
