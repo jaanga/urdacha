@@ -32,13 +32,13 @@
 		if ( ! Detector.webgl ) {
 			renderer = new THREE.CanvasRenderer( { antialias: true } );
 		} else {
-			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer = new THREE.WebGLRenderer( { alpha: 1, antialias: true, clearColor: 0xffffff } );
 		}
 		
 		var light, geometry, material, mesh, info;
 			
 		var container = document.body.appendChild( document.createElement( 'div' ) );	
-		container.style.cssText = 'float: right; height: 500px; outline: 0px solid red;padding : 0 0px 30px 30px; top: 0; width: 50%;';
+		container.style.cssText = 'float: right; height: 500px; outline: 0px solid red; padding : 0 0px 30px 30px; top: 0; width: 50%;';
 		
 		renderer.setSize( window.innerWidth * 0.5, 400 );
 		renderer.shadowMapEnabled = true;
